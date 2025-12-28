@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "qtpyt/PyRunner.h"
+#include <qtpyt/qpymodulebase.h>
 
 using namespace qtpyt;
 
