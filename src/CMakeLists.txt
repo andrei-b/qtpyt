@@ -32,6 +32,7 @@ set(LIBRARY_SOURCES
         q_py_future.cpp
         internal/q_py_future_impl.cpp
         internal/q_py_future_impl.h
+        internal/pycall.cpp
 )
 
 # Define library headers

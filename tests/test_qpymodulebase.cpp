@@ -1,0 +1,51 @@
+#include <gtest/gtest.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+
+#include "qtpyt/qpymodule.h"
+
+namespace py = pybind11;
+
+static std::unique_ptr<py::scoped_interpreter> s_py_guard;
+
+TEST(QPyModule, MakeFunctionRunsAndReturns) {
+    qtpyt::QPyModuleBase m("def test_func(x, y):\n"
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    // create a Python-callable function from a C++ lambda that doubles its input
+    const auto test_func = m.makeFunction<double(double, double)>("test_func");
+    const auto res = test_func(2.5, 3.5);
+    EXPECT_EQ(res, 6.0);
+}
+
+TEST(QPyModule, MakeFunctionRunsAndReturnsFloat) {
+    qtpyt::QPyModuleBase m("def test_func(x, y):\n"
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    const auto test_func = m.makeFunction<float(float, float)>("test_func");
+    const auto res = test_func(2.5f, 3.5f);
+    EXPECT_FLOAT_EQ(res, 6.0f);
+}
+
+TEST(QPyModule, MakeFunctionRunsAndReturnsInt) {
+    qtpyt::QPyModuleBase m("def test_func(x, y):\n"
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    const auto test_func = m.makeFunction<int(int, int)>("test_func");
+    const auto res = test_func(2, 3);
+    EXPECT_EQ(res, 5);
+}
+
+TEST(QPyModule, MakeFunctionRunsAndReturnsLongLong) {
+    qtpyt::QPyModuleBase m("def test_func(x, y):\n"
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    const auto test_func = m.makeFunction<long long(long long, long long)>("test_func");
+    const auto res = test_func(2LL, 3LL);
+    EXPECT_EQ(res, 5LL);
+}
+
+TEST(QPyModule, MakeQVarinatListAsParamters) {
+    qtpyt::QPyModuleBase m("def test_func(x, y):\n"
+                               "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    QVariantList args = {QString("Hello, "), QString("world!")};
+    const auto res = m.call("test_func", QMetaType::QString, args);
+    ASSERT_TRUE(res.has_value());
+    EXPECT_EQ(res, "Hello, world!");
+}

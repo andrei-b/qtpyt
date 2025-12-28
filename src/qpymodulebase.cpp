@@ -4,9 +4,8 @@
 #include <qtpyt/conversions.h>
 
 namespace qtpyt {
-    QPyModuleBase::QPyModuleBase(const QString& source, const QPySourceType sourceType, const QString& funcName) :
-    m_callableFunction(funcName)
-    {
+    QPyModuleBase::QPyModuleBase(const QString &source, const QPySourceType sourceType,
+                                 const QString &funcName) : m_callableFunction(funcName) {
         switch (sourceType) {
             case QPySourceType::File:
                 buildFromFile(source, funcName);
@@ -31,7 +30,8 @@ namespace qtpyt {
         return m_isValid;
     }
 
-    std::optional<py::object> QPyModuleBase::call(const QString& function, const QVariantList& args, const QVariantMap& kwargs) {
+    std::optional<QVariant> QPyModuleBase::call(const QString &function, QMetaType::Type returnType,
+                                                const QVariantList &args, const QVariantMap &kwargs) {
         try {
             const auto argsTuple = pycall_internal__::build_args_tuple_from_variant_list(args);
             py::dict kwargsDict;
@@ -39,23 +39,24 @@ namespace qtpyt {
                 kwargsDict[py::str(it.key().toStdString())] = qvariantToPyObject(it.value());
             }
             setCallableFunction(function);
-            return pycall_internal__::call_python(callable, argsTuple, kwargsDict);
-        } catch (const std::exception& e) {
+            return pyObjectToQVariant(pycall_internal__::call_python(callable, argsTuple, kwargsDict),
+                QMetaType(returnType).name());
+        } catch (const std::exception &e) {
             return std::nullopt;
         }
         return {};
     }
 
-    std::optional<py::object> QPyModuleBase::makeCallable(const QString& function) {
+    std::optional<py::object> QPyModuleBase::makeCallable(const QString &function) {
         try {
             return m_module.attr(function.toStdString().c_str());
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             qWarning() << "QPyModuleBase::makeCallable error:" << e.what();
             return std::nullopt;
         }
     }
 
-    void QPyModuleBase::setCallableFunction(const QString& name) {
+    void QPyModuleBase::setCallableFunction(const QString &name) {
         m_callableFunction = name;
         if (m_module && !m_module.is_none()) {
             py::gil_scoped_acquire gil;
@@ -69,17 +70,18 @@ namespace qtpyt {
             }
         }
     }
-    pybind11::object QPyModuleBase::call(const pybind11::tuple& args, const pybind11::dict& kwargs) const {
+
+    pybind11::object QPyModuleBase::call(const pybind11::tuple &args, const pybind11::dict &kwargs) const {
         try {
             const py::object result = pycall_internal__::call_python(callable, args, kwargs);
             return result;
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             return py::none();
         }
         return py::none();
     }
 
-    pybind11::object&& QPyModuleBase::takePythonCallable(const QString& functionName) {
+    pybind11::object &&QPyModuleBase::takePythonCallable(const QString &functionName) {
         py::gil_scoped_acquire gil;
         py::object func;
         if (functionName.isEmpty()) {
@@ -105,7 +107,7 @@ namespace qtpyt {
         }
 
         py::module_ inspect = py::module_::import("inspect");
-        auto getArgType = [](const pybind11::handle& h) -> QPyValueType {
+        auto getArgType = [](const pybind11::handle &h) -> QPyValueType {
             if (!h || h.is_none()) return QPyValueType::Any;
             using namespace pybind11;
             if (isinstance<int_>(h)) return QPyValueType::Int;
@@ -121,8 +123,7 @@ namespace qtpyt {
         try {
             // Prefer getfullargspec for a simple structured view
             py::object spec = inspect.attr("getfullargspec")(callable);
-            for (py::list args_py = spec.attr("args"); auto &it : args_py) {
-
+            for (py::list args_py = spec.attr("args"); auto &it: args_py) {
                 const auto arg_name = it.cast<std::string>();
                 py::object ann_obj = spec.attr("annotations").attr("get")(arg_name, py::none());
                 QPyValueType argType = getArgType(ann_obj);
@@ -132,36 +133,39 @@ namespace qtpyt {
             // varargs / varkw
             if (py::object varargs = spec.attr("varargs"); !varargs.is_none()) {
                 info.has_varargs = true;
-                info.arguments.push_back({QPyArgumentType::VarArgs, QPyValueType::Any, QString::fromStdString(varargs.cast<std::string>())});
+                info.arguments.push_back({
+                    QPyArgumentType::VarArgs, QPyValueType::Any, QString::fromStdString(varargs.cast<std::string>())
+                });
             }
             if (py::object varkw = spec.attr("varkw"); !varkw.is_none()) {
                 info.has_varkw = true;
-                info.arguments.push_back({QPyArgumentType::VarKwargs, QPyValueType::Any, QString::fromStdString(varkw.cast<std::string>())});
+                info.arguments.push_back({
+                    QPyArgumentType::VarKwargs, QPyValueType::Any, QString::fromStdString(varkw.cast<std::string>())
+                });
             }
 
             // defaults: tuple aligned to last N args
             py::object defaults = spec.attr("defaults");
             if (!defaults.is_none()) {
                 auto def_tup = defaults.cast<py::tuple>();
-                int ndefs = (int)def_tup.size();
-                int nargs = (int)info.arguments.size();
-                for (int i = nargs-ndefs; i < nargs; ++i) {
+                int ndefs = (int) def_tup.size();
+                int nargs = (int) info.arguments.size();
+                for (int i = nargs - ndefs; i < nargs; ++i) {
                     info.arguments[i].hasDefault = true;
                 }
             }
             // annotations
             py::dict ann = spec.attr("annotations");
-            for (auto item : ann) {
+            for (auto item: ann) {
                 std::string name = item.first.cast<std::string>();
                 info.annotations[name] = item.second;
             }
-
         } catch (const py::error_already_set &e) {
             // Fallback: try inspect.signature when getfullargspec fails (e.g., builtins/C functions)
             py::object sig = inspect.attr("signature")(callable);
             py::object params = sig.attr("parameters");
             py::list items = params.attr("items")();
-            for (auto &it : items) {
+            for (auto &it: items) {
                 auto pair = it.cast<py::tuple>();
                 auto name = pair[0].cast<std::string>();
                 py::object param = pair[1];
@@ -179,14 +183,14 @@ namespace qtpyt {
                 if (py::object default_val = param.attr("default");
                     !default_val.is_none() && default_val.ptr() != inspect.attr("_empty").ptr()) {
                     hasDefault = true;
-                    }
+                }
 
                 QPyAnnotation annotation;
 
                 if (py::handle ann = param.attr("annotation");
                     !ann.is_none() && ann.ptr() != inspect.attr("_empty").ptr()) {
-                    annotation = annotations_internal__::parse_annotation(ann,0 );
-                    }
+                    annotation = annotations_internal__::parse_annotation(ann, 0);
+                }
 
                 info.arguments.push_back({argType, type, QString::fromStdString(kind), hasDefault, annotation});
             }
@@ -198,15 +202,16 @@ namespace qtpyt {
         return m_callableFunction;
     }
 
-    py::object& QPyModuleBase::getPyCallable() {
+    py::object &QPyModuleBase::getPyCallable() {
         return callable;
     }
 
-    void QPyModuleBase::buildFromString(const QString& source, const QString& funcName) {
+    void QPyModuleBase::buildFromString(const QString &source, const QString &funcName) {
         try {
             py::gil_scoped_acquire acquire;
 
-            const std::string mod_name = std::string("_pycall_src_") + std::to_string(std::hash<std::string>{}(source.toStdString()));
+            const std::string mod_name = std::string("_pycall_src_") + std::to_string(
+                                             std::hash<std::string>{}(source.toStdString()));
 
             py::module_ types = py::module_::import("types");
             m_module = types.attr("ModuleType")(mod_name);
@@ -226,15 +231,18 @@ namespace qtpyt {
             throw std::runtime_error(std::string("Python error: ") + e.what());
         }
     }
-    void QPyModuleBase::buildFromFile(const QString& fileName, const QString& funcName) {
+
+    void QPyModuleBase::buildFromFile(const QString &fileName, const QString &funcName) {
         try {
             py::gil_scoped_acquire acquire;
 
-            const std::string spec_name = std::string("_pycall_") + std::to_string(std::hash<std::string>{}(fileName.toStdString()));
+            const std::string spec_name = std::string("_pycall_") + std::to_string(
+                                              std::hash<std::string>{}(fileName.toStdString()));
 
             // importlib.util.spec_from_file_location + module_from_spec + loader.exec_module(module)
             const py::module_ importlib_util = py::module_::import("importlib.util");
-            py::object spec = importlib_util.attr("spec_from_file_location")(spec_name.c_str(), fileName.toStdString().c_str());
+            py::object spec = importlib_util.attr("spec_from_file_location")(
+                spec_name.c_str(), fileName.toStdString().c_str());
             if (!spec || spec.is_none()) throw std::runtime_error("failed to create spec for module path");
             m_module = importlib_util.attr("module_from_spec")(spec);
             if (!m_module || m_module.is_none()) throw std::runtime_error("failed to create module from spec");

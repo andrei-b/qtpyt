@@ -15,6 +15,9 @@ include(GoogleTest)
 # Create test executable
 add_executable(qtpyt_tests
         test_conversions.cpp
+        test_qpymodulebase.cpp
+        test_qpyfuture.cpp
+        ../src/internal/pycall.cpp
 )
 
 target_sources(qtpyt_tests PRIVATE

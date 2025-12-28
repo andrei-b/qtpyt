@@ -32,7 +32,7 @@ class QPyFutureImpl {
     mutable std::mutex m_mutex;
     std::shared_ptr< qtpyt::QPyModule> m_callable;
     QString m_functionName;
-    py::object m_arguments;
+    pybind11::tuple m_arguments;
     py::list m_result;
      qtpyt::QPyFutureState m_state{ qtpyt::QPyFutureState::NotStarted};
     std::shared_ptr< qtpyt::QPyFutureNotifier> m_notifier{nullptr};

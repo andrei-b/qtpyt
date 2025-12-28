@@ -30,6 +30,7 @@ QPyFutureImpl::QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QStrin
     m_arguments = std::move(argsTuple);
 }
 
+
 void QPyFutureImpl::run() {
     try {
         pybind11::gil_scoped_acquire gil;
@@ -39,8 +40,9 @@ void QPyFutureImpl::run() {
                 m_notifier->notifyStarted();
             }
             // specify the return type explicitly and pass an explicit empty kwargs dict
+
             py::object result =
-               m_callable->makeCallable(m_functionName).value()(m_arguments);
+               pycall_internal__::call_python_no_kw(m_callable->makeCallable(m_functionName).value(), m_arguments);
             pushResult(std::move(result));
             m_state =  qtpyt::QPyFutureState::Finished;
             if (m_notifier.get() != nullptr) {
