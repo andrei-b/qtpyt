@@ -7,7 +7,7 @@ This project uses CMake as the build system and includes Google Test for unit te
 
 ### Prerequisites
 - CMake 3.14 or higher
-- C++17 compatible compiler
+- C++20 compatible compiler
 - Git (for fetching Google Test)
 
 ### Build Instructions
