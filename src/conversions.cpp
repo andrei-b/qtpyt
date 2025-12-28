@@ -1,6 +1,5 @@
 
 #include <qtpyt/conversions.h>
-
 #include <qtpyt/q_py_shared_array.h>
 #include <QByteArray>
 #include <QColor>
@@ -744,6 +743,19 @@ namespace qtpyt {
 
         if (py::isinstance<py::dict>(obj)) {
             return QVariant::fromValue(pyDictToVariantMap(obj.cast<py::dict>()));
+        }
+
+        if (py::isinstance<py::memoryview>(obj) && expectedType == "QByteArray") {
+            auto memoryviewDataPtr = [](const py::memoryview& mv, size_t& outBytes) -> const char* {
+                if (!mv || mv.is_none()) throw std::runtime_error("memoryview is null");
+                py::buffer_info info =  py::buffer(mv).request();
+                outBytes = static_cast<size_t>(info.size) * info.itemsize;
+                return static_cast<const char*>(info.ptr);
+            };
+            py::memoryview mv = obj.cast<py::memoryview>();
+            size_t nbytes;
+            auto ptr = memoryviewDataPtr(mv, nbytes);
+            return QVariant::fromValue(QByteArray(ptr, static_cast<int>(nbytes)));
         }
 
         if (expectedType.isEmpty() && (expectedType == "QObject" || expectedType == "QObject*") &&

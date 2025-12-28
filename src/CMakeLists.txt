@@ -1,23 +1,6 @@
-list(PREPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-list(PREPEND CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.10.1/gcc_64")
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-
-include(FetchContent)
-FetchContent_Declare(pybind11 GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG v2.13.5)            # choose a tag
-FetchContent_MakeAvailable(pybind11)
-pybind11_add_module(qembed q_embed_meta_object_py.cpp)
-
-find_package(Python314t REQUIRED)
-
-find_package(Qt6 CONFIG REQUIRED COMPONENTS Core Widgets Gui)
-
-find_package(Qt6 OPTIONAL_COMPONENTS CorePrivate)
-
-
 
 # Define library sources
 set(LIBRARY_SOURCES
@@ -34,7 +17,6 @@ set(LIBRARY_SOURCES
         pyextra/py_datetime.cpp
         pyextra/py_datetime.h
         qpymodulebase.cpp
-        internal/pycall.h
         internal/annotations.cpp
         internal/annotations.h
         conversions.cpp
@@ -62,7 +44,8 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/q_py_future.h
     ../include/qtpyt/conversions.h
     ../include/qtpyt/pep3118format.h
-        ../include/qtpyt/qpyannotation.h
+    ../include/qtpyt/qpyannotation.h
+    ../include/qtpyt/pycall.h
 )
 
 # Create the shared library

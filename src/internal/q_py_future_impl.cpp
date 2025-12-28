@@ -40,7 +40,7 @@ void QPyFutureImpl::run() {
             }
             // specify the return type explicitly and pass an explicit empty kwargs dict
             py::object result =
-                pycall_internal__::call_python<py::object>(m_callable->makeCallable(m_functionName).value(), m_arguments, py::dict());
+               m_callable->makeCallable(m_functionName).value()(m_arguments);
             pushResult(std::move(result));
             m_state =  qtpyt::QPyFutureState::Finished;
             if (m_notifier.get() != nullptr) {
@@ -60,6 +60,7 @@ void QPyFutureImpl::run() {
         qWarning() << "Python error in QPyFutureImpl::run:" << e.what();
         // Handle Python exception (log it, store it, etc.)
     }
+
     catch (const std::exception& e) {
         m_state =  qtpyt::QPyFutureState::Error;
         {

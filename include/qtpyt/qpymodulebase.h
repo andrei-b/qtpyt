@@ -3,20 +3,14 @@
 #include <pybind11/pybind11.h>
 
 #include <qtpyt/qpyannotation.h>
+#include <qtpyt/pycall.h>
 #include <QRunnable>
 #include <QVariant>
 #include <Python.h>
 
 namespace py = pybind11;
 
-namespace pycall_internal__ {
-    // forward-declare helper used by the header templates
-    template<typename... Args>
-    pybind11::tuple build_args_tuple(Args&&... args);
 
-    template<typename R, typename Callable, typename... Args>
-    R call_python(Callable&& callable, Args&&... args);
-}
 
 namespace qtpyt {
     enum class QPySourceType {

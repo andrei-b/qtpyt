@@ -1,6 +1,5 @@
 #include <qtpyt/qpymodulebase.h>
 #include "q_embed_meta_object_py.h"
-#include "internal/pycall.h"
 #include "internal/annotations.h"
 #include <qtpyt/conversions.h>
 
