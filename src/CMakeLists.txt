@@ -33,6 +33,7 @@ set(LIBRARY_SOURCES
         internal/q_py_future_impl.cpp
         internal/q_py_future_impl.h
         internal/pycall.cpp
+        qpyscript.cpp
 )
 
 # Define library headers
@@ -47,6 +48,7 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/pep3118format.h
     ../include/qtpyt/qpyannotation.h
     ../include/qtpyt/pycall.h
+    ../include/qtpyt/qpyscript.h
 )
 
 # Create the shared library

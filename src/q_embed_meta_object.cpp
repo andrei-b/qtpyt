@@ -241,8 +241,16 @@ namespace qtpyt {
         // --- Extract return value (if requested) ---
         if (hasReturn) {
             if (ok && outReturn) {
-                // construct QVariant from the returned value
-                *outReturn = QVariant(static_cast<QMetaType>(returnTypeId), retStorage);
+                if (returnTypeId == QMetaType::QVariant) {
+                    // Return type already is QVariant
+                    *outReturn = *static_cast<QVariant*>(retStorage);
+                } else {
+                    *outReturn = QVariant(QMetaType(returnTypeId), retStorage);
+                }
+                if (!outReturn->isValid()) {
+                    qWarning() << "invokeFromVariantListDynamic: constructed return QVariant is invalid for method"
+                            << methodName << "on" << mo->className();
+                }
             }
             QMetaType::destroy(returnTypeId, retStorage);
         }

@@ -19,7 +19,12 @@ add_executable(qtpyt_tests
         test_qpyfuture.cpp
         test_qpymodule.cpp
         main.cpp
+        test_qpyscript.cpp
+        testobject.h
 )
+
+set_target_properties(qtpyt_tests PROPERTIES AUTOMOC ON)
+
 
 target_sources(qtpyt_tests PRIVATE
         ../src/q_embed_meta_object.cpp
@@ -39,7 +44,9 @@ target_sources(qtpyt_tests PRIVATE
         ../src/internal/q_py_future_impl.cpp
         ../src/internal/q_py_sub_interpreter.cpp
         ../src/conversions.cpp
-        ../src/internal/pycall.cpp# or internal/conversions.cpp
+        ../src/internal/pycall.cpp
+        ../src/qpyscript.cpp
+        testobject.h
 )
 
 # Link against the library and Google Test
@@ -50,6 +57,7 @@ target_link_libraries(qtpyt_tests
         gtest
         Qt::Core
         Qt::CorePrivate
+        Qt6::Test
         Python314t::Python
 )
 
@@ -63,3 +71,14 @@ add_test(NAME conversions COMMAND test_conversions)
 
 # Discover tests
 gtest_discover_tests(qtpyt_tests)
+
+add_custom_command(TARGET qtpyt_tests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/pyfiles
+        $<TARGET_FILE_DIR:qtpyt_tests>/pyfiles
+)
+
+add_test(NAME qpyscript_tests COMMAND qtpyt_tests)
+set_tests_properties(qpyscript_tests PROPERTIES
+        WORKING_DIRECTORY $<TARGET_FILE_DIR:qtpyt_tests>
+)

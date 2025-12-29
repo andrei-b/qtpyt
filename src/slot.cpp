@@ -1,6 +1,5 @@
-//
-// Created by andre on 30/11/2025.
-//
+#define  PYBIND11_NO_KEYWORDS
+#include <pybind11/pybind11.h>
 
 #include "slot.h"
 

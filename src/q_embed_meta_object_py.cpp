@@ -1,8 +1,7 @@
-//
-// Created by andrei on 02.12.25.
-//
 #define PYBIND11_DETAILED_ERROR_MESSAGES
-
+#define PYBIND11_NO_KEYWORDS
+#include <pybind11/embed.h>
+#include <pybind11/detail/common.h>
 #include "q_embed_meta_object_py.h"
 
 #include <qtpyt/conversions.h>
@@ -12,14 +11,13 @@
 #include <QJsonObject>
 #include <QMetaMethod>
 #include <QVariantList>
-#include <bits/codecvt.h>
-#include <bits/locale_facets_nonio.h>
-#include <functional>
-#include <list>
-#include <pybind11/numpy.h>
-#include <qdatetime.h>
 #include <qpoint.h>
-#include <stdexcept>
+
+
+
+#pragma message("PYBIND11 file: " PYBIND11_STRINGIFY(PYBIND11_INTERNALS_ID))
+
+static_assert(PYBIND11_VERSION_HEX >= 0x020D0500, "Wrong/old pybind11 headers");
 
 namespace qtpyt {
     namespace {
@@ -29,6 +27,19 @@ namespace qtpyt {
             return py::make_tuple(ok, return_value);
         }
 
+        extern "C" {
+            // CPython will call this to create the module
+            PyObject* PyInit_qembed();
+        }
+
+#if PY_VERSION_HEX >= 0x030D0000
+        // Declare module can run with GIL disabled (free-threaded)
+        static PyModuleDef_Slot qembed_slots[] = {
+            {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+            {0, nullptr}
+        };
+#endif
+
         PYBIND11_EMBEDDED_MODULE(qembed, m) {
             m.doc() = "pybind11 bindings for QEmbedMetaObject invokeFromVariantListDynamic";
 
@@ -37,6 +48,9 @@ namespace qtpyt {
                   py::arg("method"), py::arg("return_value"), py::arg("args"));
 
             m.def("invoke", &QEmbedMetaObjectPy::invoke_returning_from_args, py::arg("obj_ptr"), py::arg("method"));
+
+            m.def("invoke_ret_void", &QEmbedMetaObjectPy::invoke_void_from_args, py::arg("obj_ptr"), py::arg("method"));
+
 
             // find_object_by_name(root_ptr, name, recursive=true)
             m.def("find_object_by_name", &QEmbedMetaObjectPy::find_object_by_name, py::arg("root_ptr"), py::arg("name"),
@@ -48,7 +62,17 @@ namespace qtpyt {
 
             // get_property(obj_ptr, property_name)
             m.def("get_property", &QEmbedMetaObjectPy::get_property, py::arg("obj_ptr"), py::arg("property_name"));
+
+
+#if PY_VERSION_HEX >= 0x030D0000
+            // Patch the module definition to include the slot.
+            // This uses pybind11 internals (stable enough across 2.13.x).
+            auto *def = reinterpret_cast<PyModuleDef*>(PyModule_GetDef(m.ptr()));
+            def->m_slots = qembed_slots;
+#endif
+
         }
+
     } // namespace
 
 
@@ -80,6 +104,11 @@ namespace qtpyt {
                                                             py::reinterpret_borrow<py::iterable>(args));
     }
 
+
+    void invoke_void_from_args(const uintptr_t obj_ptr, const std::string& method, const py::args& args) {
+        py::object retValue; // unused
+        QEmbedMetaObjectPy::invoke_from_args(obj_ptr, method, retValue, args);
+    }
 
     bool QEmbedMetaObjectPy::invoke_from_variant_list(uintptr_t obj_ptr, const std::string& method,
                                                       py::object& return_value, const py::iterable& args) {

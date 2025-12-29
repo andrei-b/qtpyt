@@ -22,9 +22,9 @@ FetchContent_Declare(pybind11 GIT_REPOSITORY https://github.com/pybind/pybind11.
 FetchContent_MakeAvailable(pybind11)
 pybind11_add_module(qembed src/q_embed_meta_object_py.cpp)
 
-find_package(Python314t REQUIRED)
+find_package(Python314t REQUIRED COMPONENTS Development Embedding)
 
-find_package(Qt6 CONFIG REQUIRED COMPONENTS Core Widgets Gui)
+find_package(Qt6 CONFIG REQUIRED COMPONENTS Core Widgets Gui Test)
 
 find_package(Qt6 OPTIONAL_COMPONENTS CorePrivate)
 

@@ -1,8 +1,6 @@
 #pragma once
 #define PYBIND11_NO_KEYWORDS
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include "q_embed_meta_object.h" // existing header in project
 
 #include <pybind11/embed.h>
