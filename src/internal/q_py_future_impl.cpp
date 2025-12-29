@@ -5,14 +5,25 @@
 #include <utility>
 
 QPyFutureImpl::~QPyFutureImpl() {
-    if (Py_IsInitialized()) {
-        pybind11::gil_scoped_acquire gil;
-        m_arguments.dec_ref();
-        m_result.dec_ref();
-    } else {
+    // Avoid touching Python refcounts unless we can safely acquire a valid thread state.
+    // Destructor may run on arbitrary threads and/or during interpreter finalization.
+    if (!Py_IsInitialized()) {
         m_arguments.release();
         m_result.release();
+        return;
     }
+
+    // If this thread has no Python thread state, acquiring the GIL via PyGILState
+    // (used by pybind11::gil_scoped_acquire) is unsafe and can assert/abort.
+    if (PyGILState_GetThisThreadState() == nullptr) {
+        m_arguments.release();
+        m_result.release();
+        return;
+    }
+
+    pybind11::gil_scoped_acquire gil;
+    m_arguments.dec_ref();
+    m_result.dec_ref();
 }
 
 QPyFutureImpl::QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QString functionName, QVariantList&& arguments)
@@ -85,6 +96,7 @@ void QPyFutureImpl::run() {
 
 int QPyFutureImpl::resultCount() {
     std::lock_guard<std::mutex> lock(m_mutex);
+    pybind11::gil_scoped_acquire gil;
     if (m_result.is(py::none())) {
         return 0;
     }
@@ -93,18 +105,20 @@ int QPyFutureImpl::resultCount() {
 
 QVariant QPyFutureImpl::resultAsVariant(const QString& resultType, int index) const {
     std::lock_guard<std::mutex> lock(m_mutex);
+    pybind11::gil_scoped_acquire gil;
     if (m_result.is(py::none())) {
         return QVariant();
     }
-    if (index < 0 || index >= static_cast<int>(py::len(m_result))) {
+    const int n = static_cast<int>(py::len(m_result));
+    if (index < 0 || index >= n) {
         return QVariant();
     }
     py::object resultObj = m_result[index];
-    auto v =  qtpyt::pyObjectToQVariant(resultObj, resultType.toUtf8());
-        if (!v.has_value()) {
-            qWarning() << "QPyFutureImpl::resultAsVariant: conversion to QVariant failed for result at index" << index;
-                return QVariant();
-        }
+    auto v = qtpyt::pyObjectToQVariant(resultObj, resultType.toUtf8());
+    if (!v.has_value()) {
+        qWarning() << "QPyFutureImpl::resultAsVariant: conversion to QVariant failed for result at index" << index;
+        return QVariant();
+    }
     return v.value();
 }
 

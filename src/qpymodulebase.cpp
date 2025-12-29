@@ -19,11 +19,28 @@ namespace qtpyt {
     }
 
     QPyModuleBase::~QPyModuleBase() {
-        if (callable) {
-            pybind11::gil_scoped_acquire gil;
-            callable = pybind11::none();
-        }
-        m_isValid = false;
+
+            // Destructors can run on arbitrary threads and/or during interpreter finalization.
+            // Avoid refcount operations unless Python is initialized and this thread has a valid state.
+            auto safe_release = [](pybind11::object &o) {
+                if (!o || o.is_none()) return;
+
+                if (!Py_IsInitialized() || PyGILState_GetThisThreadState() == nullptr) {
+                    // Do not decref: can trip PyGILState_Check()/invalid tstate.
+                    o.release();
+                    return;
+                }
+
+                pybind11::gil_scoped_acquire gil;
+                // Ensure decref happens while GIL is held.
+                o = pybind11::none();
+            };
+
+            safe_release(callable);
+            safe_release(m_module);
+
+            m_isValid = false;
+
     }
 
     bool QPyModuleBase::isValid() const {
