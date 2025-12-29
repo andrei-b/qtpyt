@@ -9,6 +9,7 @@
 #include <QSignalSpy>
 #include <gtest/gtest.h>
 #include <QObject>
+#include  <QVector3D>
 #include <QDebug>
 #include "testobject.h"
 
@@ -28,6 +29,7 @@ protected:
         qtpyt::registerSharedArray<long long>(" QPySharedArray<long long>", true);
         auto newid = qtpyt::registerContainerType<QList<int>>("QList<int>");
         qtpyt::registerContainerType<QList<QVector3D>>("QList<QVector3D>");
+        qtpyt::registerContainerType<std::map<int, QString>>("std::map<int, QString>");
         qWarning() <<" Registered std::list<int> with type id " << newid;
     }
     static void TearDownTestSuite() {
