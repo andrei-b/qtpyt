@@ -16,11 +16,11 @@ class QPyModule : public QPyModuleBase, public std::enable_shared_from_this<QPyM
     ~QPyModule() override;
 
     template <typename... Args>
-    std::optional<QPyFuture> callAsync(const QString& functionName, Args... args) {
+    std::optional<QPyFuture> callAsync(const QString& functionName, const QPyRegisteredType& returnType, Args... args) {
         QVariantList varArgs = {args...};
-        return callAsync(functionName, std::move(varArgs));
+        return callAsync(functionName, returnType, std::move(varArgs));
     }
-    std::optional<QPyFuture> callAsync(const QString& functionName, QVariantList&& args);
+    std::optional<QPyFuture> callAsync(const QString &functionName, const QPyRegisteredType &returnType, QVariantList &&args);
   protected:
     auto getThreadId() const;
     void setThreadId();

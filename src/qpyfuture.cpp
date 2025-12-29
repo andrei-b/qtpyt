@@ -6,14 +6,14 @@
 #include "internal/q_py_future_impl.h"
 
 namespace qtpyt {
-    QPyFuture::QPyFuture(std::shared_ptr<QPyModule> callable, const QString& functionName,
+    QPyFuture::QPyFuture(std::shared_ptr<QPyModule> callable, const QString& functionName, const QByteArray& returnType,
                          QVariantList&& arguments) {
-        m_impl = std::make_shared<QPyFutureImpl>(std::move(callable), functionName,std::move(arguments));
+        m_impl = std::make_shared<QPyFutureImpl>(std::move(callable), functionName, returnType, std::move(arguments));
     }
 
-    QPyFuture::QPyFuture(std::shared_ptr<QPyModule> callable, QString functionName, const QVector<int>& types,
-                         void** a) {
-        m_impl = std::make_shared<::QPyFutureImpl>(std::move(callable), std::move(functionName), types, a);
+    QPyFuture::QPyFuture(std::shared_ptr<QPyModule> callable, QString functionName, const QByteArray& returnType,
+        const QVector<int>& types,  void** a) {
+        m_impl = std::make_shared<::QPyFutureImpl>(std::move(callable), std::move(functionName), returnType, types, a);
     }
 
     QPyFuture::QPyFuture(const QPyFuture& other) {
@@ -57,17 +57,8 @@ namespace qtpyt {
         m_impl->run();
     }
 
-    QVariant QPyFuture::resultAsVariant(const QPyRegisteredType& rt , int index) const {
-        if (std::holds_alternative<QMetaType>(rt)) {
-            return m_impl->resultAsVariant(std::get<QMetaType>(rt).name(), index);
-        }
-        if (std::holds_alternative<QMetaType::Type>(rt)) {
-            return m_impl->resultAsVariant(QMetaType(std::get<QMetaType::Type>(rt)).name(), index);
-        }
-        if (std::holds_alternative<QString>(rt)) {
-            return m_impl->resultAsVariant(std::get<QString>(rt), index);
-        }
-        return {};
+    QVariant QPyFuture::resultAsVariant(int index) const {
+        return m_impl->resultAsVariant(index);
     }
 
     QPyFutureState QPyFuture::state() const {

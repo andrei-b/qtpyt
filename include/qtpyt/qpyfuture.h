@@ -37,8 +37,9 @@ namespace qtpyt {
 
     class QPyFuture {
     public:
-        QPyFuture(std::shared_ptr<QPyModule> callable, const QString& functionName, QVariantList&& arguments);
-        QPyFuture(std::shared_ptr<QPyModule> callable, QString  functionName,
+        QPyFuture(std::shared_ptr<QPyModule> callable, const QString& functionName,  const QByteArray& returnType,
+            QVariantList&& arguments);
+        QPyFuture(std::shared_ptr<QPyModule> callable, QString  functionName,  const QByteArray& returnType,
                                  const QVector<int>& types, void** a);
         QPyFuture(const QPyFuture& other);
         QPyFuture& operator=(const QPyFuture& other);
@@ -52,10 +53,13 @@ namespace qtpyt {
         }
         void run() const;
         [[nodiscard]] int resultCount() const;
-        [[nodiscard]] QVariant resultAsVariant(const QPyRegisteredType &rt, int index) const;
-        template <typename T> T resultAt(int index) {
-            auto mt = QMetaType::fromType<T>();
-            const QVariant var = this->resultAsVariant(mt, index);
+        [[nodiscard]] QVariant resultAsVariant(int index) const;
+        template <typename T> T resultAs(int index) {
+            if (index < 0 || index >= this->resultCount()) {
+                qWarning() << "QPyFuture::resultAs: index out of range:" << index;
+                return T{};
+            }
+            const QVariant var = this->resultAsVariant(index);
             return var.value<T>();
         }
         [[nodiscard]] QPyFutureState state() const;

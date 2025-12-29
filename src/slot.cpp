@@ -119,7 +119,7 @@ namespace qtpyt {
             auto asyncCallable = slot->callable();
 
             if (asyncCallable.get()) {
-                QPyFuture f = QPyFuture(asyncCallable, slot->functionName(), slot->parameterTypes(), a);
+                QPyFuture f = QPyFuture(asyncCallable, slot->functionName(), QByteArray("void"), slot->parameterTypes(),  a);
                 QPyThreadPool::instance().submit(std::move(f));
             } else {
                 qWarning() << "Slot::connectCallableAsync: callable is not a QPyModule";

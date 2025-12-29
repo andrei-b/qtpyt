@@ -49,12 +49,21 @@ namespace qtpyt {
     QPyModule::~QPyModule() {}
 
 
-    std::optional<QPyFuture> QPyModule::callAsync(const QString& functionName, QVariantList&& args) {
+    std::optional<QPyFuture> QPyModule::callAsync(const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) {
         const auto self = shared_from_this();
         if (functionName.isEmpty()) {
             return std::nullopt;
         }
-        QPyFuture me(self, functionName, std::move(args));
+        QByteArray type = "void";
+        if (std::holds_alternative<QMetaType>(returnType)) {
+            type = std::get<QMetaType>(returnType).name();
+        } else if (std::holds_alternative<QString>(returnType)) {
+            type = std::get<QString>(returnType).toUtf8();
+        } else if (std::holds_alternative<QMetaType::Type>(returnType)) {
+            type = QMetaType(std::get<QMetaType::Type>(returnType)).name();
+        }
+
+        QPyFuture me(self, functionName, type, std::move(args));
         QPyThreadPool::instance().submit(me);
         return me;
     }
