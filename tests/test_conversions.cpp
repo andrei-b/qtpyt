@@ -11,8 +11,6 @@
 
 namespace py = pybind11;
 
-static std::unique_ptr<py::scoped_interpreter> s_py_guard;
-
 TEST(Conversions, IntRoundtrip) {
     QVariant in = 42;
     py::object obj = qtpyt::qvariantToPyObject(in);
@@ -56,10 +54,4 @@ TEST(Conversions, BytesToQByteArray) {
     ASSERT_TRUE(outOpt.has_value());
     QByteArray out = outOpt->value<QByteArray>();
     EXPECT_EQ(out, QByteArray("sample bytes data"));
-}
-
-int main(int argc, char** argv) {
-    s_py_guard = std::make_unique<py::scoped_interpreter>(); // initialize Python once
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

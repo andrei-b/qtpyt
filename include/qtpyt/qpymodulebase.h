@@ -10,8 +10,6 @@
 
 namespace py = pybind11;
 
-
-
 namespace qtpyt {
     enum class QPySourceType {
         Module,
@@ -55,6 +53,8 @@ namespace qtpyt {
         std::vector<QPythonArgument> arguments;
         QPyValueType returnType;
     };
+
+    using QPyRegisteredType = std::variant<QMetaType::Type, QString, QMetaType>;
 
     class QPyModuleBase {
     public:

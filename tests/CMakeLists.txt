@@ -17,7 +17,8 @@ add_executable(qtpyt_tests
         test_conversions.cpp
         test_qpymodulebase.cpp
         test_qpyfuture.cpp
-        ../src/internal/pycall.cpp
+        test_qpymodule.cpp
+        main.cpp
 )
 
 target_sources(qtpyt_tests PRIVATE
@@ -37,7 +38,8 @@ target_sources(qtpyt_tests PRIVATE
         ../src/q_py_future.cpp
         ../src/internal/q_py_future_impl.cpp
         ../src/internal/q_py_sub_interpreter.cpp
-        ../src/conversions.cpp          # or internal/conversions.cpp
+        ../src/conversions.cpp
+        ../src/internal/pycall.cpp# or internal/conversions.cpp
 )
 
 # Link against the library and Google Test

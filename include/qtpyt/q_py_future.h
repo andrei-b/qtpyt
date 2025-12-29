@@ -1,8 +1,12 @@
 #pragma once
+#define PYBIND11_NO_KEYWORDS
+#include <pybind11/pybind11.h>
 #include <QMetaType>
 #include <QObject>
 #include <QVariant>
 #include <memory>
+
+#include "qpymodulebase.h"
 
 class QPyFutureImpl;
 namespace qtpyt {
@@ -38,6 +42,9 @@ namespace qtpyt {
                                  const QVector<int>& types, void** a);
         QPyFuture(const QPyFuture& other);
         QPyFuture& operator=(const QPyFuture& other);
+
+        void waitForFinished() const;
+
         QPyFuture(QPyFuture&& other) noexcept;
         QPyFuture& operator=(QPyFuture&& other);
         void operator()() const {
@@ -45,7 +52,7 @@ namespace qtpyt {
         }
         void run() const;
         [[nodiscard]] int resultCount() const;
-        [[nodiscard]] QVariant resultAsVariant(const QMetaType& mt, int index) const;
+        [[nodiscard]] QVariant resultAsVariant(const QPyRegisteredType &rt, int index) const;
         template <typename T> T resultAt(int index) {
             auto mt = QMetaType::fromType<T>();
             const QVariant var = this->resultAsVariant(mt, index);

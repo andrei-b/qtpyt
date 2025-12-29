@@ -27,6 +27,17 @@ namespace qtpyt {
         return *this;
     }
 
+    void QPyFuture::waitForFinished() const {
+        while (true) {
+            const QPyFutureState s = this->state();
+            if (s == QPyFutureState::Finished || s == QPyFutureState::Error || s == QPyFutureState::Canceled) {
+                break;
+            }
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+            QThread::msleep(1);
+        }
+    }
+
     QPyFuture::QPyFuture(QPyFuture&& other)  noexcept {
         m_impl = std::move(other.m_impl);
     }
@@ -46,9 +57,17 @@ namespace qtpyt {
         m_impl->run();
     }
 
-    QVariant QPyFuture::resultAsVariant(const QMetaType& mt , int index) const {
-        const QByteArray name = mt.name();
-        return m_impl->resultAsVariant(QString::fromUtf8(name), index);
+    QVariant QPyFuture::resultAsVariant(const QPyRegisteredType& rt , int index) const {
+        if (std::holds_alternative<QMetaType>(rt)) {
+            return m_impl->resultAsVariant(std::get<QMetaType>(rt).name(), index);
+        }
+        if (std::holds_alternative<QMetaType::Type>(rt)) {
+            return m_impl->resultAsVariant(QMetaType(std::get<QMetaType::Type>(rt)).name(), index);
+        }
+        if (std::holds_alternative<QString>(rt)) {
+            return m_impl->resultAsVariant(std::get<QString>(rt), index);
+        }
+        return {};
     }
 
     QPyFutureState QPyFuture::state() const {

@@ -6,9 +6,7 @@
 
 namespace py = pybind11;
 
-static std::unique_ptr<py::scoped_interpreter> s_py_guard;
-
-TEST(QPyModule, MakeFunctionRunsAndReturns) {
+TEST(QPyModuleBase, MakeFunctionRunsAndReturns) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
     // create a Python-callable function from a C++ lambda that doubles its input
@@ -17,7 +15,7 @@ TEST(QPyModule, MakeFunctionRunsAndReturns) {
     EXPECT_EQ(res, 6.0);
 }
 
-TEST(QPyModule, MakeFunctionRunsAndReturnsFloat) {
+TEST(QPyModuleBase, MakeFunctionRunsAndReturnsFloat) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
     const auto test_func = m.makeFunction<float(float, float)>("test_func");
@@ -25,7 +23,7 @@ TEST(QPyModule, MakeFunctionRunsAndReturnsFloat) {
     EXPECT_FLOAT_EQ(res, 6.0f);
 }
 
-TEST(QPyModule, MakeFunctionRunsAndReturnsInt) {
+TEST(QPyModuleBase, MakeFunctionRunsAndReturnsInt) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
     const auto test_func = m.makeFunction<int(int, int)>("test_func");
@@ -33,7 +31,7 @@ TEST(QPyModule, MakeFunctionRunsAndReturnsInt) {
     EXPECT_EQ(res, 5);
 }
 
-TEST(QPyModule, MakeFunctionRunsAndReturnsLongLong) {
+TEST(QPyModuleBase, MakeFunctionRunsAndReturnsLongLong) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
     const auto test_func = m.makeFunction<long long(long long, long long)>("test_func");
@@ -41,7 +39,7 @@ TEST(QPyModule, MakeFunctionRunsAndReturnsLongLong) {
     EXPECT_EQ(res, 5LL);
 }
 
-TEST(QPyModule, MakeQVarinatListAsParamters) {
+TEST(QPyModuleBase, MakeQVarinatListAsParamters) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
                                "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
     QVariantList args = {QString("Hello, "), QString("world!")};
