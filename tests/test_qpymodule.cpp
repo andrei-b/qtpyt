@@ -15,3 +15,24 @@ TEST(QPyModule, CallAsyncRunsAndReturns) {
     EXPECT_EQ(res, 6.0);
 }
 
+TEST(QPyModule, SyncRunsAfterAsync) {
+    auto m = std::make_shared<qtpyt::QPyModule> (
+              "import time\n"
+        "def func_1(x, y):\n"
+              "    time.sleep(1)\n"
+              "    return x + y\n"
+              "\n"
+              "\n"
+              "def func_2():"
+              "    return 1", qtpyt::QPySourceType::SourceString, "func_1");
+    auto f = m->callAsync<double, double>("func_1", 2.5, 3.5).value();
+    auto func_2 = m->makeFunction<int()>("func_2");
+    const auto res2 = func_2();
+    EXPECT_EQ(res2, 1);
+    auto f2 = m->callAsync<>("func_2" ).value();
+    f2.waitForFinished();
+    auto res = f2.resultAt<int>(0);
+    EXPECT_EQ(res, 1);
+
+}
+

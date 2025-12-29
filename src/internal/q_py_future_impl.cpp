@@ -5,13 +5,19 @@
 #include <utility>
 
 QPyFutureImpl::~QPyFutureImpl() {
-    pybind11::gil_scoped_acquire gil;
-        m_arguments.release();// = py::none();
-        m_result.release();// = py::none();
-
+    if (Py_IsInitialized()) {
+        pybind11::gil_scoped_acquire gil;
+        m_arguments.dec_ref();
+        m_result.dec_ref();
+    } else {
+        m_arguments.release();
+        m_result.release();
+    }
 }
+
 QPyFutureImpl::QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QString functionName, QVariantList&& arguments)
     : m_callable{std::move(callable)}, m_functionName(std::move(functionName)) {
+    pybind11::gil_scoped_acquire gil;
     py::tuple argsTuple(arguments.size());
     for (int i = 0; i < arguments.size(); ++i) {
         py::object argObj =  qtpyt::qvariantToPyObject(arguments[i]);

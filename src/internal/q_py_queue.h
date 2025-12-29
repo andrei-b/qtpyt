@@ -53,6 +53,9 @@ public:
     void close() {
         {
             std::lock_guard<std::mutex> lk(m_);
+            while (!q_.empty()) {
+                q_.pop_front();
+            }
             closed_ = true;
         }
         cv_.notify_all();
