@@ -24,8 +24,7 @@ namespace pycall_internal__ {
 
             PyObject *res_ptr = PyObject_Call(callable.ptr(), args.ptr(), kwargs.ptr());
             if (!res_ptr) {
-                PyErr_Print();
-                throw std::runtime_error("Python call failed");
+                throw pybind11::error_already_set();
             }
             return py::reinterpret_steal<py::object>(res_ptr);
         } catch (const py::error_already_set &e) {

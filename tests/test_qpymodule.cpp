@@ -36,3 +36,21 @@ TEST(QPyModule, SyncRunsAfterAsync) {
 
 }
 
+TEST(QPyModule, CallAsyncWithVariantListRunsAndReturns) {
+    auto m = std::make_shared<qtpyt::QPyModule> ("def test_func(x, y):\n"
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    QVariantList args = {2.5, 3.5};
+    auto f = m->callAsync("test_func", std::move(args)).value();
+    f.waitForFinished();
+    auto res = f.resultAt<double>(0);
+    EXPECT_EQ(res, 6.0);
+}
+
+TEST(QPyModule, CallAsyncInvalidFunctionReturnsNullopt) {
+    auto m = std::make_shared<qtpyt::QPyModule> ("def test_func(x, y):\n"
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+    auto f = m->callAsync<>("test_func");
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
+    EXPECT_EQ(f->errorMessage(), "Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
+}
