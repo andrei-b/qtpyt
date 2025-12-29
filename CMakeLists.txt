@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Build shared library by default
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
+add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=1)
+
 # Enable testing
 enable_testing()
 

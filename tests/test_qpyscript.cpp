@@ -26,7 +26,9 @@ protected:
         qtpyt::registerSharedArray<float>("const QPySharedArray<float>&", true);
         qtpyt::registerSharedArray<double>("QPySharedArray<double>", true);
         qtpyt::registerSharedArray<long long>(" QPySharedArray<long long>", true);
-        qtpyt::registerContainerType<std::list<int>>("std::list<int>");
+        auto newid = qtpyt::registerContainerType<QList<int>>("QList<int>");
+        qtpyt::registerContainerType<QList<QVector3D>>("QList<QVector3D>");
+        qWarning() <<" Registered std::list<int> with type id " << newid;
     }
     static void TearDownTestSuite() {
         // runs once after all tests in this fixture

@@ -66,7 +66,7 @@ public:
         qDebug() << "setPoints called" << p1 << p2;
     }
 
-    Q_INVOKABLE std::list<int> getInts() {
+    Q_INVOKABLE QList<int> getInts() {
         return {6, 7, 8, 9, 0};
     }
 
