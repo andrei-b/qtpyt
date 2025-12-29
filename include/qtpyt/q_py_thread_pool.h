@@ -1,7 +1,7 @@
 #pragma once
 
 #include "qpymodule.h"
-#include "q_py_future.h"
+#include "qpyfuture.h"
 #include <atomic>
 #include <functional>
 #include <future>

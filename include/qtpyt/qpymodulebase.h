@@ -67,7 +67,7 @@ namespace qtpyt {
 
 
         [[nodiscard]] bool isValid() const;
-        [[nodiscard]] std::optional<QVariant> call(const QString& function, QMetaType::Type returnType, const QVariantList& args, const QVariantMap& kwargs = {});
+        [[nodiscard]] std::optional<QVariant> call(const QString& function, const QPyRegisteredType& returnType, const QVariantList& args, const QVariantMap& kwargs = {});
         std::optional<py::object> makeCallable(const QString& function);
         void setCallableFunction(const QString& name);
         template<typename R, typename... Args>

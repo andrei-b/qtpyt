@@ -1,7 +1,7 @@
 #pragma once
 #define PYBIND11_NO_KEYWORDS
 #include "qpymodulebase.h"
-#include "q_py_future.h"
+#include "qpyfuture.h"
 #include "q_py_thread.h"
 #include <QObject>
 #include <QRunnable>

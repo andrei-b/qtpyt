@@ -1,7 +1,7 @@
 #define  PYBIND11_NO_KEYWORDS
 #include <pybind11/pybind11.h>
 
-#include <qtpyt/q_py_future.h>
+#include <qtpyt/qpyfuture.h>
 
 #include "internal/q_py_future_impl.h"
 

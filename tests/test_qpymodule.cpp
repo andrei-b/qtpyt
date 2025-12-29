@@ -46,7 +46,7 @@ TEST(QPyModule, CallAsyncWithVariantListRunsAndReturns) {
     EXPECT_EQ(res, 6.0);
 }
 
-TEST(QPyModule, CallAsyncInvalidFunctionReturnsNullopt) {
+TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
     auto m = std::make_shared<qtpyt::QPyModule> ("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
     auto f = m->callAsync<>("test_func");

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <qtpyt/qpymodule.h>
-#include <qtpyt/q_py_future.h>
+#include <qtpyt/qpyfuture.h>
 #include <condition_variable>
 #include <deque>
 #include <mutex>

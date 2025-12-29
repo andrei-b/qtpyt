@@ -4,7 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <QObject>
 #include <utility>
-#include <qtpyt/q_py_future.h>
+#include <qtpyt/qpyfuture.h>
 #include <qtpyt/qpymodule.h>
 
 class QPyFutureImpl {

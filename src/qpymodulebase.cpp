@@ -47,9 +47,17 @@ namespace qtpyt {
         return m_isValid;
     }
 
-    std::optional<QVariant> QPyModuleBase::call(const QString &function, QMetaType::Type returnType,
+    std::optional<QVariant> QPyModuleBase::call(const QString &function, const QPyRegisteredType& returnType,
                                                 const QVariantList &args, const QVariantMap &kwargs) {
         try {
+            QByteArray typeName = {"Unknown Type"};
+            if (std::holds_alternative<QMetaType>(returnType)) {
+                typeName = std::get<QMetaType>(returnType).name();
+            } else if (std::holds_alternative<QMetaType::Type>(returnType)) {
+                typeName = QMetaType(std::get<QMetaType::Type>(returnType)).name();
+            } else if (std::holds_alternative<QString>(returnType)) {
+                typeName = QByteArray::fromStdString(std::get<QString>(returnType).toStdString());
+            }
             const auto argsTuple = pycall_internal__::build_args_tuple_from_variant_list(args);
             py::dict kwargsDict;
             for (auto it = kwargs.constBegin(); it != kwargs.constEnd(); ++it) {
@@ -57,7 +65,7 @@ namespace qtpyt {
             }
             setCallableFunction(function);
             return pyObjectToQVariant(pycall_internal__::call_python(callable, argsTuple, kwargsDict),
-                QMetaType(returnType).name());
+                typeName);
         } catch (const std::exception &e) {
             return std::nullopt;
         }

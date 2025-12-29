@@ -29,7 +29,7 @@ set(LIBRARY_SOURCES
         q_py_thread_pool.cpp
         internal/q_py_sub_interpreter.cpp
         internal/q_py_sub_interpreter.h
-        q_py_future.cpp
+        qpyfuture.cpp
         internal/q_py_future_impl.cpp
         internal/q_py_future_impl.h
         internal/pycall.cpp
@@ -42,7 +42,7 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/q_py_thread.h
     ../include/qtpyt/q_py_shared_array.h
     ../include/qtpyt/q_py_thread_pool.h
-    ../include/qtpyt/q_py_future.h
+    ../include/qtpyt/qpyfuture.h
     ../include/qtpyt/conversions.h
     ../include/qtpyt/pep3118format.h
     ../include/qtpyt/qpyannotation.h

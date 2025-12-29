@@ -35,7 +35,7 @@ target_sources(qtpyt_tests PRIVATE
         ../src/qpymodule.cpp
         ../src/q_py_thread.cpp
         ../src/q_py_thread_pool.cpp
-        ../src/q_py_future.cpp
+        ../src/qpyfuture.cpp
         ../src/internal/q_py_future_impl.cpp
         ../src/internal/q_py_sub_interpreter.cpp
         ../src/conversions.cpp
