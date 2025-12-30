@@ -3,6 +3,7 @@
 #include <pybind11/embed.h>
 
 #include "qtpyt/qpymodule.h"
+#include <QPoint>
 
 namespace py = pybind11;
 
@@ -46,4 +47,13 @@ TEST(QPyModuleBase, MakeQVarinatListAsParamters) {
     const auto res = m.call("test_func", QMetaType::QString, args);
     ASSERT_TRUE(res.has_value());
     EXPECT_EQ(res, "Hello, world!");
+}
+
+TEST(QPyModuleBase, TestQPointReturnValue) {
+    qtpyt::QPyModuleBase m("def test_func(x, y):\n"
+                               "    return (x, y)\n", qtpyt::QPySourceType::SourceString, "test_func");
+    QVariantList args = {10, 20};
+    const auto res = m.call("test_func", QMetaType::QPoint, args);
+    ASSERT_TRUE(res.has_value());
+    EXPECT_EQ(res, QPoint(10,20));
 }

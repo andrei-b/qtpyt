@@ -6,6 +6,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QPointF>
+#include <QVector3D>
 
 #include "qtpyt/conversions.h"
 
@@ -65,4 +66,72 @@ TEST(Convesions, QMapTrivialRoundtrip) {
     ASSERT_TRUE(outOpt.has_value());
     QMap<int, QString> out = outOpt->value<QMap<int, QString>>();
     EXPECT_EQ(out, map);
+}
+
+TEST(Conversions, QVector3DRoundTrip) {
+    QVector3D vec(1.0f, 2.0f, 3.0f);
+    QVariant in = QVariant::fromValue(vec);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector3D"));
+    ASSERT_TRUE(outOpt.has_value());
+    QVector3D out = outOpt->value<QVector3D>();
+    EXPECT_EQ(out, vec);
+}
+
+TEST(Conversions, QVectorDoubleRoundTrip) {
+    qtpyt::registerContainerType<QVector<double>>("QVector<double>");
+    QVector<double> vec = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+    QVariant in = QVariant::fromValue(vec);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    qWarning() << "  " << py::repr(obj).cast<std::string>();
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector<double>"));
+    ASSERT_TRUE(outOpt.has_value());
+    QVector<double> out = outOpt->value<QVector<double>>();
+    ASSERT_EQ(out.size(), vec.size());
+    for (int i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(out[i], vec[i]);
+    }
+}
+
+TEST(Conversions, QVectorQVector3DRoundTrip) {
+    qtpyt::registerContainerType<QVector<QVector3D>>("QVector<QVector3D>");
+    QVector<QVector3D> vec = {{1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}};
+    QVariant in = QVariant::fromValue(vec);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    qWarning() << "  " << py::repr(obj).cast<std::string>();
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector<QVector3D>"));
+    ASSERT_TRUE(outOpt.has_value());
+    QVector<QVector3D> out = outOpt->value<QVector<QVector3D>>();
+    ASSERT_EQ(out.size(), vec.size());
+    for (int i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(out[i], vec[i]);
+    }
+}
+
+TEST(Conversions, QListQPointRoundTrip) {
+    qtpyt::registerContainerType<QList<QPoint>>("QList<QPoint>");
+    QList<QPoint> list = {{100, 200}, {300, 400}, {500, 600}};
+    QVariant in = QVariant::fromValue(list);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QList<QPoint>"));
+    ASSERT_TRUE(outOpt.has_value());
+    QList<QPoint> out = outOpt->value<QList<QPoint>>();
+    ASSERT_EQ(out.size(), list.size());
+    for (int i = 0; i < list.size(); ++i) {
+        EXPECT_EQ(out[i], list[i]);
+    }
+}
+
+TEST(Conversions, QListQPStringRoundTrip) {
+    qtpyt::registerContainerType<QList<QString>>("QList<QString>");
+    QList<QString> list = {"first", "second", "third"};
+    QVariant in = QVariant::fromValue(list);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QList<QString>"));
+    ASSERT_TRUE(outOpt.has_value());
+    auto out = outOpt->value<QList<QString>>();
+    ASSERT_EQ(out.size(), list.size());
+    for (int i = 0; i < list.size(); ++i) {
+        EXPECT_EQ(out[i], list[i]);
+    }
 }

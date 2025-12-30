@@ -711,13 +711,18 @@ namespace qtpyt {
             if (py::isinstance<py::list>(obj) || py::isinstance<py::tuple>(obj)) {
                 auto seq = py::reinterpret_borrow<py::sequence>(obj);
                 if (specializedSequenceConverters.contains(expectedType)) {
-                    return specializedSequenceConverters.at(expectedType)(seq);
+                    auto f = specializedSequenceConverters.at(expectedType);
+                    return f(seq);
                 }
             }
 
             if (specializedPodConverters.contains(expectedType)) {
                 return specializedPodConverters.at(expectedType)(obj);
             }
+        }
+
+        if (specializedPyObjectConverters.contains(expectedType)) {
+            return specializedPyObjectConverters.at(expectedType)(static_cast<const pybind11::object&>(obj));
         }
 
         if (py::isinstance<py::bool_>(obj)) {

@@ -27,14 +27,26 @@ namespace qtpyt {
 
     void addSpecializedMetatypeConverter(int typeId, QVariantFromPyObjectFunc &&func);
 
+    template <typename T>
+       QByteArray qtTypeNameOf() {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        const QMetaType mt = QMetaType::fromType<T>();
+        return mt.isValid() ? QByteArray(mt.name()) : QByteArray{};
+#else
+        const int id = qMetaTypeId<T>();
+        const char* n = QMetaType::typeName(id);
+        return n ? QByteArray(n) : QByteArray{};
+#endif
+    }
+
     template<typename Container>
     void addSequenceFromSequenceConverter(const QString &typeName) {
         using T = typename Container::value_type;
         ValueFromSequenceFunc f = [](py::sequence &seq) -> QVariant {
             Container c;
             for (auto item: seq) {
-                // use std::inserter so both sequence and associative containers work
-                *std::inserter(c, c.end()) = item.cast<T>();
+                auto qItem = pyObjectToQVariant(item, qtTypeNameOf<T>());
+                *std::inserter(c, c.end()) = qItem.value().template value<T>();
             }
             return QVariant::fromValue(c);
         };
@@ -49,6 +61,7 @@ namespace qtpyt {
     template<typename A, typename B>
     struct is_pair_like<std::pair<A, B> > : std::true_type {
     };
+
 
 
     py::object qvariantToPyObject(const QVariant &var);
@@ -119,6 +132,7 @@ namespace qtpyt {
             return t;
         };
         addFromQVariantFunc(typeId, std::move(f));
+
     }
 
     template<typename Container>
@@ -131,18 +145,6 @@ namespace qtpyt {
             addSequenceToPyTupleConverter<Container>(newId);
         }
         return newId;
-    }
-
-    template <typename T>
-    QByteArray qtTypeNameOf() {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        const QMetaType mt = QMetaType::fromType<T>();
-        return mt.isValid() ? QByteArray(mt.name()) : QByteArray{};
-#else
-        const int id = qMetaTypeId<T>();
-        const char* n = QMetaType::typeName(id);
-        return n ? QByteArray(n) : QByteArray{};
-#endif
     }
 
     void addFromDictFunc(const QString& name, ValueFromDictFunc&&func);
