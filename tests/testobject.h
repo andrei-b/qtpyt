@@ -70,8 +70,8 @@ public:
         return {6, 7, 8, 9, 0};
     }
 
-    Q_INVOKABLE std::list<int> mulVect(const std::list<int> &a, int c) {
-        std::list<int> result;
+    Q_INVOKABLE QList<int> mulVect(const QList<int> &a, int c) {
+        QList<int> result;
         for (int v: a) {
             result.push_back(v * c);
         }

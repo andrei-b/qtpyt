@@ -552,6 +552,10 @@ namespace qtpyt {
         specializedPyObjectConverters.insert({name, std::move(func)});
     }
 
+    void addFromDictFunc(const QString &name, ValueFromDictFunc &&func) {
+        specializedDictConverters.insert({name, std::move(func)});
+    }
+
     static std::unordered_map<int, QVariantFromPyObjectFunc> specializedMetatypeConverters = {
         {QMetaType::QByteArray, byteArrayToQVariant},
         {QMetaType::QStringList, stringListToQVariant},

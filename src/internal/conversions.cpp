@@ -703,6 +703,9 @@ std::optional<QVariant> pyObjectToQVariant(const py::handle& obj, const QByteArr
             if (specializedDictConverters.contains(expectedType)) {
                 return specializedDictConverters.at(expectedType)(dict);
             }
+            if (specializedSequenceConverters.contains(expectedType)) {
+                return specializedSequenceConverters.at(expectedType)(seq);
+            }
         }
 
         if (py::isinstance<py::list>(obj) || py::isinstance<py::tuple>(obj)) {

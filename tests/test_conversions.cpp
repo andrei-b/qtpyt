@@ -55,3 +55,14 @@ TEST(Conversions, BytesToQByteArray) {
     QByteArray out = outOpt->value<QByteArray>();
     EXPECT_EQ(out, QByteArray("sample bytes data"));
 }
+
+TEST(Convesions, QMapTrivialRoundtrip) {
+    qtpyt::registerQMapType<int, QString>("QMap<int, QString>");
+    QMap<int, QString> map = {{1, "Ananas"}, {2, "Banana"}, {3, "Citron"}};
+    QVariant in = QVariant::fromValue(map);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QMap<int, QString>"));
+    ASSERT_TRUE(outOpt.has_value());
+    QMap<int, QString> out = outOpt->value<QMap<int, QString>>();
+    EXPECT_EQ(out, map);
+}

@@ -68,3 +68,11 @@ TEST_F(QPyScriptTest, CallsTestObjMethodReturningValueFromScript) {
     ASSERT_TRUE(success) << errorMsg.toStdString();
 
 }
+
+TEST_F(QPyScriptTest, CallPassingAndReturningQList) {
+
+    auto [success, errorMsg] = qtpyt::QPyScript::runScriptFileGlobal(
+        QString::fromStdString(testdata_path("module4.py").string()), &obj);
+    ASSERT_TRUE(success) << errorMsg.toStdString();
+
+}
