@@ -1,7 +1,7 @@
 #include  <gtest/gtest.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
-#include <qtpyt/q_py_thread_pool.h>
+#include <qtpyt/qpythreadpool.h>
 
 namespace py = pybind11;
 

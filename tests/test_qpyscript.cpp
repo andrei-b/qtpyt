@@ -70,9 +70,15 @@ TEST_F(QPyScriptTest, CallsTestObjMethodReturningValueFromScript) {
 }
 
 TEST_F(QPyScriptTest, CallPassingAndReturningQList) {
-
     auto [success, errorMsg] = qtpyt::QPyScript::runScriptFileGlobal(
         QString::fromStdString(testdata_path("module4.py").string()), &obj);
     ASSERT_TRUE(success) << errorMsg.toStdString();
+}
 
+TEST_F(QPyScriptTest, SetReadPropertyFromPython) {
+    auto [success, errorMsg] = qtpyt::QPyScript::runScriptFileGlobal(
+        QString::fromStdString(testdata_path("module5.py").string()), &obj);
+    ASSERT_TRUE(success) << errorMsg.toStdString();
+    EXPECT_EQ(obj.property("intProperty").value<int>(), 111);
+    EXPECT_EQ(obj.property("value").value<QPoint>(), QPoint(24, 56));
 }

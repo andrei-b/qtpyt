@@ -12,7 +12,7 @@
 namespace qtpyt {
     void impl(int which, QtPrivate::QSlotObjectBase* this_, QObject* r, void** a, bool* ret);
 
-    class Slot {
+    class QPySlot {
     public:
         static QMetaObject::Connection connectCallable(QObject* sender, const char* signal,
                                                        std::shared_ptr<QPyModuleBase> callable,
@@ -62,7 +62,7 @@ namespace qtpyt {
         static void connect(QObject* sender, const char* signal, Qt::ConnectionType type) {
             int i = 0;
             auto impl2 = [](int which, QtPrivate::QSlotObjectBase* this_, QObject* r, void** a, bool* ret) {
-                qDebug() << "Slot called from lambda";
+                qDebug() << "QPySlot called from lambda";
             };
             auto* slotObject = new QtPrivate::QSlotObjectBase(impl2);
             const int signalIndex = QObjectPrivate::get(sender)->signalIndex(signal);

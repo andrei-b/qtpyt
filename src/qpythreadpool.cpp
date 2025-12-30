@@ -1,4 +1,4 @@
-#include <qtpyt/q_py_thread_pool.h>
+#include <qtpyt/qpythreadpool.h>
 #include "internal/q_py_sub_interpreter.h"
 #include "internal/q_py_queue.h"
 

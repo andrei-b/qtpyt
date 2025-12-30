@@ -6,8 +6,8 @@ set(CMAKE_AUTOUIC ON)
 set(LIBRARY_SOURCES
         q_embed_meta_object.cpp
         q_embed_meta_object.h
-        slot.cpp
-        slot.h
+        qpyslot.cpp
+        qpyslot.h
         q_embed_meta_object_py.cpp
         q_embed_meta_object_py.h
         pyextra/py_time.cpp
@@ -26,7 +26,7 @@ set(LIBRARY_SOURCES
         qpymodule.cpp
         q_py_thread.cpp
         internal/q_py_queue.h
-        q_py_thread_pool.cpp
+        qpythreadpool.cpp
         internal/q_py_sub_interpreter.cpp
         internal/q_py_sub_interpreter.h
         qpyfuture.cpp
@@ -42,7 +42,7 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpymodule.h
     ../include/qtpyt/q_py_thread.h
     ../include/qtpyt/q_py_shared_array.h
-    ../include/qtpyt/q_py_thread_pool.h
+        ../include/qtpyt/qpythreadpool.h
     ../include/qtpyt/qpyfuture.h
     ../include/qtpyt/conversions.h
     ../include/qtpyt/pep3118format.h

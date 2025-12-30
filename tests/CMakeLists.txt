@@ -20,6 +20,7 @@ add_executable(qtpyt_tests
         test_qpymodule.cpp
         main.cpp
         test_qpyscript.cpp
+        test_signalsslots.cpp
         testobject.h
 )
 
@@ -28,7 +29,7 @@ set_target_properties(qtpyt_tests PROPERTIES AUTOMOC ON)
 
 target_sources(qtpyt_tests PRIVATE
         ../src/q_embed_meta_object.cpp
-        ../src/slot.cpp
+        ../src/qpyslot.cpp
         ../src/q_embed_meta_object_py.cpp
         ../src/pyextra/py_time.cpp
         ../src/pyextra/py_date.cpp
@@ -39,7 +40,7 @@ target_sources(qtpyt_tests PRIVATE
         ../src/internal/q_py_execute_event.cpp
         ../src/qpymodule.cpp
         ../src/q_py_thread.cpp
-        ../src/q_py_thread_pool.cpp
+        ../src/qpythreadpool.cpp
         ../src/qpyfuture.cpp
         ../src/internal/q_py_future_impl.cpp
         ../src/internal/q_py_sub_interpreter.cpp

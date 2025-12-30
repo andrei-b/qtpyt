@@ -1,6 +1,6 @@
 #include <qtpyt/qpymodule.h>
 
-#include <qtpyt/q_py_thread_pool.h>
+#include <qtpyt/qpythreadpool.h>
 
 namespace py = pybind11;
 
