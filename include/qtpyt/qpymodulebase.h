@@ -112,6 +112,20 @@ namespace qtpyt {
         pybind11::object&& takePythonCallable(const QString& functionName);
         PyCallableInfo inspectCallable() const;
         QString functionName() const;
+        void addVariable(const QString& name, const QVariant& value);
+        QVariant readVariable(const QString& name, const QPyRegisteredType& type) const;
+        template<typename T>
+        void addVariable(const QString& name, const T& value) {
+            addVariable(name, QVariant::fromValue(value));
+        }
+        template<typename T>
+        T readVariable(const QString& name) const {
+            QVariant var = readVariable(name, QMetaType::fromType<T>());
+            if (var.isValid()) {
+                return var.value<T>();
+            }
+            throw std::runtime_error("QPyModuleBase::readVariable: variable " + name.toStdString() + " is invalid or of wrong type");
+        }
     protected:
         py::object &getPyCallable();
     private:

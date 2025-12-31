@@ -2,6 +2,7 @@
 #include <pybind11/pybind11.h>
 #include "../include/qtpyt/qpyslot.h"
 #include "qtpyt/q_py_shared_array.h"
+#include <qtpyt/qpyslot.h>
 #include <filesystem>
 #include <QSignalSpy>
 #include <gtest/gtest.h>
@@ -34,9 +35,14 @@ protected:
 
 
 TEST_F(QPyScriptTest, TestSlotCalledFromPython) {
-  /*  QObject root_obj;
-    auto [success, errorMsg] = qtpyt::QPyScript::runScriptFileGlobal(
-        QString::fromStdString(testdata_path("module5.py").string()), &obj);
-    EXPECT_TRUE(success) << "Error running script: " << errorMsg.toStdString();*/
+  TestObj obj;
+  auto m = qtpyt::QPyModule::create(QString::fromStdString(testdata_path("module6.py").string()),
+                                    qtpyt::QPySourceType::File, "slot");
+    m->addVariable<QObject*>("obj", &obj);
+    qtpyt::QPySlot::connectPythonFunction(&obj, "passPoint(QPoint)", m, "slot", qtpyt::QPyRegisteredType(QMetaType::Void));
+    obj.setIntProperty(69);
+    obj.emitPassPoint(QPoint(12, 24));
+    int p = obj.intProperty();
+    EXPECT_EQ(p, 36);
 }
 

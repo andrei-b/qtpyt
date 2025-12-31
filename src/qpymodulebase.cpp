@@ -227,6 +227,32 @@ namespace qtpyt {
         return m_callableFunction;
     }
 
+    void QPyModuleBase::addVariable(const QString &name, const QVariant &value) {
+        py::gil_scoped_acquire gil;
+        if (m_module && !m_module.is_none()) {
+            m_module.attr(name.toStdString().c_str()) = qvariantToPyObject(value);
+        }
+    }
+
+    QVariant QPyModuleBase::readVariable(const QString &name, const QPyRegisteredType &type) const {
+        py::gil_scoped_acquire gil;
+        if (m_module && !m_module.is_none()) {
+            py::object var = m_module.attr(name.toStdString().c_str());
+            QByteArray typeName = {"Unknown Type"};
+            if (std::holds_alternative<QMetaType>(type)) {
+                typeName = std::get<QMetaType>(type).name();
+            } else if (std::holds_alternative<QMetaType::Type>(type)) {
+                typeName = QMetaType(std::get<QMetaType::Type>(type)).name();
+            } else if (std::holds_alternative<QString>(type)) {
+                typeName = QByteArray::fromStdString(std::get<QString>(type).toStdString());
+            }
+            if (auto result = qtpyt::pyObjectToQVariant(var, typeName); result.has_value()) {
+                return result.value();
+            }
+        }
+        return {};
+    }
+
     py::object &QPyModuleBase::getPyCallable() {
         return callable;
     }
