@@ -183,10 +183,10 @@ namespace qtpyt {
         return QObjectPrivate::connect(sender, signalIndex, slotObject, Qt::DirectConnection);
     }
 
-    QMetaObject::Connection QPySlot::connectCallable(QObject* sender, int signalIndex, QSharedPointer<QPyModuleBase> callable,
+    QMetaObject::Connection QPySlot::connectCallable(QObject* sender, int signalIndex, QSharedPointer<QPyModuleBase> module,
                                   QSharedPointer<QPyFutureNotifier> notifier, Qt::ConnectionType type) {
         auto mmethod = sender->metaObject()->method(signalIndex);
-        auto* slotObject = new QPySlotInternal<QPyModuleBase, void>(std::move(callable), notifier, mmethod, callProc);
+        auto* slotObject = new QPySlotInternal<QPyModuleBase, void>(std::move(module), notifier, mmethod, callProc);
         return QObjectPrivate::connect(sender, signalIndex, slotObject, type);
     }
 

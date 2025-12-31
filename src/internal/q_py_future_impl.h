@@ -10,8 +10,8 @@
 class QPyFutureImpl {
   public:
     virtual ~QPyFutureImpl();
-    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> callable, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
-    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> callable, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
+    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
+    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
     void run();
 
     int resultCount() const;
@@ -23,7 +23,7 @@ class QPyFutureImpl {
     }
 
     qtpyt::QPyModule * callablePtr() const {
-        return m_callable.get();
+        return m_module.get();
     }
     QString errorMessage() const;
 
@@ -31,7 +31,7 @@ class QPyFutureImpl {
     void pushResult(QVariant result);
     QByteArray m_returnType;
     mutable std::mutex m_mutex;
-    QSharedPointer<qtpyt::QPyModule> m_callable;
+    QSharedPointer<qtpyt::QPyModule> m_module;
     QString m_functionName;
     pybind11::tuple m_arguments;
     QVariantList m_result;
