@@ -1,6 +1,6 @@
 #pragma once
 
-#include "q_embed_meta_object_py.h"
+#include "../../src/q_embed_meta_object_py.h"
 #include <qtpyt/qpymodule.h>
 #include <qtpyt/qpymodulebase.h>
 #include <qtpyt/q_py_thread.h>
@@ -15,52 +15,58 @@ namespace qtpyt {
 
     class QPySlot {
     public:
-        static QMetaObject::Connection connectCallable(QObject *sender, const char *signal,
-                                                       QSharedPointer<QPyModuleBase> callable,
-                                                       Qt::ConnectionType type = Qt::AutoConnection);
-        static QMetaObject::Connection connectCallableAsync(QObject *sender, const char *signal,
-                                                            QSharedPointer<QPyModule> callable, QSharedPointer<QPyFutureNotifier> notifier);
-        static QMetaObject::Connection connectCallableAsync(QObject *sender, const char *signal,
-                                                            QSharedPointer<QPyModule> callable, QSharedPointer<QPyFutureNotifier> notifier, QPyThread *thread);
+        static QMetaObject::Connection connectPythonFunction(QObject *sender, const char *signal,
+                                                             QSharedPointer<QPyModuleBase> callable,
+                                                             const QPyRegisteredType &returnType = QMetaType::Void, Qt::ConnectionType type = Qt::AutoConnection);
+        static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
+                                                                  QSharedPointer<QPyModule> callable,
+                                                                  const QSharedPointer<QPyFutureNotifier> &notifier,
+                                                                  const QPyRegisteredType& returnType = QMetaType::Void);
+        static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
+                                                                  QSharedPointer<QPyModule> callable, QSharedPointer<QPyFutureNotifier> notifier,
+                                                                  const QPyRegisteredType& returnType,
+                                                                  QPyThread *thread);
         template <typename SignalFunc>
-        static QMetaObject::Connection connectCallable(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
+        static QMetaObject::Connection connectPythonFunction(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
                                                 SignalFunc signal,
                                                 QSharedPointer<QPyModuleBase> callable,
                                                 QSharedPointer<QPyFutureNotifier> notifier,
-                                                Qt::ConnectionType type) {
+                                                const QPyRegisteredType& returnType = QMetaType::Void,
+                                                Qt::ConnectionType type = Qt::AutoConnection) {
             int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
             if (signalIndex < 0) {
                 qWarning("connectCallable: cannot match the signal");
                 return {};
             }
-            return connectCallable(sender, signalIndex, callable, notifier, type);
+            return connectPythonFunction(sender, signalIndex, callable, notifier, returnType, type);
         }
 
         template <typename SignalFunc>
-        static QMetaObject::Connection connectCallableAsync(QObject * sender, const SignalFunc signal, std::shared_ptr<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier) {
+        static QMetaObject::Connection connectPythonFunctionAsync(QObject * sender, const SignalFunc signal, std::shared_ptr<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const QPyRegisteredType& returnType = QMetaType::Void) {
             int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
             if (signalIndex < 0) {
                 qWarning("connectCallableAsync: cannot match the signal");
                 return {};
             }
             const char* signalSignature = sender->metaObject()->method(signalIndex).methodSignature().constData();
-            return connectCallableAsync(sender, signalSignature, std::move(module), std::move(notifier));
+            return connectPythonFunctionAsync(sender, signalSignature, std::move(module), std::move(notifier), returnType);
         }
 
         template <typename SignalFunc>
-        static QMetaObject::Connection connectCallableAsync(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
-                                                SignalFunc signal, std::shared_ptr<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, QPyThread* thread) {
+        static QMetaObject::Connection connectPythonFunctionAsync(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
+                                                SignalFunc signal, std::shared_ptr<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const QPyRegisteredType& returnType, QPyThread* thread) {
             int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
             if (signalIndex < 0) {
                 qWarning("connectCallableAsync: cannot match the signal");
                 return {};
             }
             const char* signalSignature = sender->metaObject()->method(signalIndex).methodSignature().constData();
-            return connectCallableAsync(sender, signalSignature, module, std::move(notifier), thread);
+            return connectPythonFunctionAsync(sender, signalSignature, module, std::move(notifier), returnType, thread);
         }
 
-        static QMetaObject::Connection connectCallable(QObject *sender, int signalIndex, QSharedPointer<QPyModuleBase> module,
-                                                       QSharedPointer<QPyFutureNotifier> notifier, Qt::ConnectionType type = Qt::AutoConnection);
+        static QMetaObject::Connection connectPythonFunction(QObject *sender, int signalIndex, QSharedPointer<QPyModuleBase> module,
+                                                             QSharedPointer<QPyFutureNotifier> notifier, const QPyRegisteredType &returnType, Qt::ConnectionType type =
+                                                                     Qt::AutoConnection);
 
         static void connect(QObject* sender, const char* signal, Qt::ConnectionType type) {
             int i = 0;

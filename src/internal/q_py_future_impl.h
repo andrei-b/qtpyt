@@ -22,7 +22,7 @@ class QPyFutureImpl {
         return m_state;
     }
 
-    qtpyt::QPyModule * callablePtr() const {
+    qtpyt::QPyModule * modulePtr() const {
         return m_module.get();
     }
     QString errorMessage() const;

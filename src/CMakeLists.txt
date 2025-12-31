@@ -7,7 +7,7 @@ set(LIBRARY_SOURCES
         q_embed_meta_object.cpp
         q_embed_meta_object.h
         qpyslot.cpp
-        qpyslot.h
+        ../include/qtpyt/qpyslot.h
         q_embed_meta_object_py.cpp
         q_embed_meta_object_py.h
         pyextra/py_time.cpp

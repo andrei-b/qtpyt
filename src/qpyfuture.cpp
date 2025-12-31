@@ -66,7 +66,7 @@ namespace qtpyt {
     }
 
     QPyModule* QPyFuture::callablePtr() const {
-        return m_impl->callablePtr();
+        return m_impl->modulePtr();
     }
 
     QString QPyFuture::errorMessage() const {

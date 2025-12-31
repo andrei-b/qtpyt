@@ -1,6 +1,6 @@
 #define  PYBIND11_NO_KEYWORDS
 #include <pybind11/pybind11.h>
-#include "../src/qpyslot.h"
+#include "../include/qtpyt/qpyslot.h"
 #include "qtpyt/q_py_shared_array.h"
 #include <filesystem>
 #include <QSignalSpy>
