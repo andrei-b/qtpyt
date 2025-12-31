@@ -49,8 +49,11 @@ namespace qtpyt {
     QPyModule::~QPyModule() {}
 
 
-    std::optional<QPyFuture> QPyModule::callAsync(const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) {
-        const auto self = shared_from_this();
+    std::optional<QPyFuture> QPyModule::callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) {
+        const auto self = this->sharedFromThis();
+        if (self == nullptr) {
+            throw std::runtime_error("QPyModule::callAsync: module should be created as a QSharedPointer<QPyModule>");
+        }
         if (functionName.isEmpty()) {
             return std::nullopt;
         }
@@ -63,7 +66,7 @@ namespace qtpyt {
             type = QMetaType(std::get<QMetaType::Type>(returnType)).name();
         }
 
-        QPyFuture me(self, functionName, type, std::move(args));
+        QPyFuture me(self, notifier, functionName, type, std::move(args));
         QPyThreadPool::instance().submit(me);
         return me;
     }

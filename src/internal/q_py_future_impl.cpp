@@ -5,15 +5,11 @@
 #include <utility>
 
 QPyFutureImpl::~QPyFutureImpl() {
-    // Avoid touching Python refcounts unless we can safely acquire a valid thread state.
-    // Destructor may run on arbitrary threads and/or during interpreter finalization.
     if (!Py_IsInitialized()) {
         m_arguments.release();
         return;
     }
 
-    // If this thread has no Python thread state, acquiring the GIL via PyGILState
-    // (used by pybind11::gil_scoped_acquire) is unsafe and can assert/abort.
     if (PyGILState_GetThisThreadState() == nullptr) {
         m_arguments.release();
         return;
@@ -23,8 +19,11 @@ QPyFutureImpl::~QPyFutureImpl() {
     m_arguments.dec_ref();
 }
 
-QPyFutureImpl::QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QString functionName, const QByteArray& returnType, QVariantList&& arguments)
-    : m_callable{std::move(callable)}, m_functionName(std::move(functionName)), m_returnType(returnType) {
+QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> callable, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
+    : m_returnType(std::move(returnType)), m_callable{std::move(callable)}, m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
+    if (m_callable == nullptr) {
+        throw std::runtime_error("QPyFutureImpl: null callable module");
+    }
     pybind11::gil_scoped_acquire gil;
     py::tuple argsTuple(arguments.size());
     for (int i = 0; i < arguments.size(); ++i) {
@@ -34,9 +33,12 @@ QPyFutureImpl::QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QStrin
     m_arguments = std::move(argsTuple);
 }
 
-QPyFutureImpl::QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QString  functionName, const QByteArray& returnType,
-                             const QVector<int>& types, void** a) : m_callable{std::move(callable)},
-                             m_functionName(std::move(functionName)), m_returnType(returnType) {
+QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> callable, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
+                             const QVector<int>& types, void** a) : m_returnType(std::move(returnType)), m_callable{std::move(callable)},
+                             m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
+    if (m_callable == nullptr) {
+        throw std::runtime_error("QPyFutureImpl: null callable module");
+    }
     py::tuple argsTuple(types.size());
     for (int i = 0; i < types.size(); ++i) {
         const int typeId = types[i];
@@ -73,7 +75,7 @@ void QPyFutureImpl::run() {
             pushResult(var.value());
             m_state =  qtpyt::QPyFutureState::Finished;
             if (m_notifier != nullptr) {
-                m_notifier->notifyFinished();
+                m_notifier->notifyFinished(var.value());
             }
         }
 
@@ -116,11 +118,6 @@ QVariant QPyFutureImpl::resultAsVariant(int index) const {
         return {};
     }
     return m_result.at(index);
-}
-
-std::shared_ptr<qtpyt::QPyFutureNotifier> QPyFutureImpl::connectNotifier() {
-    m_notifier =  std::make_shared< qtpyt::QPyFutureNotifier>();
-    return m_notifier;
 }
 
 QString QPyFutureImpl::errorMessage() const {

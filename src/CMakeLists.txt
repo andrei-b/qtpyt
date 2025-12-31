@@ -49,6 +49,8 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpyannotation.h
     ../include/qtpyt/pycall.h
     ../include/qtpyt/qpyscript.h
+        pymodule.cpp
+        pymodule.h
 )
 
 # Create the shared library

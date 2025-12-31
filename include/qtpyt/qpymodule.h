@@ -9,18 +9,22 @@
 
 namespace qtpyt {
 
-class QPyModule : public QPyModuleBase, public std::enable_shared_from_this<QPyModule> {
+class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> {
   public:
     static void makeQPyAsyncModule();
+    static QSharedPointer<QPyModule> create(const QString& source, QPySourceType sourceType, const QString& funcName) {
+        return QSharedPointer<QPyModule>(new QPyModule(source, sourceType, funcName));
+    }
     QPyModule(const QString& source, QPySourceType sourceType, const QString& funcName);
     ~QPyModule() override;
 
     template <typename... Args>
-    std::optional<QPyFuture> callAsync(const QString& functionName, const QPyRegisteredType& returnType, Args... args) {
+    std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, Args... args) {
         QVariantList varArgs = {args...};
-        return callAsync(functionName, returnType, std::move(varArgs));
+        return callAsync(notifier, functionName, returnType, std::move(varArgs));
     }
-    std::optional<QPyFuture> callAsync(const QString &functionName, const QPyRegisteredType &returnType, QVariantList &&args);
+    std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString &functionName, const QPyRegisteredType &returnType, QVariantList
+                                       &&args);
   protected:
     auto getThreadId() const;
     void setThreadId();

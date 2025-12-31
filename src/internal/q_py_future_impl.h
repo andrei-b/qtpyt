@@ -10,8 +10,8 @@
 class QPyFutureImpl {
   public:
     virtual ~QPyFutureImpl();
-    QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable, QString  functionName, const QByteArray& returnType, QVariantList&& arguments);
-    QPyFutureImpl(std::shared_ptr< qtpyt::QPyModule> callable,  QString  functionName, const QByteArray& returnType, const QVector<int>& types, void **a);
+    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> callable, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
+    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> callable, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
     void run();
 
     int resultCount() const;
@@ -21,8 +21,8 @@ class QPyFutureImpl {
      qtpyt::QPyFutureState state() const {
         return m_state;
     }
-    std::shared_ptr< qtpyt::QPyFutureNotifier> connectNotifier();
-     qtpyt::QPyModule * callablePtr() const {
+
+    qtpyt::QPyModule * callablePtr() const {
         return m_callable.get();
     }
     QString errorMessage() const;
@@ -31,11 +31,11 @@ class QPyFutureImpl {
     void pushResult(QVariant result);
     QByteArray m_returnType;
     mutable std::mutex m_mutex;
-    std::shared_ptr< qtpyt::QPyModule> m_callable;
+    QSharedPointer<qtpyt::QPyModule> m_callable;
     QString m_functionName;
     pybind11::tuple m_arguments;
     QVariantList m_result;
      qtpyt::QPyFutureState m_state{ qtpyt::QPyFutureState::NotStarted};
-    std::shared_ptr< qtpyt::QPyFutureNotifier> m_notifier{nullptr};
+    QSharedPointer<qtpyt::QPyFutureNotifier> m_notifier{nullptr};
     QString m_errorMessage{};
 };

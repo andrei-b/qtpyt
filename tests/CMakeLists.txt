@@ -47,6 +47,8 @@ target_sources(qtpyt_tests PRIVATE
         ../src/conversions.cpp
         ../src/internal/pycall.cpp
         ../src/qpyscript.cpp
+        ../src/pymodule.cpp
+        ../src/pymodule.h
         testobject.h
 )
 

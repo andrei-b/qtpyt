@@ -17,29 +17,36 @@ namespace qtpyt {
     class QPyFutureNotifier : public QObject {
         Q_OBJECT
       public:
+        static QSharedPointer<QPyFutureNotifier> createNotifier() {
+            return QSharedPointer<QPyFutureNotifier>(new QPyFutureNotifier());
+        }
         QPyFutureNotifier() = default;
         ~QPyFutureNotifier() override = default;
         void notifyStarted() {
             emit started();
         }
-        void notifyFinished() {
-            emit finished();
+        void notifyFinished(const QVariant& value = QVariant()) {
+            emit finished(value);
+        }
+        void notifyResultAvailable(const QVariant& value) {
+            emit resultAvailable(value);
         }
         void notifyErrorOccurred(const QString& errorMessage) {
             emit errorOccurred(errorMessage);
         }
         signals:
           void started();
-        void finished();
+        void finished(const QVariant& value = QVariant());
+        void resultAvailable(const QVariant& value);
         void errorOccurred(const QString& errorMessage);
     };
 
 
     class QPyFuture {
     public:
-        QPyFuture(std::shared_ptr<QPyModule> callable, const QString& functionName,  const QByteArray& returnType,
+        QPyFuture(QSharedPointer<QPyModule> callable, QSharedPointer<QPyFutureNotifier> notifier, const QString& functionName,  const QByteArray& returnType,
             QVariantList&& arguments);
-        QPyFuture(std::shared_ptr<QPyModule> callable, QString  functionName,  const QByteArray& returnType,
+        QPyFuture(QSharedPointer<QPyModule> callable, QSharedPointer<QPyFutureNotifier> notifier, QString  functionName,  const QByteArray& returnType,
                                  const QVector<int>& types, void** a);
         QPyFuture(const QPyFuture& other);
         QPyFuture& operator=(const QPyFuture& other);
@@ -63,7 +70,7 @@ namespace qtpyt {
             return var.value<T>();
         }
         [[nodiscard]] QPyFutureState state() const;
-        [[nodiscard]] std::shared_ptr<QPyFutureNotifier> makeConnectNotifier() const;
+
         [[nodiscard]] QPyModule* callablePtr() const;
         [[nodiscard]] QString errorMessage() const;
 
