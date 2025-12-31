@@ -37,7 +37,7 @@ protected:
 TEST_F(QPyScriptTest, TestSlotCalledFromPython) {
   TestObj obj;
   auto m = qtpyt::QPyModule::create(QString::fromStdString(testdata_path("module6.py").string()),
-                                    qtpyt::QPySourceType::File, "slot");
+                                    qtpyt::QPySourceType::File);
     m->addVariable<QObject*>("obj", &obj);
     qtpyt::QPySlot::connectPythonFunction(&obj, "passPoint(QPoint)", m, "slot", qtpyt::QPyRegisteredType(QMetaType::Void));
     obj.setIntProperty(69);

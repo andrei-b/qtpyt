@@ -12,10 +12,10 @@ namespace qtpyt {
 class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> {
   public:
     static void makeQPyAsyncModule();
-    static QSharedPointer<QPyModule> create(const QString& source, QPySourceType sourceType, const QString& funcName) {
-        return QSharedPointer<QPyModule>(new QPyModule(source, sourceType, funcName));
+    static QSharedPointer<QPyModule> create(const QString& source, QPySourceType sourceType) {
+        return QSharedPointer<QPyModule>(new QPyModule(source, sourceType));
     }
-    QPyModule(const QString& source, QPySourceType sourceType, const QString& funcName);
+    QPyModule(const QString& source, QPySourceType sourceType);
     ~QPyModule() override;
 
     template <typename... Args>

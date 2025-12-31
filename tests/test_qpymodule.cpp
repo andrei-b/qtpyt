@@ -8,7 +8,7 @@ namespace py = pybind11;
 
 TEST(QPyModule, CallAsyncRunsAndReturns) {
     auto m = qtpyt::QPyModule::create("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     auto f = m->callAsync<double, double>(nullptr, "test_func", "Double", 2.5, 3.5).value();
     f.waitForFinished();
     auto res = f.resultAs<double>(0);
@@ -24,7 +24,7 @@ TEST(QPyModule, SyncRunsAfterAsync) {
               "\n"
               "\n"
               "def func_2():"
-              "    return 1", qtpyt::QPySourceType::SourceString, "func_1");
+              "    return 1", qtpyt::QPySourceType::SourceString);
     auto f = m->callAsync<double, double>(nullptr,"func_1", "Double", 2.5, 3.5).value();
     auto func_2 = m->makeFunction<int()>("func_2");
     const auto res2 = func_2();
@@ -38,7 +38,7 @@ TEST(QPyModule, SyncRunsAfterAsync) {
 
 TEST(QPyModule, CallAsyncWithVariantListRunsAndReturns) {
     auto m = qtpyt::QPyModule::create ("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {2.5, 3.5};
     auto f = m->callAsync(nullptr, "test_func", QMetaType::Double, std::move(args)).value();
     f.waitForFinished();
@@ -48,7 +48,7 @@ TEST(QPyModule, CallAsyncWithVariantListRunsAndReturns) {
 
 TEST(QPyModule, CallAsyncReturnVoid) {
     auto m = qtpyt::QPyModule::create("def test_func(x, y):\n"
-                            "    print(f'Result is: {x + y}')\n", qtpyt::QPySourceType::SourceString, "test_func");
+                            "    print(f'Result is: {x + y}')\n", qtpyt::QPySourceType::SourceString);
     QVariant x = 2.5;
     QVariant y = 3.5;
     QVariantList args = {x, y};
@@ -60,7 +60,7 @@ TEST(QPyModule, CallAsyncReturnVoid) {
 
 TEST(QPyModule, CallAsyncReturnVoid2) {
     auto m = qtpyt::QPyModule::create("def test_func(x, y):\n"
-                            "    print(f'Result is: {x + y}')\n", qtpyt::QPySourceType::SourceString, "test_func");
+                            "    print(f'Result is: {x + y}')\n", qtpyt::QPySourceType::SourceString);
     QVariant x = 2.5;
     QVariant y = 3.5;
     QVariantList args = {x, y};
@@ -73,7 +73,7 @@ TEST(QPyModule, CallAsyncReturnVoid2) {
 
 TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
     auto m = qtpyt::QPyModule::create("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     auto f = m->callAsync<>(nullptr, "test_func", "Double");
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);

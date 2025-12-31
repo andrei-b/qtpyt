@@ -41,8 +41,8 @@ namespace qtpyt {
         qpyasync_module.add_object("qpyasync.cancelled", g_CancelledExc, false);
     }
 
-    QPyModule::QPyModule(const QString& source, QPySourceType sourceType, const QString& funcName)
-        : QPyModuleBase(source, sourceType, funcName) {
+    QPyModule::QPyModule(const QString& source, QPySourceType sourceType)
+        : QPyModuleBase(source, sourceType) {
         addWantsToCancel();
     }
 
@@ -82,8 +82,8 @@ namespace qtpyt {
 
     void QPyModule::addWantsToCancel() {
         py::gil_scoped_acquire gil;
-        getPyCallable().attr("wantsToCancel") = py::cpp_function([this]() -> bool { return m_wantsToCancel; });
-        getPyCallable().attr("setCancelReason") = py::cpp_function([this](const std::string& reason) {
+        getPyModule().attr("wantsToCancel") = py::cpp_function([this]() -> bool { return m_wantsToCancel; });
+        getPyModule().attr("setCancelReason") = py::cpp_function([this](const std::string& reason) {
             m_cancelReason = QString::fromStdString(reason);
             m_cancelled = true;
         });

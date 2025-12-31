@@ -9,7 +9,7 @@ namespace py = pybind11;
 
 TEST(QPyModuleBase, MakeFunctionRunsAndReturns) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     // create a Python-callable function from a C++ lambda that doubles its input
     const auto test_func = m.makeFunction<double(double, double)>("test_func");
     const auto res = test_func(2.5, 3.5);
@@ -18,7 +18,7 @@ TEST(QPyModuleBase, MakeFunctionRunsAndReturns) {
 
 TEST(QPyModuleBase, MakeFunctionRunsAndReturnsFloat) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     const auto test_func = m.makeFunction<float(float, float)>("test_func");
     const auto res = test_func(2.5f, 3.5f);
     EXPECT_FLOAT_EQ(res, 6.0f);
@@ -26,7 +26,7 @@ TEST(QPyModuleBase, MakeFunctionRunsAndReturnsFloat) {
 
 TEST(QPyModuleBase, MakeFunctionRunsAndReturnsInt) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     const auto test_func = m.makeFunction<int(int, int)>("test_func");
     const auto res = test_func(2, 3);
     EXPECT_EQ(res, 5);
@@ -34,7 +34,7 @@ TEST(QPyModuleBase, MakeFunctionRunsAndReturnsInt) {
 
 TEST(QPyModuleBase, MakeFunctionRunsAndReturnsLongLong) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
-                           "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                           "    return x + y\n", qtpyt::QPySourceType::SourceString);
     const auto test_func = m.makeFunction<long long(long long, long long)>("test_func");
     const auto res = test_func(2LL, 3LL);
     EXPECT_EQ(res, 5LL);
@@ -42,7 +42,7 @@ TEST(QPyModuleBase, MakeFunctionRunsAndReturnsLongLong) {
 
 TEST(QPyModuleBase, MakeQVarinatListAsParamters) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
-                               "    return x + y\n", qtpyt::QPySourceType::SourceString, "test_func");
+                               "    return x + y\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {QString("Hello, "), QString("world!")};
     const auto res = m.call("test_func", QMetaType::QString, args);
     ASSERT_TRUE(res.has_value());
@@ -51,7 +51,7 @@ TEST(QPyModuleBase, MakeQVarinatListAsParamters) {
 
 TEST(QPyModuleBase, TestQPointReturnValue) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
-                               "    return (x, y)\n", qtpyt::QPySourceType::SourceString, "test_func");
+                               "    return (x, y)\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {10, 20};
     const auto res = m.call("test_func", QMetaType::QPoint, args);
     ASSERT_TRUE(res.has_value());

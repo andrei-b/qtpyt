@@ -58,7 +58,7 @@ namespace qtpyt {
 
     class QPyModuleBase {
     public:
-        QPyModuleBase(const QString& source, QPySourceType sourceType, const QString& funcName);
+        QPyModuleBase(const QString& source, QPySourceType sourceType);
         QPyModuleBase(const QPyModuleBase& other) = delete;
         QPyModuleBase& operator=(const QPyModuleBase& other) = delete;
         QPyModuleBase(const QPyModuleBase&& other) = delete;
@@ -127,10 +127,10 @@ namespace qtpyt {
             throw std::runtime_error("QPyModuleBase::readVariable: variable " + name.toStdString() + " is invalid or of wrong type");
         }
     protected:
-        py::object &getPyCallable();
+        py::object &getPyModule();
     private:
-        void buildFromString(const QString& source, const QString& funcName);
-        void buildFromFile(const QString& fileName, const QString& funcName);
+        void buildFromString(const QString &source);
+        void buildFromFile(const QString &fileName);
         QString m_callableFunction;
         pybind11::object callable;
         pybind11::object m_module;

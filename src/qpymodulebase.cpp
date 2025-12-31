@@ -4,14 +4,13 @@
 #include <qtpyt/conversions.h>
 
 namespace qtpyt {
-    QPyModuleBase::QPyModuleBase(const QString &source, const QPySourceType sourceType,
-                                 const QString &funcName) : m_callableFunction(funcName) {
+    QPyModuleBase::QPyModuleBase(const QString &source, const QPySourceType sourceType) {
         switch (sourceType) {
             case QPySourceType::File:
-                buildFromFile(source, funcName);
+                buildFromFile(source);
                 break;
             case QPySourceType::SourceString:
-                buildFromString(source, funcName);
+                buildFromString(source);
                 break;
             case QPySourceType::Module:
                 break;
@@ -253,11 +252,11 @@ namespace qtpyt {
         return {};
     }
 
-    py::object &QPyModuleBase::getPyCallable() {
-        return callable;
+    py::object &QPyModuleBase::getPyModule() {
+        return m_module;
     }
 
-    void QPyModuleBase::buildFromString(const QString &source, const QString &funcName) {
+    void QPyModuleBase::buildFromString(const QString &source) {
         try {
             py::gil_scoped_acquire acquire;
 
@@ -273,17 +272,13 @@ namespace qtpyt {
 
             py::exec(source.toStdString(), globals);
 
-            callable = m_module.attr(funcName.toStdString().c_str());
-            if (!callable || !PyCallable_Check(callable.ptr())) {
-                m_isValid = false;
-            }
             m_isValid = true;
         } catch (const py::error_already_set &e) {
             throw std::runtime_error(std::string("Python error: ") + e.what());
         }
     }
 
-    void QPyModuleBase::buildFromFile(const QString &fileName, const QString &funcName) {
+    void QPyModuleBase::buildFromFile(const QString &fileName) {
         try {
             py::gil_scoped_acquire acquire;
 
@@ -301,11 +296,6 @@ namespace qtpyt {
             py::object loader = spec.attr("loader");
             if (!loader || loader.is_none()) throw std::runtime_error("spec.loader is null for module path");
             loader.attr("exec_module")(m_module);
-
-            callable = m_module.attr(funcName.toStdString().c_str());
-            if (!callable || !PyCallable_Check(callable.ptr())) {
-                m_isValid = false;
-            }
             m_isValid = true;
         } catch (const py::error_already_set &e) {
             throw std::runtime_error(std::string("Python error: ") + e.what());

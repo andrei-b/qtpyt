@@ -120,6 +120,7 @@ namespace qtpyt {
      QMetaObject::Connection QPySlot::connectPythonFunction(QObject* sender, const char* signal, const QSharedPointer<QPyModuleBase> module,
      const QString&  slot,
      const QPyRegisteredType& returnType, Qt::ConnectionType type) {
+        module->setCallableFunction(slot);
         const auto pyCallableInfo = module->inspectCallable();
         const auto signalMethod = findMatchingSignal(sender, signal, pyCallableInfo);
         if (!signalMethod) {
@@ -217,11 +218,34 @@ namespace qtpyt {
         int methodIndex = -1;
         QByteArray qMethodName(signal);
         methodIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(qPrintable(signal)));
+        if (methodIndex < 0)    {
+            for (int i = mo->methodOffset(); i < mo->methodCount(); ++i) {
+                QMetaMethod m = mo->method(i);
+
+                if (m.methodType() == QMetaMethod::Signal) {
+                    auto extractName = [](const char* sig) -> QByteArray {
+                        QByteArray ba(sig);
+                        int parenIndex = ba.indexOf('(');
+                        if (parenIndex >= 0) {
+                            return ba.left(parenIndex);
+                        }
+                        return ba;
+                    };
+                    if (m.name() == extractName(signal)) {
+                        if (m.parameterCount() == pyCallableInfo.arguments.size()) {
+                            methodIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         if (methodIndex >= 0) {
             if (QMetaMethod m = mo->method(methodIndex); m.parameterCount() != pyCallableInfo.arguments.size()) {
                 methodIndex = -1; // arg count mismatch
             }
         }
+
         if (methodIndex < 0) {
             qWarning() << "QPySlot::findMatchingSignal: no matching signal " << signal << "num args: " << pyCallableInfo.arguments.size()
                     << "on " << mo->className();
