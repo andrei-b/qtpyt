@@ -47,14 +47,6 @@ public:
         return title;
     }
 
-    void emitBA(const QByteArray &data) {
-        emit passBA(data);
-        qtpyt::QPySharedArray<float> sarr(3);
-        sarr[0] = 1.5;
-        sarr[1] = 2.5;
-        sarr[2] = 3.5;
-        emit passArray(sarr);
-    }
 
     void emitPassPoint(const QPoint &p) {
         emit passPoint(p);

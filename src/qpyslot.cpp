@@ -212,6 +212,21 @@ namespace qtpyt {
         return QObjectPrivate::connect(sender, signalIndex, slotObject, type);
     }
 
+    QPySlot::QPySlot(QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier,
+        const QString &slotName, const QPyRegisteredType &returnType) : m_module(std::move(module)),
+    m_notifier(std::move(notifier)), m_slotName(slotName), m_returnType(returnType)
+    {}
+
+    QMetaObject::Connection QPySlot::
+    connectAsyncToSignal(QObject *sender, const char *signal, Qt::ConnectionType type) const {
+        return connectPythonFunctionAsync(sender, signal, m_module, m_notifier, m_slotName, m_returnType);
+    }
+
+    QMetaObject::Connection QPySlot::
+    connectToSignal(QObject *sender, const char *signal, Qt::ConnectionType type) const {
+        return connectPythonFunction(sender, signal, m_module, m_slotName, m_returnType, type);
+    }
+
     std::optional<QMetaMethod> QPySlot::findMatchingSignal(QObject* sender, const char* signal, const PyCallableInfo& pyCallableInfo) {
         const QMetaObject *mo = sender->metaObject();
         // Find method by name + arg count

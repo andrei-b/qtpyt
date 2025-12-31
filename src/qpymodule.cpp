@@ -1,6 +1,8 @@
 #include <qtpyt/qpymodule.h>
 
 #include <qtpyt/qpythreadpool.h>
+#include <qtpyt/qpyslot.h>
+
 
 namespace py = pybind11;
 
@@ -75,6 +77,15 @@ namespace qtpyt {
             const auto self = shared_from_this();
             thread->postExecute(self);
     }*/
+
+    QPySlot QPyModule::makeSlot(const QString &slotName, const QPyRegisteredType &returnType,
+        const QSharedPointer<QPyFutureNotifier> &notifier) {
+        auto self = this->sharedFromThis();
+        if (self == nullptr) {
+            throw std::runtime_error("QPyModule::makeSlot: module should be created as a QSharedPointer<QPyModule>");
+        }
+        return QPySlot(std::move(self), notifier, slotName, returnType);
+    }
 
     auto QPyModule::getThreadId() const {
         return m_threadId;

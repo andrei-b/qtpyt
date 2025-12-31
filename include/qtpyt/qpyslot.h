@@ -97,10 +97,36 @@ namespace qtpyt {
             const int signalIndex = QObjectPrivate::get(sender)->signalIndex(signal);
             QObjectPrivate::connect(sender, signalIndex, slotObject, type);
         }
+        QPySlot(QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const QString& slotName,
+            const QPyRegisteredType& returnType);
 
+        QMetaObject::Connection connectAsyncToSignal(QObject* sender, const char* signal, Qt::ConnectionType type = Qt::AutoConnection) const;
+        QMetaObject::Connection connectToSignal(QObject* sender, const char* signal, Qt::ConnectionType type = Qt::AutoConnection) const;
+        template <typename SignalFunc>
+        QMetaObject::Connection connectAsyncToSignal(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
+                                                SignalFunc signal,
+                                                Qt::ConnectionType type = Qt::AutoConnection) const {
+            int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
+            if (signalIndex < 0) {
+                qWarning("connectAsyncToSignal: cannot match the signal");
+                return {};
+            }
+            const char* signalSignature = sender->metaObject()->method(signalIndex).methodSignature().constData();
+            return connectAsyncToSignal(sender, signalSignature, type);
+        }
+        template <typename SignalFunc>
+        QMetaObject::Connection connectToSignal(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
+                                                SignalFunc signal,
+                                                Qt::ConnectionType type = Qt::AutoConnection) const {
+            int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
+            if (signalIndex < 0) {
+                qWarning("connectToSignal: cannot match the signal");
+                return {};
+            }
+            const char* signalSignature = sender->metaObject()->method(signalIndex).methodSignature().constData();
+            return connectToSignal(const_cast<QObject*>(static_cast<const QObject*>(sender)), signalSignature, type);
+        }
     private:
-        // file: `slot.h`
-        // Fix: use originalMeta->method(...) and check against originalMeta->methodCount()
         template <typename SignalFunc>
         static std::optional<int> getSignalIndex(const QObject* sender, SignalFunc signal) {
             if (!signal) {
@@ -185,6 +211,11 @@ namespace qtpyt {
             return absoluteMethodIndex;
         }
         static std::optional<QMetaMethod> findMatchingSignal(QObject* sender, const char* signal,
-                                                             const PyCallableInfo& pyCallableInfo);
+        const PyCallableInfo& pyCallableInfo);
+
+        QSharedPointer<QPyModule> m_module;
+        QSharedPointer<QPyFutureNotifier> m_notifier;
+        QString m_slotName;
+        QPyRegisteredType m_returnType;
     };
 } // namespace qtpyt

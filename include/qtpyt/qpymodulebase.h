@@ -88,7 +88,7 @@ namespace qtpyt {
         struct _pycall_return<R(Args...)> { using type = R; };
 
         template<typename Signature>
-        std::function<Signature> makeFunction(const QString& name = {}) {
+        std::function<Signature> makeFunction(const QString& name) {
             auto resultCallable = callable;
             if (name.isEmpty() || name == m_callableFunction) {
                 if (!callable) throw std::runtime_error("callable is null");

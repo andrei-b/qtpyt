@@ -46,3 +46,14 @@ TEST_F(QPyScriptTest, TestSlotCalledFromPython) {
     EXPECT_EQ(p, 36);
 }
 
+TEST_F(QPyScriptTest, TestSlotCalledFromPython2) {
+    TestObj obj;
+    auto m = qtpyt::QPyModule::create(QString::fromStdString(testdata_path("module6.py").string()),
+                                      qtpyt::QPySourceType::File);
+    m->addVariable<QObject*>("obj", &obj);
+    m->makeSlot("slot_2", QMetaType::Void).connectToSignal(&obj, &TestObj::passPoint);
+    obj.setIntProperty(69);
+    obj.emitPassPoint(QPoint(12, 24));
+    auto value = obj.value();
+    EXPECT_EQ(value, QPoint(12, 24));
+}
