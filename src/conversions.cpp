@@ -27,6 +27,15 @@
 
 
 namespace qtpyt {
+
+    static inline QByteArray makeNormalName(const QByteArray& name) {
+        auto nn = QByteArray(QMetaType::fromName(name).name());
+        if (nn.isEmpty()) {
+            return name;
+        }
+        return nn;
+    }
+
     auto tupleFromQSize(const QVariant& v) {
         const auto s = v.toSize();
         py::tuple t(2);
@@ -516,45 +525,47 @@ namespace qtpyt {
         throw std::runtime_error("Expected a list or tuple for QStringList conversion");
     }
 
-    const static std::unordered_map<QString, ValueFromStringFunc> specializedStringConverters = {
-        {"QUrl", [](const QString& val) { return QVariant::fromValue(QUrl(val)); }},
-        {"QTime", [](const QString& val) { return QVariant::fromValue(QTime::fromString(val)); }},
-        {"QDate", [](const QString& val) { return QVariant::fromValue(QDate::fromString(val)); }},
-        {"QDateTime", [](const QString& val) { return QVariant::fromValue(QDateTime::fromString(val)); }},
-        {"QColor", [](const QString& val) { return QVariant(QColor(val)); }},
-        {"QByteArray",
+    const static std::unordered_map<QByteArray, ValueFromStringFunc> specializedStringConverters = {
+        {makeNormalName("QUrl"), [](const QString& val) { return QVariant::fromValue(QUrl(val)); }},
+        {makeNormalName("QTime"), [](const QString& val) { return QVariant::fromValue(QTime::fromString(val)); }},
+        {makeNormalName("QDate"), [](const QString& val) { return QVariant::fromValue(QDate::fromString(val)); }},
+        {makeNormalName("QDateTime"), [](const QString& val) { return QVariant::fromValue(QDateTime::fromString(val)); }},
+        {makeNormalName("QColor"), [](const QString& val) { return QVariant(QColor(val)); }},
+        {makeNormalName("QByteArray"),
          [](const QString& val) { return QVariant::fromValue(QByteArray::fromStdString(val.toStdString())); }},
-        {"QUuid", [](const QString& val) { return QVariant::fromValue(QUuid(val)); }}};
+        {makeNormalName("QUuid"), [](const QString& val) { return QVariant::fromValue(QUuid(val)); }}};
 
     static std::unordered_map<QString, ValueFromSequenceFunc> specializedSequenceConverters {
-        {"QByteArray", byteArrayToQVariant},
-        {"QStringList", stringListToQVariant},
-        {"QPoint", squenceToQPoint},
-        {"QSize", squenceToQSize},
-        {"QRect", squenceToQRect},
-        {"QColor", squenceToQColor},
-        {"QPointF", tupleToQPointF},
-        {"QSizeF", tupleToQSizeF},
-        {"QRectF", tupleToQRectF},
-        {"QVector2D", sequenceToVector},
-        {"QVector3D", sequenceToVector},
-        {"QVector4D", sequenceToVector},
-        {"QQuaternion", sequenceToQQuaternion},
-        {"QMatrix4x4", sequenceToMatrix4x4},
-        {"QVariantList", sequenceToQVariantList}};
+        {makeNormalName("QByteArray"), byteArrayToQVariant},
+        {makeNormalName("QStringList"), stringListToQVariant},
+        {makeNormalName("QPoint"), squenceToQPoint},
+        {makeNormalName("QSize"), squenceToQSize},
+        {makeNormalName("QRect"), squenceToQRect},
+        {makeNormalName("QColor"), squenceToQColor},
+        {makeNormalName("QPointF"), tupleToQPointF},
+        {makeNormalName("QSizeF"), tupleToQSizeF},
+        {makeNormalName("QRectF"), tupleToQRectF},
+        {makeNormalName("QVector2D"), sequenceToVector},
+        {makeNormalName("QVector3D"), sequenceToVector},
+        {makeNormalName("QVector4D"), sequenceToVector},
+        {makeNormalName("QQuaternion"), sequenceToQQuaternion},
+        {makeNormalName("QMatrix4x4"), sequenceToMatrix4x4},
+        {makeNormalName("QVariantList"), sequenceToQVariantList}};
     ;
 
     static std::unordered_map<QString, ValueFromDictFunc> specializedDictConverters {
-        {"QVariantMap", dictToQVariantMap}, {"QVariantHash", dictToQVariantHash}};
+        {makeNormalName("QVariantMap"), dictToQVariantMap}, {makeNormalName("QVariantHash"), dictToQVariantHash}};
 
     static std::unordered_map<QString, QVariantFromPyObjectFunc> specializedPyObjectConverters{};
 
     void addFromPyObjectToQVariantFunc(const QString& name, QVariantFromPyObjectFunc&& func) {
-        specializedPyObjectConverters.insert({conversions_internal__::normalizeTypeName(name), std::move(func)});
+        const auto normName = makeNormalName(name.toStdString().c_str());
+        specializedPyObjectConverters.insert({normName, std::move(func)});
     }
 
     void addFromDictFunc(const QString &name, ValueFromDictFunc &&func) {
-        specializedDictConverters.insert({name, std::move(func)});
+        const auto normName = makeNormalName(name.toStdString().c_str());
+        specializedDictConverters.insert({normName, std::move(func)});
     }
 
     static std::unordered_map<int, QVariantFromPyObjectFunc> specializedMetatypeConverters = {
@@ -571,84 +582,84 @@ namespace qtpyt {
     using ValueFromPOD = std::function<QVariant(const py::handle&)>;
 
     const static std::unordered_map<QString, ValueFromPOD> specializedPodConverters = {
-        {"Int",
+        {makeNormalName("int"),
          [](const py::handle& obj) {
              if (!py::isinstance<py::int_>(obj)) {
                  throw std::runtime_error("Expected an integer for Int conversion");
              }
              return QVariant::fromValue(obj.cast<int>());
         }},
-       {"UInt",
+       {makeNormalName("unsigned int"),
         [](const py::handle& obj) {
             if (!py::isinstance<py::int_>(obj)) {
                 throw std::runtime_error("Expected an integer for UInt conversion");
             }
             return QVariant::fromValue(obj.cast<unsigned int>());
        }},
-      {"LongLong",
+      {makeNormalName("long long"),
        [](const py::handle& obj) {
            if (!py::isinstance<py::int_>(obj)) {
                throw std::runtime_error("Expected an integer for LongLong conversion");
            }
            return QVariant::fromValue(obj.cast<qlonglong>());
       }},
-     {"ULongLong",
+     {makeNormalName("unsigned long long"),
       [](const py::handle& obj) {
           if (!py::isinstance<py::int_>(obj)) {
               throw std::runtime_error("Expected an integer for ULongLong conversion");
           }
           return QVariant::fromValue(obj.cast<qulonglong>());
      }},
-    {"Long",
+    {makeNormalName("long"),
      [](const py::handle& obj) {
          if (!py::isinstance<py::int_>(obj)) {
              throw std::runtime_error("Expected an integer for Long conversion");
          }
          return QVariant::fromValue(obj.cast<long>());
     }},
-   {"ULong",
+   {makeNormalName("unsigned long"),
     [](const py::handle& obj) {
         if (!py::isinstance<py::int_>(obj)) {
             throw std::runtime_error("Expected an integer for ULong conversion");
         }
         return QVariant::fromValue(obj.cast<unsigned long>());
    }},
-  {"Short",
+  {makeNormalName("short"),
    [](const py::handle& obj) {
        if (!py::isinstance<py::int_>(obj)) {
            throw std::runtime_error("Expected an integer for Short conversion");
        }
        return QVariant::fromValue(obj.cast<short>());
   }},
- {"UShort",
+ {makeNormalName("unsigned short"),
   [](const py::handle& obj) {
       if (!py::isinstance<py::int_>(obj)) {
           throw std::runtime_error("Expected an integer for UShort conversion");
       }
       return QVariant::fromValue(obj.cast<unsigned short>());
  }},
-{"Float",
+{makeNormalName("float"),
  [](const py::handle& obj) {
      if (!py::isinstance<py::float_>(obj)) {
          throw std::runtime_error("Expected a float for Float conversion");
      }
      return QVariant::fromValue(obj.cast<float>());
 }},
-{"Double",
+{makeNormalName("double"),
 [](const py::handle& obj) {
     if (!py::isinstance<py::float_>(obj)) {
         throw std::runtime_error("Expected a float for Double conversion");
     }
     return QVariant::fromValue(obj.cast<double>());
 }},
-{"Bool",
+{makeNormalName("bool"),
 [](const py::handle& obj) {
     if (!py::isinstance<py::bool_>(obj)) {
         throw std::runtime_error("Expected a boolean for Bool conversion");
     }
     return QVariant::fromValue(obj.cast<bool>());
 }},
-{"Char",
+{makeNormalName("char"),
 [](const py::handle& obj) {
     if (!py::isinstance<py::str>(obj)) {
         throw std::runtime_error("Expected a string for Char conversion");
@@ -659,7 +670,7 @@ namespace qtpyt {
     }
     return QVariant::fromValue(QChar(str[0]));
 }},
-{"UChar",
+{makeNormalName("unsigned char"),
 [](const py::handle& obj) {
     if (!py::isinstance<py::int_>(obj)) {
         throw std::runtime_error("Expected an integer for UChar conversion");
@@ -670,7 +681,7 @@ namespace qtpyt {
     }
     return QVariant::fromValue(static_cast<uchar>(val));
 }},
-{"VoidStar",
+{makeNormalName("void *"),
 [](const py::handle& obj) {
     if (!py::isinstance<py::int_>(obj)) {
         throw std::runtime_error("Expected an integer for VoidStar conversion");
@@ -678,7 +689,7 @@ namespace qtpyt {
     const auto ptr = obj.cast<uintptr_t>();
     return QVariant::fromValue(reinterpret_cast<void*>(ptr));
 }},
-{"QObjectStar", [](const py::handle& obj) {
+{makeNormalName("QObject *"), [](const py::handle& obj) {
     if (!py::isinstance<py::int_>(obj)) {
         throw std::runtime_error("Expected an integer for QObject* conversion");
     }
@@ -692,39 +703,35 @@ namespace qtpyt {
             return std::nullopt;
         }
         if (!expectedType.isEmpty()) {
-            auto normName = conversions_internal__::normalizeTypeName(expectedType);
+            const auto normName = makeNormalName(expectedType);
             if (specializedPyObjectConverters.contains(normName)) {
                 return specializedPyObjectConverters.at(normName)(static_cast<const pybind11::object&>(obj));
             }
             if (py::isinstance<py::str>(obj)) {
                 const auto val = QString::fromStdString(obj.cast<std::string>());
-                if (specializedStringConverters.contains(expectedType)) {
-                    return specializedStringConverters.at(expectedType)(val);
+                if (specializedStringConverters.contains(normName)) {
+                    return specializedStringConverters.at(normName)(val);
                 }
             }
 
             if (py::isinstance<py::dict>(obj)) {
                 auto dict = py::reinterpret_borrow<py::dict>(obj);
-                if (specializedDictConverters.contains(expectedType)) {
-                    return specializedDictConverters.at(expectedType)(dict);
+                if (specializedDictConverters.contains(normName)) {
+                    return specializedDictConverters.at(normName)(dict);
                 }
             }
 
             if (py::isinstance<py::list>(obj) || py::isinstance<py::tuple>(obj)) {
                 auto seq = py::reinterpret_borrow<py::sequence>(obj);
-                if (specializedSequenceConverters.contains(expectedType)) {
-                    auto f = specializedSequenceConverters.at(expectedType);
+                if (specializedSequenceConverters.contains(normName)) {
+                    auto f = specializedSequenceConverters.at(normName);
                     return f(seq);
                 }
             }
 
-            if (specializedPodConverters.contains(expectedType)) {
-                return specializedPodConverters.at(expectedType)(obj);
+            if (specializedPodConverters.contains(normName)) {
+                return specializedPodConverters.at(normName)(obj);
             }
-        }
-
-        if (specializedPyObjectConverters.contains(expectedType)) {
-            return specializedPyObjectConverters.at(expectedType)(static_cast<const pybind11::object&>(obj));
         }
 
         if (py::isinstance<py::bool_>(obj)) {
@@ -756,7 +763,7 @@ namespace qtpyt {
             return QVariant::fromValue(pyDictToVariantMap(obj.cast<py::dict>()));
         }
 
-        if (py::isinstance<py::memoryview>(obj) && expectedType == "QByteArray") {
+        if (py::isinstance<py::memoryview>(obj) && makeNormalName(expectedType) == makeNormalName("QByteArray")) {
             auto memoryviewDataPtr = [](const py::memoryview& mv, size_t& outBytes) -> const char* {
                 if (!mv || mv.is_none()) throw std::runtime_error("memoryview is null");
                 py::buffer_info info =  py::buffer(mv).request();
@@ -846,7 +853,8 @@ namespace qtpyt {
         return map;
     }
     void addFromSequenceFunc(const QString& typeName, ValueFromSequenceFunc&& func) {
-        specializedSequenceConverters.insert({typeName, std::move(func)});
+        const auto normName = makeNormalName(typeName.toLatin1());
+        specializedSequenceConverters.insert({normName, std::move(func)});
     }
 
     py::object voidPtrToPyObject(const void* v) {

@@ -5,7 +5,11 @@
 #include <QVariant>
 #include <QString>
 #include <QByteArray>
+#include <QColor>
+#include <QDateTime>
 #include <QPointF>
+#include <QUrl>
+#include <QUuid>
 #include <QVector3D>
 
 #include "qtpyt/conversions.h"
@@ -16,15 +20,56 @@ namespace py = pybind11;
 TEST(Conversions, IntRoundtrip) {
     QVariant in = 42;
     py::object obj = qtpyt::qvariantToPyObject(in);
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray());
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("int"));
     ASSERT_TRUE(outOpt.has_value());
     EXPECT_EQ(outOpt->toInt(), in.toInt());
 }
 
+TEST(Conversions, LongRoundtrip) {
+    QVariant in = 44;
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("long"));
+    ASSERT_TRUE(outOpt.has_value());
+    EXPECT_EQ(outOpt->toInt(), in.toInt());
+}
+
+TEST(Conversions, LongLongRoundtrip) {
+    QVariant in = -12326001231984LL;
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("long long"));
+    ASSERT_TRUE(outOpt.has_value());
+    EXPECT_EQ(outOpt->toLongLong(), in.toLongLong());
+}
+
+TEST(Conversions, ULongLongRoundtrip) {
+    QVariant in = QVariant::fromValue<unsigned long long>(12222312326001231984ULL);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("unsigned long long"));
+    ASSERT_TRUE(outOpt.has_value());
+    EXPECT_EQ(outOpt->toULongLong(), in.toULongLong());
+}
+
+TEST(Conversions, ULongRoundtrip) {
+    QVariant in = QVariant::fromValue<unsigned long>(26001231984UL);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("unsigned long"));
+    ASSERT_TRUE(outOpt.has_value());
+    EXPECT_EQ(outOpt->toUInt(), in.toUInt());
+}
+
+TEST(Conversions, DoubleRoundtrip) {
+    QVariant in = 19.84;
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("double"));
+    ASSERT_TRUE(outOpt.has_value());
+    EXPECT_EQ(outOpt->toDouble(), in.toDouble());
+}
+
+
 TEST(Conversions, StringRoundtrip) {
     QVariant in = QStringLiteral("hello from test");
     py::object obj = qtpyt::qvariantToPyObject(in);
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray());
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QString"));
     ASSERT_TRUE(outOpt.has_value());
     EXPECT_EQ(outOpt->toString(), in.toString());
 }
@@ -88,6 +133,21 @@ TEST(Conversions, QVectorDoubleRoundTrip) {
     auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector<double>"));
     ASSERT_TRUE(outOpt.has_value());
     QVector<double> out = outOpt->value<QVector<double>>();
+    ASSERT_EQ(out.size(), vec.size());
+    for (int i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(out[i], vec[i]);
+    }
+}
+
+TEST(Conversions, QListFloatRoundTrip) {
+    qtpyt::registerContainerType<QList<float>>("QList<float>");
+    QList<float> vec = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+    QVariant in = QVariant::fromValue(vec);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    qWarning() << "  " << py::repr(obj).cast<std::string>();
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QList<float>"));
+    ASSERT_TRUE(outOpt.has_value());
+    QList<float> out = outOpt->value<QList<float>>();
     ASSERT_EQ(out.size(), vec.size());
     for (int i = 0; i < vec.size(); ++i) {
         EXPECT_EQ(out[i], vec[i]);
@@ -190,4 +250,47 @@ TEST(Conversions, QSharedArrayRoundTrip3) {
     for (int i = 0; i < sharedArray.size(); ++i) {
         EXPECT_EQ(out[i], sharedArray[i]);
     }
+}
+
+
+TEST(Conversions, QUuidRoundTrip) {
+    QUuid id = QUuid::createUuid();
+    QVariant in = QVariant::fromValue(id);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QUuid"));
+    ASSERT_TRUE(outOpt.has_value());
+    QUuid out = outOpt->value<QUuid>();
+    EXPECT_EQ(out, id);
+}
+
+TEST(Conversions, QUrlRoundTrip) {
+    QUrl url(QStringLiteral("https://example.com/a/b?x=1#frag"));
+    QVariant in = QVariant::fromValue(url);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QUrl"));
+    ASSERT_TRUE(outOpt.has_value());
+    QUrl out = outOpt->value<QUrl>();
+    EXPECT_EQ(out, url);
+}
+
+TEST(Conversions, QDateTimeRoundTrip) {
+    QDateTime dt(QDate(2025, 1, 2), QTime(3, 4, 5, 6), Qt::UTC);
+    QVariant in = QVariant::fromValue(dt);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QDateTime"));
+    ASSERT_TRUE(outOpt.has_value());
+    QDateTime out = outOpt->value<QDateTime>();
+    qWarning() << "In: " << dt.toString();
+    qWarning() << "Out: " << out.toString();
+    EXPECT_EQ(out.toString(), dt.toString());
+}
+
+TEST(Conversions, QColorRoundTrip) {
+    QColor c(10, 20, 30, 40);
+    QVariant in = QVariant::fromValue(c);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QColor"));
+    ASSERT_TRUE(outOpt.has_value());
+    QColor out = outOpt->value<QColor>();
+    EXPECT_EQ(out, c);
 }
