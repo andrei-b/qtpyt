@@ -4,6 +4,8 @@
 
 #include "qtpyt/qpymodule.h"
 
+#include <QVector3D>
+
 namespace py = pybind11;
 
 TEST(QPyModule, CallAsyncRunsAndReturns) {
@@ -78,4 +80,14 @@ TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
     EXPECT_EQ(f->errorMessage(), "Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
+}
+
+TEST(QPyModule, TestMakeAsyncFunction) {
+    auto m = qtpyt::QPyModule::create("def add_vectors(a, b):\n"
+                           "    return (a[0]+b[0], a[1] + b[1], a[2] + b[2])\n", qtpyt::QPySourceType::SourceString);
+    auto add_vectors = m->makeAsyncFunction<QVector3D, QVector3D, QVector3D>(nullptr,"add_vectors");
+    auto f = add_vectors({1.0, 2.0, 3.0}, {5.0, 8.0, 10.0});
+    f->waitForFinished();
+    EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
+    EXPECT_EQ(f.value().resultAs<QVector3D>(0), QVector3D(6.0, 10.0, 13.0));
 }

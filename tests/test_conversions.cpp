@@ -154,3 +154,40 @@ TEST(Conversions, QSharedArrayRoundTrip) {
         EXPECT_EQ(out[i], sharedArray[i]);
     }
 }
+
+TEST(Conversions, QSharedArrayRoundTrip2) {
+    qtpyt::registerSharedArray<double>("QPySharedArray<double>");
+    QVector<double> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+    qtpyt::QPySharedArray<double> sharedArray(6);
+    for (int i = 0; i < data.size(); ++i) {
+        sharedArray[i] = data[i];
+    }
+    QVariant in = QVariant::fromValue(sharedArray);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<double>"));
+    ASSERT_TRUE(outOpt.has_value());
+    auto out = outOpt->value<qtpyt::QPySharedArray<double>>();
+    ASSERT_EQ(out.size(), sharedArray.size());
+    for (int i = 0; i < sharedArray.size(); ++i) {
+        EXPECT_EQ(out[i], sharedArray[i]);
+    }
+}
+
+
+TEST(Conversions, QSharedArrayRoundTrip3) {
+    qtpyt::registerSharedArray<long long>("QPySharedArray<long long>", false);
+    QVector<int64_t> data = {5, 4, 3, 2, 1};
+    qtpyt::QPySharedArray<long long> sharedArray(6);
+    for (int i = 0; i < data.size(); ++i) {
+        sharedArray[i] = data[i];
+    }
+    QVariant in = QVariant::fromValue(sharedArray);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<long long>"));
+    ASSERT_TRUE(outOpt.has_value());
+    auto out = outOpt->value<qtpyt::QPySharedArray<long long>>();
+    ASSERT_EQ(out.size(), sharedArray.size());
+    for (int i = 0; i < sharedArray.size(); ++i) {
+        EXPECT_EQ(out[i], sharedArray[i]);
+    }
+}

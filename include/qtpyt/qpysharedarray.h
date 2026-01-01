@@ -173,12 +173,12 @@ namespace qtpyt {
                           "Typed memoryview requires trivially copyable T");
 
             const py::ssize_t n = static_cast<py::ssize_t>(size());
-            auto *m_formatString = new std::string(pep3118::full_format_string<T>(false));
+            d_->format = pep3118::full_format_string<T>(false);
 
             py::gil_scoped_acquire gil;
             return py::memoryview::from_buffer(const_cast<void *>(static_cast<const void *>(constData())),
                                                static_cast<py::ssize_t>(sizeof(T)), // itemsize
-                                               m_formatString->c_str(),
+                                               d_->format.c_str(),
                                                std::vector<py::ssize_t>{n}, // shape
                                                std::vector<py::ssize_t>{static_cast<py::ssize_t>(sizeof(T))},
                                                m_readonly);
@@ -203,6 +203,7 @@ namespace qtpyt {
             bool external = false;
             bool takeOwnership = false;
             py::object owner;
+            std::string format;
 
             Buffer() = default;
 
@@ -562,3 +563,4 @@ Q_DECLARE_METATYPE(qtpyt::QPySharedArray<double>)
 Q_DECLARE_METATYPE(qtpyt::QPySharedArray<std::byte>)
 
 Q_DECLARE_METATYPE(qtpyt::QPySharedArray<std::int8_t>)
+

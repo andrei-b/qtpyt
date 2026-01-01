@@ -7,6 +7,8 @@
 #include <QRunnable>
 #include <pybind11/pybind11.h>
 
+#include "qpythreadpool.h"
+
 namespace qtpyt {
 class QPySlot;
 class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> {
@@ -25,22 +27,23 @@ class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> 
     }
     std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString &functionName, const QPyRegisteredType &returnType, QVariantList
                                        &&args);
-  template<typename Signature>
-      std::function<Signature> makeAsyncFunction(const QString& name, const QPyRegisteredType& returnType = QMetaType::Void, const QSharedPointer<QPyFutureNotifier> &notifier = nullptr) {
-          auto self = this->sharedFromThis();
-          if (self == nullptr) {
-              throw std::runtime_error("QPyModule::makeAsyncFunction: module should be created as a QSharedPointer<QPyModule>");
+  template<typename R, typename... Args>
+    std::function<std::optional<QPyFuture>(Args...)> makeAsyncFunction(const QSharedPointer<QPyFutureNotifier>& notifier, const QString& name) {
+      auto self = sharedFromThis(); // whatever your project uses
+      const QMetaType returnType = QMetaType::fromType<R>();
+
+      return [self, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
+          QVariantList varArgs;
+          varArgs.reserve(sizeof...(Args));
+          (varArgs.push_back(QVariant::fromValue(args)), ...);
+
+          auto futOpt = self->callAsync(notifier, name, returnType, std::move(varArgs));
+          if (!futOpt) {
+              throw std::runtime_error("callAsync failed");
           }
-          using R = typename QPyModuleBase::template _pycall_return<Signature>::type;
-          return [self, name, returnType, notifier](auto&&... args) -> QPyFuture {
-              QVariantList varArgs = {args...};
-              auto futureOpt = self->callAsync(notifier, name, returnType, std::move(varArgs));
-              if (!futureOpt.has_value()) {
-                  throw std::runtime_error("QPyModule::makeAsyncFunction: callAsync returned no future");
-              }
-              return futureOpt.value();
-          };
-      }
+          return futOpt;
+      };
+  }
 
       QPySlot makeSlot(const QString& slotName, const QPyRegisteredType& returnType = QMetaType::Void, const QSharedPointer<QPyFutureNotifier>& notifier = nullptr);
   protected:
