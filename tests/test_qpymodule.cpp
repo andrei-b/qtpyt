@@ -6,6 +6,8 @@
 
 #include <QVector3D>
 
+#include "qtpyt/qpysharedarray.h"
+
 namespace py = pybind11;
 
 TEST(QPyModule, CallAsyncRunsAndReturns) {
@@ -90,4 +92,43 @@ TEST(QPyModule, TestMakeAsyncFunction) {
     f->waitForFinished();
     EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
     EXPECT_EQ(f.value().resultAs<QVector3D>(0), QVector3D(6.0, 10.0, 13.0));
+}
+
+TEST(QPyModule, TestAsincFunctionWithQSharedArray) {
+    qtpyt::registerSharedArray<double>("QPySharedArray<double>", true);
+    auto m = qtpyt::QPyModule::create("def scale_array(arr, factor):\n"
+                           "    for i in range(len(arr)):\n"
+                           "        arr[i] = arr[i] * factor\n", qtpyt::QPySourceType::SourceString);
+    auto scale_array = m->makeAsyncFunction<void, qtpyt::QPySharedArray<double>, double>(nullptr,"scale_array");
+    qtpyt::QPySharedArray<double> arr(3);
+    arr[0] = 1.0;
+    arr[1] = 2.0;
+    arr[2] = 3.0;
+    auto f = scale_array(arr, 2.5);
+    f->waitForFinished();
+    EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
+    EXPECT_DOUBLE_EQ(arr[0], 2.5);
+    EXPECT_DOUBLE_EQ(arr[1], 5.0);
+    EXPECT_DOUBLE_EQ(arr[2], 7.5);
+}
+
+TEST(QPyModule, TestQPyFutureNotifier) {
+    auto m = qtpyt::QPyModule::create("import time\n"
+                           "def long_task():\n"
+                           "    time.sleep(2)\n"
+                           "    return 42\n", qtpyt::QPySourceType::SourceString);
+    auto notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    int oresult;
+
+    auto f = m->callAsync<>(notifier, "long_task", QMetaType::Int);
+    bool notified = false;
+    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&notified, &oresult](const QVariant& result) {
+        notified = true;
+        oresult = result.toInt();
+    });
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    EXPECT_EQ(oresult, 42);
+    EXPECT_EQ(f->resultAs<int>(0), 42);
+    EXPECT_TRUE(notified);
 }

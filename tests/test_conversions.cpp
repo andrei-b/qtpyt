@@ -236,7 +236,7 @@ TEST(Conversions, QSharedArrayRoundTrip2) {
 
 TEST(Conversions, QSharedArrayRoundTrip3) {
     qtpyt::registerSharedArray<long long>("QPySharedArray<long long>", false);
-    QVector<int64_t> data = {5, 4, 3, 2, 1};
+    QVector<int64_t> data = {500000000, 4, 3, 2, 1};
     qtpyt::QPySharedArray<long long> sharedArray(6);
     for (int i = 0; i < data.size(); ++i) {
         sharedArray[i] = data[i];
@@ -293,4 +293,106 @@ TEST(Conversions, QColorRoundTrip) {
     ASSERT_TRUE(outOpt.has_value());
     QColor out = outOpt->value<QColor>();
     EXPECT_EQ(out, c);
+}
+
+TEST(Conversions, QVariantListRoundTrip) {
+    QVariantList list;
+    list << 1 << QStringLiteral("x") << 2.25;
+
+    QVariant in = QVariant::fromValue(list);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVariantList"));
+    ASSERT_TRUE(outOpt.has_value());
+    QVariantList out = outOpt->toList();
+
+    ASSERT_EQ(out.size(), list.size());
+    EXPECT_EQ(out[0].toInt(), 1);
+    EXPECT_EQ(out[1].toString(), QStringLiteral("x"));
+    EXPECT_EQ(out[2].toDouble(), 2.25);
+}
+
+
+TEST(Conversions, QListDoubleRoundTrip) {
+    qtpyt::registerContainerType<QList<double>>("QList<double>");
+    QList<double> list = {1.0, -2.5, 3.25};
+    QVariant in = QVariant::fromValue(list);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QList<double>"));
+    ASSERT_TRUE(outOpt.has_value());
+    QList<double> out = outOpt->value<QList<double>>();
+    ASSERT_EQ(out.size(), list.size());
+    for (int i = 0; i < list.size(); ++i) {
+        EXPECT_EQ(out[i], list[i]);
+    }
+}
+
+
+TEST(Conversions, QVariantMapRoundTrip) {
+    QVariantMap map;
+    map.insert(QStringLiteral("a"), 1);
+    map.insert(QStringLiteral("b"), QStringLiteral("two"));
+    map.insert(QStringLiteral("c"), 3.5);
+
+    QVariant in = QVariant::fromValue(map);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVariantMap"));
+    ASSERT_TRUE(outOpt.has_value());
+    QVariantMap out = outOpt->toMap();
+
+    EXPECT_EQ(out.value(QStringLiteral("a")).toInt(), 1);
+    EXPECT_EQ(out.value(QStringLiteral("b")).toString(), QStringLiteral("two"));
+    EXPECT_EQ(out.value(QStringLiteral("c")).toDouble(), 3.5);
+}
+
+
+TEST(Conversions, QMapIntQVector4DRoundTrip) {
+    qtpyt::registerQMapType<int, QVector4D>("QMap<int, QVector4D>");
+
+    QMap<int, QVector4D> map;
+    map.insert(1, QVector4D(1.0f, 2.0f, 3.0f, 4.0f));
+    map.insert(2, QVector4D(-1.5f, 0.0f, 100.25f, 8.0f));
+    map.insert(3, QVector4D(9.0f, 8.0f, 7.0f, 6.0f));
+
+    QVariant in = QVariant::fromValue(map);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QMap<int, QVector4D>"));
+    ASSERT_TRUE(outOpt.has_value());
+
+    const QMap<int, QVector4D> out = outOpt->value<QMap<int, QVector4D>>();
+    ASSERT_EQ(out.size(), map.size());
+
+    for (auto it = map.cbegin(); it != map.cend(); ++it) {
+        ASSERT_TRUE(out.contains(it.key()));
+        const QVector4D a = it.value();
+        const QVector4D b = out.value(it.key());
+        EXPECT_FLOAT_EQ(b.x(), a.x());
+        EXPECT_FLOAT_EQ(b.y(), a.y());
+        EXPECT_FLOAT_EQ(b.z(), a.z());
+        EXPECT_FLOAT_EQ(b.w(), a.w());
+    }
+}
+
+TEST(Conversions, QSharedArrayUShortRoundTrip) {
+    qtpyt::registerSharedArray<unsigned short>("QPySharedArray<unsigned short>");
+
+    qtpyt::QPySharedArray<unsigned short> sharedArray(6);
+    sharedArray[0] = static_cast<unsigned short>(0);
+    sharedArray[1] = static_cast<unsigned short>(1);
+    sharedArray[2] = static_cast<unsigned short>(42);
+    sharedArray[3] = static_cast<unsigned short>(65535);
+    sharedArray[4] = static_cast<unsigned short>(1234);
+    sharedArray[5] = static_cast<unsigned short>(50000);
+
+    QVariant in = QVariant::fromValue(sharedArray);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<unsigned short>"));
+    ASSERT_TRUE(outOpt.has_value());
+
+    auto out = outOpt->value<qtpyt::QPySharedArray<unsigned short>>();
+    ASSERT_EQ(out.size(), sharedArray.size());
+    for (int i = 0; i < sharedArray.size(); ++i) {
+        EXPECT_EQ(out[i], sharedArray[i]);
+    }
 }
