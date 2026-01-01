@@ -1,6 +1,6 @@
 
 #include <qtpyt/conversions.h>
-#include <qtpyt/q_py_shared_array.h>
+#include <qtpyt/qpysharedarray.h>
 #include <QByteArray>
 #include <QColor>
 #include <QDateTime>
@@ -23,6 +23,7 @@
 #include <QVector4D>
 #include <pybind11/numpy.h>
 #include <qkeysequence.h>
+#include "internal/normalize.h"
 
 
 namespace qtpyt {
@@ -549,7 +550,7 @@ namespace qtpyt {
     static std::unordered_map<QString, QVariantFromPyObjectFunc> specializedPyObjectConverters{};
 
     void addFromPyObjectToQVariantFunc(const QString& name, QVariantFromPyObjectFunc&& func) {
-        specializedPyObjectConverters.insert({name, std::move(func)});
+        specializedPyObjectConverters.insert({conversions_internal__::normalizeTypeName(name), std::move(func)});
     }
 
     void addFromDictFunc(const QString &name, ValueFromDictFunc &&func) {
@@ -691,8 +692,9 @@ namespace qtpyt {
             return std::nullopt;
         }
         if (!expectedType.isEmpty()) {
-            if (specializedPyObjectConverters.contains(expectedType)) {
-                return specializedPyObjectConverters.at(expectedType)(static_cast<const pybind11::object&>(obj));
+            auto normName = conversions_internal__::normalizeTypeName(expectedType);
+            if (specializedPyObjectConverters.contains(normName)) {
+                return specializedPyObjectConverters.at(normName)(static_cast<const pybind11::object&>(obj));
             }
             if (py::isinstance<py::str>(obj)) {
                 const auto val = QString::fromStdString(obj.cast<std::string>());

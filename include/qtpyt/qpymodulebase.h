@@ -15,7 +15,7 @@ namespace qtpyt {
         Module,
         File,
         SourceString
-};
+    };
 
     enum class QPyArgumentType {
         Argument,
@@ -36,7 +36,7 @@ namespace qtpyt {
         Object,
         Callable,
         Any,
-         };
+    };
 
     struct QPythonArgument {
         QPyArgumentType argType;
@@ -49,7 +49,7 @@ namespace qtpyt {
     struct PyCallableInfo {
         bool has_varargs = false;
         bool has_varkw = false;
-        std::unordered_map<std::string, py::handle> annotations;   // param -> annotation (py::handle)
+        std::unordered_map<std::string, py::handle> annotations; // param -> annotation (py::handle)
         std::vector<QPythonArgument> arguments;
         QPyValueType returnType;
     };
@@ -58,37 +58,67 @@ namespace qtpyt {
 
     class QPyModuleBase {
     public:
-        QPyModuleBase(const QString& source, QPySourceType sourceType);
-        QPyModuleBase(const QPyModuleBase& other) = delete;
-        QPyModuleBase& operator=(const QPyModuleBase& other) = delete;
-        QPyModuleBase(const QPyModuleBase&& other) = delete;
-        QPyModuleBase& operator=(const QPyModuleBase&& other) = delete;
+        QPyModuleBase(const QString &source, QPySourceType sourceType);
+
+        QPyModuleBase(const QPyModuleBase &other) = delete;
+
+        QPyModuleBase &operator=(const QPyModuleBase &other) = delete;
+
+        QPyModuleBase(const QPyModuleBase &&other) = delete;
+
+        QPyModuleBase &operator=(const QPyModuleBase &&other) = delete;
+
         virtual ~QPyModuleBase();
 
 
         [[nodiscard]] bool isValid() const;
-        [[nodiscard]] std::optional<QVariant> call(const QString& function, const QPyRegisteredType& returnType, const QVariantList& args, const QVariantMap& kwargs = {});
-        std::optional<py::object> makeCallable(const QString& function);
-        void setCallableFunction(const QString& name);
+
+        [[nodiscard]] std::optional<QVariant> call(const QString &function, const QPyRegisteredType &returnType,
+                                                   const QVariantList &args, const QVariantMap &kwargs = {});
+
+        std::optional<py::object> makeCallable(const QString &function);
+
+        void setCallableFunction(const QString &name);
+
         template<typename R, typename... Args>
-        R call(Args&&... args) const {
-            pybind11::object varArgs = pycall_internal__::build_args_tuple(std::forward<Args>(args)...);
-            const auto result = call(varArgs, {});
-            return result.cast<R>();
+        R call(const QString &function, Args &&... args) {
+            pybind11::tuple varArgs =
+                    pycall_internal__::build_args_tuple(std::forward<Args>(args)...)
+                    .template cast<pybind11::tuple>();
+
+            setCallableFunction(function);
+            pybind11::dict kwargs; // empty
+            pybind11::object resultObj = call(varArgs, kwargs);
+
+            if constexpr (std::is_same_v<R, void>) {
+                (void) resultObj;
+                return;
+            } else {
+                auto var = pyObjectToQVariant(resultObj, QMetaType::fromType<R>().name());
+                if (!var.has_value()) {
+                    throw std::runtime_error("QPyModuleBase::call: Failed to convert return value to QVariant");
+                }
+                return var.value().template value<R>();
+            }
         }
+
         template<typename R, typename... Args>
-        R operator ()(Args&&... args) const  {
+        R operator ()(Args &&... args) const {
             return call<R>(std::forward<Args>(args)...);
         }
-        [[nodiscard]] pybind11::object call(const pybind11::tuple& args, const pybind11::dict& kwargs) const;
+
+        [[nodiscard]] pybind11::object call(const pybind11::tuple &args, const pybind11::dict &kwargs) const;
+
         template<typename Signature>
         struct _pycall_return;
 
         template<typename R, typename... Args>
-        struct _pycall_return<R(Args...)> { using type = R; };
+        struct _pycall_return<R(Args...)> {
+            using type = R;
+        };
 
         template<typename Signature>
-        std::function<Signature> makeFunction(const QString& name) {
+        std::function<Signature> makeFunction(const QString &name) {
             auto resultCallable = callable;
             if (name.isEmpty() || name == m_callableFunction) {
                 if (!callable) throw std::runtime_error("callable is null");
@@ -100,37 +130,51 @@ namespace qtpyt {
             }
             using R = typename _pycall_return<Signature>::type;
             m_isValid = false;
-            return [callable=std::move(resultCallable)]<typename... T0>(T0&&... args) -> R {
+            return [callable=std::move(resultCallable)]<typename... T0>(T0 &&... args) -> R {
                 if constexpr (std::is_same_v<R, void>) {
                     pycall_internal__::call_python<R>(callable, std::forward<T0>(args)...);
                     return;
                 } else {
-                    return pycall_internal__::call_python<R>(callable, std::forward<T0>(args)...);            }
+                    return pycall_internal__::call_python<R>(callable, std::forward<T0>(args)...);
+                }
             };
         }
-        const pybind11::object& pythonCallable() const;
-        pybind11::object&& takePythonCallable(const QString& functionName);
+
+        const pybind11::object &pythonCallable() const;
+
+        pybind11::object &&takePythonCallable(const QString &functionName);
+
         PyCallableInfo inspectCallable() const;
+
         QString functionName() const;
-        void addVariable(const QString& name, const QVariant& value);
-        QVariant readVariable(const QString& name, const QPyRegisteredType& type) const;
+
+        void addVariable(const QString &name, const QVariant &value);
+
+        QVariant readVariable(const QString &name, const QPyRegisteredType &type) const;
+
         template<typename T>
-        void addVariable(const QString& name, const T& value) {
+        void addVariable(const QString &name, const T &value) {
             addVariable(name, QVariant::fromValue(value));
         }
+
         template<typename T>
-        T readVariable(const QString& name) const {
+        T readVariable(const QString &name) const {
             QVariant var = readVariable(name, QMetaType::fromType<T>());
             if (var.isValid()) {
                 return var.value<T>();
             }
-            throw std::runtime_error("QPyModuleBase::readVariable: variable " + name.toStdString() + " is invalid or of wrong type");
+            throw std::runtime_error(
+                "QPyModuleBase::readVariable: variable " + name.toStdString() + " is invalid or of wrong type");
         }
+
     protected:
         py::object &getPyModule();
+
     private:
         void buildFromString(const QString &source);
+
         void buildFromFile(const QString &fileName);
+
         QString m_callableFunction;
         pybind11::object callable;
         pybind11::object m_module;

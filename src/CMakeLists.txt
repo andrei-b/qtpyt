@@ -20,7 +20,7 @@ set(LIBRARY_SOURCES
         internal/annotations.cpp
         internal/annotations.h
         conversions.cpp
-        q_py_shared_array.cpp
+        qpysharedarray.cpp
         internal/q_py_execute_event.cpp
         internal/q_py_execute_event.h
         qpymodule.cpp
@@ -41,7 +41,7 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpymodulebase.h
     ../include/qtpyt/qpymodule.h
     ../include/qtpyt/q_py_thread.h
-    ../include/qtpyt/q_py_shared_array.h
+        ../include/qtpyt/qpysharedarray.h
         ../include/qtpyt/qpythreadpool.h
     ../include/qtpyt/qpyfuture.h
     ../include/qtpyt/conversions.h
@@ -51,6 +51,8 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpyscript.h
         pymodule.cpp
         pymodule.h
+        internal/normalize.cpp
+        internal/normalize.h
 )
 
 # Create the shared library

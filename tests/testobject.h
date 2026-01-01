@@ -2,7 +2,7 @@
 
 #define PYBIND11_NO_KEYWORDS
 #include <pybind11/pybind11.h>
-#include <qtpyt/q_py_shared_array.h>
+#include <qtpyt/qpysharedarray.h>
 #include <QObject>
 #include <QPoint>
 #include <QSize>

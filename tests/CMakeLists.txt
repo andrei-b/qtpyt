@@ -22,6 +22,8 @@ add_executable(qtpyt_tests
         test_qpyscript.cpp
         test_signalsslots.cpp
         testobject.h
+        ../src/internal/normalize.cpp
+        ../src/internal/normalize.h
 )
 
 set_target_properties(qtpyt_tests PROPERTIES AUTOMOC ON)
@@ -36,7 +38,7 @@ target_sources(qtpyt_tests PRIVATE
         ../src/pyextra/py_datetime.cpp
         ../src/internal/annotations.cpp
         ../src/qpymodulebase.cpp
-        ../src/q_py_shared_array.cpp
+        ../src/qpysharedarray.cpp
         ../src/internal/q_py_execute_event.cpp
         ../src/qpymodule.cpp
         ../src/q_py_thread.cpp

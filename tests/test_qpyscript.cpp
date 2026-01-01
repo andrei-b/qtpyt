@@ -2,7 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include "qtpyt/qpyscript.h"
-#include "qtpyt/q_py_shared_array.h"
+#include "qtpyt/qpysharedarray.h"
 #include <filesystem>
 #include <QPointF>
 #include <QSizeF>

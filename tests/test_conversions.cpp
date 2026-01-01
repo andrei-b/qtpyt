@@ -9,6 +9,7 @@
 #include <QVector3D>
 
 #include "qtpyt/conversions.h"
+#include  <qtpyt/qpysharedarray.h>
 
 namespace py = pybind11;
 
@@ -133,5 +134,23 @@ TEST(Conversions, QListQPStringRoundTrip) {
     ASSERT_EQ(out.size(), list.size());
     for (int i = 0; i < list.size(); ++i) {
         EXPECT_EQ(out[i], list[i]);
+    }
+}
+
+TEST(Conversions, QSharedArrayRoundTrip) {
+    qtpyt::registerSharedArray<float>("QPySharedArray<float>");
+    QVector<float> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+    qtpyt::QPySharedArray<float> sharedArray(6);
+    for (int i = 0; i < data.size(); ++i) {
+        sharedArray[i] = data[i];
+    }
+    QVariant in = QVariant::fromValue(sharedArray);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<float>"));
+    ASSERT_TRUE(outOpt.has_value());
+    auto out = outOpt->value<qtpyt::QPySharedArray<float>>();
+    ASSERT_EQ(out.size(), sharedArray.size());
+    for (int i = 0; i < sharedArray.size(); ++i) {
+        EXPECT_EQ(out[i], sharedArray[i]);
     }
 }
