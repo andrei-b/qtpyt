@@ -132,3 +132,23 @@ TEST(QPyModule, TestQPyFutureNotifier) {
     EXPECT_EQ(f->resultAs<int>(0), 42);
     EXPECT_TRUE(notified);
 }
+
+TEST(QPyModule, TestAsyncReturningPySharedArray) {
+    qtpyt::registerSharedArray<int>("QPySharedArray<int>", true);
+    auto m = qtpyt::QPyModule::create("def create_array(n):\n"
+                           "    arr = [i * 10 for i in range(n)]\n"
+                           "    return arr\n", qtpyt::QPySourceType::SourceString);
+    auto create_array = m->makeAsyncFunction<qtpyt::QPySharedArray<int>, int>(nullptr,"create_array");
+    auto f = create_array(5);
+    f->waitForFinished();
+    EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
+    auto arr = f.value().resultAs<qtpyt::QPySharedArray<int>>(0);
+    ASSERT_EQ(arr.size(), 5);
+    EXPECT_EQ(arr[0], 0);
+    EXPECT_EQ(arr[1], 10);
+    EXPECT_EQ(arr[2], 20);
+    EXPECT_EQ(arr[3], 30);
+    EXPECT_EQ(arr[4], 40);
+}
+
+

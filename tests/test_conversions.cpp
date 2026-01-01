@@ -396,3 +396,20 @@ TEST(Conversions, QSharedArrayUShortRoundTrip) {
         EXPECT_EQ(out[i], sharedArray[i]);
     }
 }
+
+TEST(Conversions, QVectorBoolRoundTrip) {
+    qtpyt::registerContainerType<QVector<bool>>("QVector<bool>");
+
+    QVector<bool> vec = {true, false, true, true, false};
+    QVariant in = QVariant::fromValue(vec);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector<bool>"));
+    ASSERT_TRUE(outOpt.has_value());
+
+    QVector<bool> out = outOpt->value<QVector<bool>>();
+    ASSERT_EQ(out.size(), vec.size());
+    for (int i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(out[i], vec[i]);
+    }
+}
