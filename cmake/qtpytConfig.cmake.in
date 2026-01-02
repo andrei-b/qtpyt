@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# If qtpyt's exported targets link to these, make them available to consumers
+find_dependency(Qt6 REQUIRED COMPONENTS Core)
+find_dependency(Python314t REQUIRED COMPONENTS Development Embedding)
+
+include("${CMAKE_CURRENT_LIST_DIR}/qtpytTargets.cmake")
+
+check_required_components(qtpyt)

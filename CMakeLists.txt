@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 list(PREPEND CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.10.1/gcc_64")
 
@@ -12,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=1)
-
+set(QT_NO_PRIVATE_MODULE_WARNING ON)
 # Enable testing
 enable_testing()
 

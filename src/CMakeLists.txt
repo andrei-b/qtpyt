@@ -80,3 +80,38 @@ set_target_properties(qtpyt PROPERTIES
     SOVERSION 1
     PUBLIC_HEADER "${LIBRARY_HEADERS}"
 )
+
+set(QTPYT_TARGET qtpyt)
+
+install(TARGETS ${QTPYT_TARGET}
+        EXPORT qtpytTargets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/qtpyt
+)
+
+install(EXPORT qtpytTargets
+        FILE qtpytTargets.cmake
+        NAMESPACE qtpyt::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/qtpyt
+)
+
+configure_package_config_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/qtpytConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/../qtpytConfig.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/qtpyt
+)
+
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/qtpytConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/qtpytConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/qtpytConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/qtpyt
+)
