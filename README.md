@@ -40,6 +40,52 @@ Or run the test executable directly:
 ./tests/qtpyt_tests
 ```
 
+## Generating Documentation
+
+This project uses Doxygen to generate API documentation from source code comments.
+
+### Prerequisites
+
+Install Doxygen on your system:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install doxygen
+```
+
+**macOS:**
+```bash
+brew install doxygen
+```
+
+**Windows:**
+Download and install from [https://www.doxygen.nl/download.html](https://www.doxygen.nl/download.html)
+
+### Generate Documentation
+
+From the project root directory, run:
+```bash
+doxygen Doxyfile
+```
+
+This will generate HTML documentation in the `docs/html/` directory.
+
+### View Documentation
+
+Open the generated documentation in your web browser:
+```bash
+# On Linux
+xdg-open docs/html/index.html
+
+# On macOS
+open docs/html/index.html
+
+# On Windows
+start docs/html/index.html
+```
+
+Or simply navigate to `docs/html/index.html` in your file browser and open it with any web browser.
+
 ## Project Structure
 
 - `include/qtpyt/` - Public header files
