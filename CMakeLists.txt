@@ -11,6 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Build shared library by default
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
+# Build demo application by default
+option(BUILD_DEMO "Build the demo application" ON)
+
 add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=1)
 
 # Enable testing
@@ -36,4 +39,9 @@ add_subdirectory(src)
 
 # Add the tests subdirectory
 add_subdirectory(tests)
+
+# Add the demo subdirectory if enabled
+if(BUILD_DEMO)
+    add_subdirectory(demo)
+endif()
 
