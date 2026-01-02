@@ -10,55 +10,68 @@
 #include "qpythreadpool.h"
 
 namespace qtpyt {
-class QPySlot;
-class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> {
-  public:
-    static void makeQPyAsyncModule();
-    static QSharedPointer<QPyModule> create(const QString& source, QPySourceType sourceType) {
-        return QSharedPointer<QPyModule>(new QPyModule(source, sourceType));
-    }
-    QPyModule(const QString& source, QPySourceType sourceType);
-    ~QPyModule() override;
+    class QPySlot;
 
-    template <typename... Args>
-    std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, Args... args) {
-        QVariantList varArgs = {args...};
-        return callAsync(notifier, functionName, returnType, std::move(varArgs));
-    }
-    std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString &functionName, const QPyRegisteredType &returnType, QVariantList
-                                       &&args);
-  template<typename R, typename... Args>
-    std::function<std::optional<QPyFuture>(Args...)> makeAsyncFunction(const QSharedPointer<QPyFutureNotifier>& notifier, const QString& name) {
-      auto self = sharedFromThis(); // whatever your project uses
-      const QMetaType returnType = QMetaType::fromType<R>();
+    class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> {
+    public:
+        static void makeQPyAsyncModule();
 
-      return [self, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
-          QVariantList varArgs;
-          varArgs.reserve(sizeof...(Args));
-          (varArgs.push_back(QVariant::fromValue(args)), ...);
+        static QSharedPointer<QPyModule> create(const QString &source, QPySourceType sourceType) {
+            return QSharedPointer<QPyModule>(new QPyModule(source, sourceType));
+        }
 
-          auto futOpt = self->callAsync(notifier, name, returnType, std::move(varArgs));
-          if (!futOpt) {
-              throw std::runtime_error("callAsync failed");
-          }
-          return futOpt;
-      };
-  }
+        QPyModule(const QString &source, QPySourceType sourceType);
 
-      QPySlot makeSlot(const QString& slotName, const QPyRegisteredType& returnType = QMetaType::Void, const QSharedPointer<QPyFutureNotifier>& notifier = nullptr);
-  protected:
-    auto getThreadId() const;
-    void setThreadId();
+        ~QPyModule() override;
 
-  private:
-    void addWantsToCancel();
+        template<typename... Args>
+        std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier,
+                                           const QString &functionName, const QPyRegisteredType &returnType,
+                                           Args... args) {
+            QVariantList varArgs = {args...};
+            return callAsync(notifier, functionName, returnType, std::move(varArgs));
+        }
 
-  private:
-    QString m_cancelReason;
-    bool m_cancelled{false};
-    bool m_finished{false};
-    bool m_wantsToCancel{false};
-    qulonglong m_threadId{0};
-};
+        std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier,
+                                           const QString &functionName, const QPyRegisteredType &returnType,
+                                           QVariantList
+                                           &&args);
 
-}  // namespace qtpyt
+        template<typename R, typename... Args>
+        std::function<std::optional<QPyFuture>(Args...)> makeAsyncFunction(
+            const QSharedPointer<QPyFutureNotifier> &notifier, const QString &name) {
+            auto self = sharedFromThis();
+            const QMetaType returnType = QMetaType::fromType<R>();
+
+            return [self, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
+                QVariantList varArgs;
+                varArgs.reserve(sizeof...(Args));
+                (varArgs.push_back(QVariant::fromValue(args)), ...);
+
+                auto futOpt = self->callAsync(notifier, name, returnType, std::move(varArgs));
+                if (!futOpt) {
+                    throw std::runtime_error("callAsync failed");
+                }
+                return futOpt;
+            };
+        }
+
+        QPySlot makeSlot(const QString &slotName, const QPyRegisteredType &returnType = QMetaType::Void,
+                         const QSharedPointer<QPyFutureNotifier> &notifier = nullptr);
+
+    protected:
+        auto getThreadId() const;
+
+        void setThreadId();
+
+    private:
+        void addWantsToCancel();
+
+    private:
+        QString m_cancelReason;
+        bool m_cancelled{false};
+        bool m_finished{false};
+        bool m_wantsToCancel{false};
+        qulonglong m_threadId{0};
+    };
+} // namespace qtpyt

@@ -233,6 +233,25 @@ namespace qtpyt {
         }
     }
 
+    void QPyModuleBase::addFunction(const QString &name, QVariantFn &&function) const {
+        py::gil_scoped_acquire gil;
+        if (m_module && !m_module.is_none()) {
+            m_module.attr(name.toStdString().c_str()) = py::cpp_function(
+                [function = std::move(function)](const py::args &args) -> py::object {
+                    QVariantList argList;
+                    for (auto item: args) {
+                        auto var = qtpyt::pyObjectToQVariant(item);
+                        if (!var.has_value()) {
+                            throw std::runtime_error("QPyModuleBase::addFunction: Failed to convert argument to QVariant");
+                        }
+                        argList.push_back(var.value());
+                    }
+                    QVariant result = function(argList);
+                    return qtpyt::qvariantToPyObject(result);
+                });
+        }
+    }
+
     QVariant QPyModuleBase::readVariable(const QString &name, const QPyRegisteredType &type) const {
         py::gil_scoped_acquire gil;
         if (m_module && !m_module.is_none()) {

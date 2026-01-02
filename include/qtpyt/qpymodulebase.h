@@ -56,6 +56,8 @@ namespace qtpyt {
 
     using QPyRegisteredType = std::variant<QMetaType::Type, QString, QMetaType>;
 
+    using QVariantFn = std::function<QVariant(const QVariantList&)>;
+
     class QPyModuleBase {
     public:
         QPyModuleBase(const QString &source, QPySourceType sourceType);
@@ -149,6 +151,46 @@ namespace qtpyt {
         QString functionName() const;
 
         void addVariable(const QString &name, const QVariant &value);
+
+        void addFunction(const QString& name, QVariantFn&& function) const;
+
+        template<typename R, typename... Args>
+void addFunction(const QString& name, std::function<R(Args...)>&& function) const {
+            auto invokeFromList = [function = std::move(function)](const QVariantList& argList) -> QVariant {
+                if (argList.size() != int(sizeof...(Args))) {
+                    throw std::runtime_error("QPyModuleBase::addFunction: wrong argument count");
+                }
+
+                auto invokeImpl = [&]<std::size_t... I>(std::index_sequence<I...>) -> QVariant {
+                    if constexpr (std::is_same_v<R, void>) {
+                        function(argList[int(I)].template value<std::decay_t<Args>>()...);
+                        return {};
+                    } else {
+                        R r = function(argList[int(I)].template value<std::decay_t<Args>>()...);
+                        return QVariant::fromValue(r);
+                    }
+                };
+
+                return invokeImpl(std::index_sequence_for<Args...>{});
+            };
+
+            m_module.attr(name.toStdString().c_str()) = py::cpp_function(
+                [invokeFromList = std::move(invokeFromList)](const py::args &args) -> py::object {
+                    QVariantList argList;
+                    argList.reserve(int(args.size()));
+                    for (auto item : args) {
+                        auto var = qtpyt::pyObjectToQVariant(item);
+                        if (!var.has_value()) {
+                            throw std::runtime_error("QPyModuleBase::addFunction: Failed to convert argument to QVariant");
+                        }
+                        argList.push_back(var.value());
+                    }
+
+                    QVariant result = invokeFromList(argList);
+                    return qtpyt::qvariantToPyObject(result);
+                }
+            );
+        }
 
         QVariant readVariable(const QString &name, const QPyRegisteredType &type) const;
 
