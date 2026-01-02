@@ -53,6 +53,9 @@ set(LIBRARY_HEADERS
         pymodule.h
         internal/normalize.cpp
         internal/normalize.h
+        ../demos/alarmclock/main.cpp
+        ../demos/alarmclock/alarmmodel.cpp
+        ../demos/alarmclock/alarmmodel.h
 )
 
 # Create the shared library

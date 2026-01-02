@@ -33,10 +33,7 @@ find_package(Qt6 CONFIG REQUIRED COMPONENTS Core Widgets Gui Test)
 
 find_package(Qt6 OPTIONAL_COMPONENTS CorePrivate)
 
-
-# Add the library subdirectory
 add_subdirectory(src)
-
-# Add the tests subdirectory
 add_subdirectory(tests)
-
+add_subdirectory(examples)
+add_subdirectory(demos)
