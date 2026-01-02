@@ -264,6 +264,10 @@ namespace qtpyt {
             return specializedQVariantToPyObjectConverters.at(tid)(var);
         }
         switch (tid) {
+            case QMetaType::QVariant: {
+                return qvariantToPyObject(var.value<QVariant>());
+                break;
+            }
             case QMetaType::QVariantList: {
                 const auto list = var.toList();
                 py::tuple tuple(std::distance(list.begin(), list.end()));

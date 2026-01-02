@@ -25,6 +25,8 @@ add_executable(qtpyt_tests
         ../src/internal/normalize.cpp
         ../src/internal/normalize.h
         test_asyncslots.cpp
+        TestObject_2.cpp
+        TestObject_2.h
 )
 
 set_target_properties(qtpyt_tests PROPERTIES AUTOMOC ON)
