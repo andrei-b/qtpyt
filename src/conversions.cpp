@@ -461,9 +461,11 @@ namespace qtpyt {
         if (py::isinstance<py::dict>(obj)) {
             QVariantMap map;
             auto dict = py::reinterpret_borrow<py::dict>(obj);
+            auto keyName = makeNormalName("QString");
+            auto valueName = makeNormalName("QVariant");
             for (auto item : dict) {
-                const auto key = item.first.cast<QString>();
-                const auto value = pyObjectToQVariant(item.second);
+                const auto key = pyObjectToQVariant(item.first, keyName).value().toString();
+                const auto value = pyObjectToQVariant(item.second, valueName);
                 if (!value.has_value()) {
                     throw std::runtime_error("dictToQVariantMap: Failed to convert value to QVariant in QVariantMap conversion");
                 }

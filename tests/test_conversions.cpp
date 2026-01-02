@@ -413,3 +413,18 @@ TEST(Conversions, QVectorBoolRoundTrip) {
         EXPECT_EQ(out[i], vec[i]);
     }
 }
+
+TEST(Conversions, QPairRoundTrip) {
+    qtpyt::registerQPairType<QString, int>("QPair<QString, int>");
+
+    QPair<QString, int> pair(QStringLiteral("example"), 12345);
+    QVariant in = QVariant::fromValue(pair);
+    py::object obj = qtpyt::qvariantToPyObject(in);
+
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPair<QString, int>"));
+    ASSERT_TRUE(outOpt.has_value());
+
+    QPair<QString, int> out = outOpt->value<QPair<QString, int>>();
+    EXPECT_EQ(out.first, pair.first);
+    EXPECT_EQ(out.second, pair.second);
+}

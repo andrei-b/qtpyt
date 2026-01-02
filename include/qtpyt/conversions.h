@@ -244,4 +244,55 @@ namespace qtpyt {
 
     void addFromPyObjectToQVariantFunc(const QString &name, QVariantFromPyObjectFunc &&func);
 
+    template <typename First, typename Second>
+    int registerQPairType(const QString &name) {
+        using PairType = QPair<First, Second>;
+        auto newId = qRegisterMetaType<PairType>(name.toStdString().c_str());
+        ValueFromSequenceFunc f = [](py::sequence &s) -> QVariant {
+            if (py::len(s) != 2) {
+                throw py::type_error("QPair converter expects a sequence of length 2");
+            }
+            const auto firstOpt = pyObjectToQVariant(s[0], qtTypeNameOf<First>());
+            const auto secondOpt = pyObjectToQVariant(s[1], qtTypeNameOf<Second>());
+            if (!firstOpt.has_value() || !secondOpt.has_value()) {
+                throw std::runtime_error("Failed to convert py::sequence to QPair");
+            }
+            PairType p;
+            p.first = firstOpt.value().template value<First>();
+            p.second = secondOpt.value().template value<Second>();
+            return QVariant::fromValue(p);
+        };
+        addFromSequenceFunc(name.toStdString().c_str(), std::move(f));
+        ValueFromDictFunc g = [](py::dict &d) -> QVariant {
+            PairType p;
+            QByteArray firstType = qtTypeNameOf<First>();
+            QByteArray secondType = qtTypeNameOf<Second>();
+            if (d.contains("first")) {
+                const auto firstOpt = pyObjectToQVariant(d["first"], firstType);
+                if (!firstOpt.has_value()) {
+                    throw std::runtime_error("Failed to convert 'first' key to QPair");
+                }
+                p.first = firstOpt.value().template value<First>();
+            }
+            if (d.contains("second")) {
+                const auto secondOpt = pyObjectToQVariant(d["second"], secondType);
+                if (!secondOpt.has_value()) {
+                    throw std::runtime_error("Failed to convert 'second' key to QPair");
+                }
+                p.second = secondOpt.value().template value<Second>();
+            }
+            return QVariant::fromValue(p);
+        };
+        addFromDictFunc(name.toStdString().c_str(), std::move(g));
+        PyObjectFromQVariantFunc h = [](const QVariant &v) {
+            const auto &pair = v.template value<PairType>();
+            py::tuple d(2);
+            d[0] = qvariantToPyObject(QVariant::fromValue(pair.first));
+            d[1] = qvariantToPyObject(QVariant::fromValue(pair.second));
+            return d;
+        };
+        addFromQVariantFunc(newId, std::move(h));
+        return newId;
+    }
+
 } // namespace qtpyt

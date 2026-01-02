@@ -151,4 +151,42 @@ TEST(QPyModule, TestAsyncReturningPySharedArray) {
     EXPECT_EQ(arr[4], 40);
 }
 
+TEST(QPyModule, TestAddFunction) {
+    auto m = qtpyt::QPyModule::create(
+                "def call_test_func():\n"
+                         "    test_func()\n",
+                          qtpyt::QPySourceType::SourceString);
+    bool called = false;
+    std::function<void()> test_func = [&called]() {
+        called = true;
+    };
+    m->addFunction<void>("test_func", std::move(test_func));
+    m->call<void>("call_test_func");
+    EXPECT_TRUE(called);
+}
 
+TEST(QPyModule, TestAddFunctionWithReturn) {
+    auto m = qtpyt::QPyModule::create(
+                "def call_test_func():\n"
+                         "    return test_func()\n",
+                          qtpyt::QPySourceType::SourceString);
+    std::function<int()> test_func = []() {
+        return 1234;
+    };
+    m->addFunction<int>("test_func", std::move(test_func));
+    int res = m->call<int>("call_test_func");
+    EXPECT_EQ(res, 1234);
+}
+
+TEST (QPyModule, TestAddFunctionWithArgs) {
+    auto m = qtpyt::QPyModule::create(
+                "def call_test_func(x, y):\n"
+                         "    return test_func(x, y)\n",
+                          qtpyt::QPySourceType::SourceString);
+    std::function<double(double, double)> test_func = [](double a, double b) {
+        return a * b;
+    };
+    m->addFunction<double, double, double>("test_func", std::move(test_func));
+    double res = m->call<double>("call_test_func", 3.0, 4.0);
+    EXPECT_EQ(res, 12.0);
+}
