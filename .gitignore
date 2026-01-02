@@ -49,3 +49,10 @@ cmake-build-*/
 .idea/
 *.swp
 *~
+
+# Doxygen generated documentation
+/docs/html/
+/docs/latex/
+/docs/xml/
+/docs/man/
+/docs/rtf/
