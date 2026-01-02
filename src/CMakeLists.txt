@@ -34,6 +34,7 @@ set(LIBRARY_SOURCES
         internal/q_py_future_impl.h
         internal/pycall.cpp
         qpyscript.cpp
+        PyRunner.cpp
 )
 
 # Define library headers
@@ -49,6 +50,7 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpyannotation.h
     ../include/qtpyt/pycall.h
     ../include/qtpyt/qpyscript.h
+    ../include/qtpyt/PyRunner.h
         pymodule.cpp
         pymodule.h
         internal/normalize.cpp
