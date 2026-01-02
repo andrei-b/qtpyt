@@ -47,8 +47,8 @@ TEST(QPyModuleBase, MakeQVarinatListAsParamters) {
                                "    return x + y\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {QString("Hello, "), QString("world!")};
     const auto res = m.call("test_func", QMetaType::QString, args);
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ(res, "Hello, world!");
+    ASSERT_TRUE(res.first.has_value());
+    EXPECT_EQ(res.first, "Hello, world!");
 }
 
 TEST(QPyModuleBase, TestQPointReturnValue) {
@@ -56,8 +56,8 @@ TEST(QPyModuleBase, TestQPointReturnValue) {
                                "    return (x, y)\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {10, 20};
     const auto res = m.call("test_func", QMetaType::QPoint, args);
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ(res, QPoint(10,20));
+    ASSERT_TRUE(res.first.has_value());
+    EXPECT_EQ(res.first, QPoint(10,20));
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayShared) {
@@ -104,7 +104,7 @@ TEST(QPyModuleBase, TestQPySharedArrayReturned3) {
     qtpyt::registerSharedArray<int>("QPySharedArray<int>", true);
     qtpyt::QPyModuleBase m(QString::fromStdString(testdata_path("module7.py").string()), qtpyt::QPySourceType::File);
     auto a = m.call("make_memoryview", "QPySharedArray<int>", {});
-    auto b = a.value().value<qtpyt::QPySharedArray<int>>();
+    auto b = a.first.value().value<qtpyt::QPySharedArray<int>>();
     EXPECT_EQ(b[0], 10);
     EXPECT_EQ(b[1], 20);
     EXPECT_EQ(b[2], 30);
@@ -115,7 +115,7 @@ TEST(QPyModuleBase, TestQPySharedArrayReturned4) {
     qtpyt::registerSharedArray<double>("QPySharedArray<Double>", true);
     qtpyt::QPyModuleBase m(QString::fromStdString(testdata_path("module7.py").string()), qtpyt::QPySourceType::File);
     auto a = m.call("make_memoryview_2", "QPySharedArray<double>", {});
-    auto b = a.value().value<qtpyt::QPySharedArray<double>>();
+    auto b = a.first.value().value<qtpyt::QPySharedArray<double>>();
     EXPECT_EQ(b[0], 1.0);
     EXPECT_EQ(b[1], 2.0);
     EXPECT_EQ(b[2], 3.0);

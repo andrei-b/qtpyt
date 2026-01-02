@@ -19,19 +19,14 @@
 /// represent failure without throwing.
 
 #pragma once
-#define PYBIND11_NO_KEYWORDS
-#include <pybind11/pybind11.h>
-
 #include <qtpyt/qpyannotation.h>
-#include <qtpyt/pycall.h>
 #include <QRunnable>
 #include <QVariant>
-#include <Python.h>
-
-namespace py = pybind11;
 
 namespace qtpyt {
 
+    struct MBInternal;
+    struct PyObjectWrapper;
     /// \brief Describes how a `QPyModuleBase` should interpret its source string.
     enum class QPySourceType {
         /// \brief Treat the source as a Python module name to import.
@@ -89,10 +84,6 @@ namespace qtpyt {
         bool has_varargs = false;
         /// \brief True if the callable accepts `\*\*kwargs`.
         bool has_varkw = false;
-
-        /// \brief Map of parameter name \-\> raw Python annotation handle.
-        /// \note Handles reference Python objects and require correct GIL/lifetime handling.
-        std::unordered_map<std::string, py::handle> annotations; // param -> annotation (py::handle)
 
         /// \brief Argument list in declaration order as best as can be determined.
         std::vector<QPythonArgument> arguments;
@@ -160,15 +151,15 @@ namespace qtpyt {
         /// \param kwargs Keyword arguments (name \-\> value).
         /// \return Converted return value on success; `std::nullopt` on conversion failure.
         /// \throws std::runtime_error if the function cannot be found or invoked.
-        [[nodiscard]] std::optional<QVariant> call(const QString &function,
-                                                   const QPyRegisteredType &returnType,
-                                                   const QVariantList &args,
-                                                   const QVariantMap &kwargs = {});
+        [[nodiscard]] std::pair<std::optional<QVariant>, QString> call(const QString &function,
+                                                                       const QPyRegisteredType &returnType,
+                                                                       const QVariantList &args,
+                                                                       const QVariantMap &kwargs = {});
 
         /// \brief Returns a Python callable object for the given function name.
         /// \param function Name of the attribute in the module.
         /// \return A Python object if it exists; `std::nullopt` if not found/invalid.
-        std::optional<py::object> makeCallable(const QString &function);
+        MBInternal *makeCallable(const QString &function);
 
         /// \brief Selects which function name is considered the "current" callable.
         /// \details Affects `pythonCallable()`, `call(tuple, dict)`, and `makeFunction()`.
@@ -185,23 +176,17 @@ namespace qtpyt {
         /// \throws std::runtime_error on invocation failure or return conversion failure.
         template<typename R, typename... Args>
         R call(const QString &function, Args &&... args) {
-            pybind11::tuple varArgs =
-                    pycall_internal__::build_args_tuple(std::forward<Args>(args)...)
-                    .template cast<pybind11::tuple>();
-
+            QVariantList varArgs = {std::forward<Args>(args)...};
             setCallableFunction(function);
-            pybind11::dict kwargs; // empty
-            pybind11::object resultObj = call(varArgs, kwargs);
-
+            auto result = call(function, QMetaType::fromType<R>(), varArgs);
             if constexpr (std::is_same_v<R, void>) {
-                (void) resultObj;
+                (void) result;
                 return;
             } else {
-                auto var = pyObjectToQVariant(resultObj, QMetaType::fromType<R>().name());
-                if (!var.has_value()) {
-                    throw std::runtime_error("QPyModuleBase::call: Failed to convert return value to QVariant");
+                if (!result.first.has_value()) {
+                    throw std::runtime_error("QPyModuleBase::call: " + result.second.toStdString());
                 }
-                return var.value().template value<R>();
+                return result.first.value().template value<R>();
             }
         }
 
@@ -215,12 +200,6 @@ namespace qtpyt {
             return call<R>(std::forward<Args>(args)...);
         }
 
-        /// \brief Calls the currently selected Python callable with Python args/kwargs.
-        /// \param args Python positional arguments tuple.
-        /// \param kwargs Python keyword arguments dict.
-        /// \return Python object returned by the callable.
-        /// \throws std::runtime_error if no callable is selected or invocation fails.
-        [[nodiscard]] pybind11::object call(const pybind11::tuple &args, const pybind11::dict &kwargs) const;
 
         /// \brief Helper metafunction to extract return type from a function signature.
         template<typename Signature>
@@ -244,37 +223,23 @@ namespace qtpyt {
         /// \throws std::runtime_error if the Python attribute is missing or not callable.
         template<typename Signature>
         std::function<Signature> makeFunction(const QString &name) {
-            auto resultCallable = callable;
-            if (name.isEmpty() || name == m_callableFunction) {
-                if (!callable) throw std::runtime_error("callable is null");
-            } else {
-                resultCallable = m_module.attr(name.toStdString().c_str());
-                if (!resultCallable || !PyCallable_Check(resultCallable.ptr())) {
-                    throw std::runtime_error("callable is null");
-                }
-            }
             using R = typename _pycall_return<Signature>::type;
-            m_isValid = false;
-            return [callable=std::move(resultCallable)]<typename... T0>(T0 &&... args) -> R {
+            return [module = this, name]<typename... T0>(T0 &&... args) -> R {
+                QVariantList varArgs = {QVariant::fromValue(std::forward<T0>(args))...};
+                    module->setCallableFunction(name);
+                auto result = module->call(name, QMetaType::fromType<R>(), varArgs);
                 if constexpr (std::is_same_v<R, void>) {
-                    pycall_internal__::call_python<R>(callable, std::forward<T0>(args)...);
+                    (void) result;
                     return;
                 } else {
-                    return pycall_internal__::call_python<R>(callable, std::forward<T0>(args)...);
+                    if (!result.first.has_value()) {
+                        throw std::runtime_error("QPyModuleBase::makeFunction: " + result.second.toStdString());
+                    }
+                    return result.first.value().template value<R>();
                 }
             };
         }
 
-        /// \brief Returns a reference to the currently selected Python callable.
-        /// \return Reference to an internal `pybind11::object`.
-        /// \throws std::runtime_error if no callable has been selected.
-        const pybind11::object &pythonCallable() const;
-
-        /// \brief Moves out the currently selected callable.
-        /// \param functionName Function name to select/validate before taking.
-        /// \return The callable object by rvalue reference.
-        /// \note After this call, the internal callable may be cleared/invalid.
-        pybind11::object &&takePythonCallable(const QString &functionName);
 
         /// \brief Inspects the currently selected callable for argument/return metadata.
         /// \return A `PyCallableInfo` describing parameters and return type.
@@ -297,6 +262,9 @@ namespace qtpyt {
         /// \throws std::runtime_error on conversion failures at call time.
         void addFunction(const QString& name, QVariantFn&& function) const;
 
+
+        void addFunctionInternal(const QString &name,const std::function<QVariant(const QVariantList)>& invokeFromList) const;
+
         /// \brief Registers a typed C\+\+ function as a Python function in the module.
         /// \tparam R Return type.
         /// \tparam Args Argument types.
@@ -308,7 +276,7 @@ namespace qtpyt {
         /// \throws std::runtime_error if called with the wrong argument count or conversion fails.
         template<typename R, typename... Args>
         void addFunction(const QString& name, std::function<R(Args...)>&& function) const {
-            auto invokeFromList = [function = std::move(function)](const QVariantList& argList) -> QVariant {
+            std::function<QVariant(const QVariantList)> invokeFromList = [function = std::move(function)](const QVariantList& argList) -> QVariant {
                 if (argList.size() != int(sizeof...(Args))) {
                     throw std::runtime_error("QPyModuleBase::addFunction: wrong argument count");
                 }
@@ -325,23 +293,7 @@ namespace qtpyt {
 
                 return invokeImpl(std::index_sequence_for<Args...>{});
             };
-
-            m_module.attr(name.toStdString().c_str()) = py::cpp_function(
-                [invokeFromList = std::move(invokeFromList)](const py::args &args) -> py::object {
-                    QVariantList argList;
-                    argList.reserve(int(args.size()));
-                    for (auto item : args) {
-                        auto var = qtpyt::pyObjectToQVariant(item);
-                        if (!var.has_value()) {
-                            throw std::runtime_error("QPyModuleBase::addFunction: Failed to convert argument to QVariant");
-                        }
-                        argList.push_back(var.value());
-                    }
-
-                    QVariant result = invokeFromList(argList);
-                    return qtpyt::qvariantToPyObject(result);
-                }
-            );
+            addFunctionInternal(name, invokeFromList);
         }
 
         /// \brief Reads a variable from the Python module namespace and converts it.
@@ -378,7 +330,7 @@ namespace qtpyt {
     protected:
         /// \brief Returns a mutable reference to the underlying Python module object.
         /// \return Reference to the module `py::object`.
-        py::object &getPyModule();
+        MBInternal* getPyModule();
 
     private:
         /// \brief Builds/initializes the module from literal Python source code.
@@ -393,15 +345,9 @@ namespace qtpyt {
 
         /// \brief Name of the currently selected callable within the module.
         QString m_callableFunction;
-
-        /// \brief Stored reference to the currently selected callable object.
-        pybind11::object callable;
-
-        /// \brief Stored reference to the Python module object.
-        pybind11::object m_module;
-
-        /// \brief Cached validity state.
+ /// \brief Cached validity state.
         bool m_isValid{false};
+        std::unique_ptr<MBInternal> m_internal;
     };
 
 } // namespace qtpyt

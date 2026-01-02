@@ -8,7 +8,6 @@
 #include <utility>
 #include <private/qmetaobject_p.h>
 #include <private/qobject_p.h>
-#include <pybind11/common.h>
 
 namespace qtpyt {
     void impl(int which, QtPrivate::QSlotObjectBase* this_, QObject* r, void** a, bool* ret);

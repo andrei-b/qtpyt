@@ -1,22 +1,10 @@
 #include "q_py_future_impl.h"
-#include "../q_embed_meta_object_py.h"
 #include <qtpyt/conversions.h>
 
 #include <utility>
 
 QPyFutureImpl::~QPyFutureImpl() {
-    if (!Py_IsInitialized()) {
-        m_arguments.release();
-        return;
-    }
 
-    if (PyGILState_GetThisThreadState() == nullptr) {
-        m_arguments.release();
-        return;
-    }
-
-    pybind11::gil_scoped_acquire gil;
-    m_arguments.dec_ref();
 }
 
 QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
@@ -24,13 +12,7 @@ QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPoi
     if (m_module == nullptr) {
         throw std::runtime_error("QPyFutureImpl: null module module");
     }
-    pybind11::gil_scoped_acquire gil;
-    py::tuple argsTuple(arguments.size());
-    for (int i = 0; i < arguments.size(); ++i) {
-        py::object argObj =  qtpyt::qvariantToPyObject(arguments[i]);
-        argsTuple[i] = argObj;
-    }
-    m_arguments = std::move(argsTuple);
+     m_arguments = arguments;
 }
 
 QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
@@ -39,12 +21,16 @@ QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPoi
     if (m_module == nullptr) {
         throw std::runtime_error("QPyFutureImpl: null module module");
     }
-    py::tuple argsTuple(types.size());
+
     for (int i = 0; i < types.size(); ++i) {
-        const int typeId = types[i];
-        argsTuple[i] =  qtpyt::qmetatypeToPyObject(typeId, a[i + 1]);
+        const int typeId = types.at(i);
+        if (typeId == QMetaType::Void) {
+            m_arguments.append(QVariant());
+            continue;
+        }
+        QVariant argVar = QVariant(QMetaType(typeId), a[i+1]);
+        m_arguments.append(argVar);
     }
-    m_arguments = std::move(argsTuple);
 }
 
 
@@ -58,7 +44,10 @@ void QPyFutureImpl::run() {
             }
             // specify the return type explicitly and pass an explicit empty kwargs dict
             if (m_returnType == "void" || m_returnType == "NoneType") {
-               pycall_internal__::call_python_no_kw(m_module->makeCallable(m_functionName).value(), m_arguments);
+               auto res = m_module->call(m_functionName, QMetaType::Void, m_arguments);
+               if (!res.second.isEmpty()) {
+                     throw std::runtime_error("QPyFutureImpl::run: " + res.second.toStdString());
+               }
                m_state =  qtpyt::QPyFutureState::Finished;
                if (m_notifier != nullptr) {
                    m_notifier->notifyFinished();
@@ -66,16 +55,15 @@ void QPyFutureImpl::run() {
                return;
             }
 
-            const py::object result =
-               pycall_internal__::call_python_no_kw(m_module->makeCallable(m_functionName).value(), m_arguments);
-            const auto var = qtpyt::pyObjectToQVariant(result, m_returnType);
-            if (!var.has_value()) {
-                throw std::runtime_error("QPyFutureImpl::run: conversion to QVariant failed for return type " + std::string(m_returnType));
+
+            auto result = m_module->call(m_functionName, QMetaType::fromName(m_returnType), m_arguments);
+            if (!result.first.has_value()) {
+                throw std::runtime_error("QPyFutureImpl::run: " + result.second.toStdString());
             }
-            pushResult(var.value());
+            pushResult(result.first.value());
             m_state =  qtpyt::QPyFutureState::Finished;
             if (m_notifier != nullptr) {
-                m_notifier->notifyFinished(var.value());
+                m_notifier->notifyFinished(result.first.value());
             }
         }
 

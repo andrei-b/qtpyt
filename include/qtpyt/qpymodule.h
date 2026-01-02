@@ -14,15 +14,13 @@
 /// \note `PYBIND11_NO_KEYWORDS` is defined to avoid keyword argument collisions in pybind11.
 
 #pragma once
-#define PYBIND11_NO_KEYWORDS
-
 #include "qpymodulebase.h"
 #include "qpyfuture.h"
 #include "q_py_thread.h"
 
 #include <QObject>
 #include <QRunnable>
-#include <pybind11/pybind11.h>
+
 
 #include "qpythreadpool.h"
 

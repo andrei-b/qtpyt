@@ -1,7 +1,6 @@
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 #define PYBIND11_NO_KEYWORDS
-#include <pybind11/embed.h>
-#include <pybind11/detail/common.h>
+#include <pybind11/pybind11.h>
 #include "q_embed_meta_object_py.h"
 #include <qtpyt/conversions.h>
 #include "q_embed_meta_object.h"

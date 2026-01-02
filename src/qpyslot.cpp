@@ -33,6 +33,32 @@ namespace qtpyt {
                 return argsTuple;
             }
 
+            QVariant qmetatypeToQVariant(int param_type_id, void * p) const {
+                const QMetaType metaType = QMetaType(param_type_id);
+                if (!metaType.isValid()) {
+                    qWarning() << "QPySlotInternal: Invalid parameter type id" << param_type_id;
+                    return QVariant();
+                }
+                return QVariant(metaType, p);
+            }
+
+            QVariantList makeArgsTupleVariant(void **a) const {
+                const int n = m_method.parameterCount();
+                QVariantList argsList;
+                argsList.reserve(n);
+                for (int i = 0; i < n; ++i) {
+                    const int paramTypeId = m_method.parameterType(i);
+                    if (paramTypeId == QMetaType::Void) {
+                        argsList.append(QVariant());
+                        continue;
+                    }
+                    QVariant argVar = qmetatypeToQVariant(paramTypeId, a[i+1]);
+                    argsList.append(argVar);
+                }
+                return argsList;
+            }
+
+
             auto module()  {
                 if (!m_callable) {
                     qWarning() << "QPySlot: module is null for function" << m_functionName;
@@ -110,8 +136,8 @@ namespace qtpyt {
         }
         try {
             auto* slot = static_cast<QPySlotInternal<QPyModuleBase, void>*>(this_);
-            const auto argsTuple = slot->makeArgsTuple(a);
-            slot->module()->call(argsTuple, {});
+            const auto argsTuple = slot->makeArgsTupleVariant(a);
+            slot->module()->call(slot->functionName(), slot->returnType(), argsTuple, {});
         } catch (const pybind11::error_already_set& e) {
             qWarning() << "Error in slot module:" << e.what();
         }

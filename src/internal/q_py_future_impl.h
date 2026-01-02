@@ -15,7 +15,6 @@ class QPyFutureImpl {
     void run();
 
     int resultCount() const;
-
     QVariant resultAsVariant(int index) const;
 
      qtpyt::QPyFutureState state() const {
@@ -33,7 +32,7 @@ class QPyFutureImpl {
     mutable std::mutex m_mutex;
     QSharedPointer<qtpyt::QPyModule> m_module;
     QString m_functionName;
-    pybind11::tuple m_arguments;
+    QVariantList m_arguments;
     QVariantList m_result;
      qtpyt::QPyFutureState m_state{ qtpyt::QPyFutureState::NotStarted};
     QSharedPointer<qtpyt::QPyFutureNotifier> m_notifier{nullptr};

@@ -1,12 +1,11 @@
+#include <pybind11/pybind11.h>
 #include <qtpyt/qpythreadpool.h>
-#include "internal/q_py_sub_interpreter.h"
 #include "internal/q_py_queue.h"
 
 namespace qtpyt {
     static int _threadCount = 0;
     static bool _useSubInterpreters = false;
     static bool _initialized = false;
-    static PyThreadState* _mainThreadState = nullptr;
 
     QPyThreadPool::QPyThreadPool(size_t threadCount, bool useSubInterpreters) : stop_(false) {
         if (threadCount == 0)
@@ -42,8 +41,7 @@ namespace qtpyt {
         std::lock_guard<std::mutex> lock(m);
         if (!_initialized) {
             if (_useSubInterpreters) {
-                Py_Initialize();
-                saveMainThreadState();
+
             }
             Py_Initialize();
 
@@ -53,13 +51,6 @@ namespace qtpyt {
         return *singleton;
     }
 
-    void QPyThreadPool::saveMainThreadState() {
-        _mainThreadState = PyEval_SaveThread();
-    }
-
-    void QPyThreadPool::restoreMainThreadState() {
-        PyEval_RestoreThread(_mainThreadState);
-    }
 
     QPyThreadPool::~QPyThreadPool() {
         shutdown();
@@ -92,11 +83,7 @@ namespace qtpyt {
         workers_.clear();
 
         if (_useSubInterpreters) {
-            restoreMainThreadState();
-            PyGILState_STATE gstate = PyGILState_Ensure();
-            Py_Finalize();
-            PyGILState_Release(gstate);
-            restoreMainThreadState();
+
         }
     }
 } // namespace qtpyt

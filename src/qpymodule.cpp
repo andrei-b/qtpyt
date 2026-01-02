@@ -1,3 +1,4 @@
+#include <pybind11/pybind11.h>
 #include <qtpyt/qpymodule.h>
 
 #include <qtpyt/qpythreadpool.h>
@@ -92,12 +93,7 @@ namespace qtpyt {
     }
 
     void QPyModule::addWantsToCancel() {
-        py::gil_scoped_acquire gil;
-        getPyModule().attr("wantsToCancel") = py::cpp_function([this]() -> bool { return m_wantsToCancel; });
-        getPyModule().attr("setCancelReason") = py::cpp_function([this](const std::string& reason) {
-            m_cancelReason = QString::fromStdString(reason);
-            m_cancelled = true;
-        });
+
     }
 
     void QPyModule::setThreadId() {

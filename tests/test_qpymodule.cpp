@@ -81,7 +81,8 @@ TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
     auto f = m->callAsync<>(nullptr, "test_func", "double");
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
-    EXPECT_EQ(f->errorMessage(), "Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
+    qWarning() << f->errorMessage();
+    EXPECT_EQ(f->errorMessage(), "QPyFutureImpl::run: Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
 }
 
 TEST(QPyModule, TestMakeAsyncFunction) {

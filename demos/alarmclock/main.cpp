@@ -1,26 +1,11 @@
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
+#include <QApplication>
+#include "mainwindow.h"
 
-#include "alarmmodel.h"
-
-int main(int argc, char *argv[])
+int main(int argc, char** argv)
 {
-    QGuiApplication app(argc, argv);
-    QGuiApplication::setApplicationName("QtAlarmClock");
-    QGuiApplication::setOrganizationName("ExampleOrg");
-
-    AlarmModel alarmModel;
-    alarmModel.load();
-
-    QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("alarmModel", &alarmModel);
-
-    // Load the QML module by URI + root component name
-    engine.loadFromModule("AlarmApp", "Main");
-
-    if (engine.rootObjects().isEmpty())
-        return -1;
-
+    QApplication app(argc, argv);
+    MainWindow w;
+    w.resize(1100, 500);
+    w.show();
     return app.exec();
 }

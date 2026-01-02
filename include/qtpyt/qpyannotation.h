@@ -1,6 +1,4 @@
 #pragma once
-#define PYBIND11_NO_KEYWORDS
-#include <pybind11/pybind11.h>
 #include <QString>
 
 struct QPyAnnotation {

@@ -1,12 +1,6 @@
 #pragma once
-#define PYBIND11_NO_KEYWORDS
-
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <string>
-#include <vector>
-#include <QString>
-
+#include <qtpyt/qpyannotation.h>
 
 
 
