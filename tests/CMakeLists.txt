@@ -57,7 +57,7 @@ target_sources(qtpyt_tests PRIVATE
         ../src/qpyscript.cpp
         ../src/pymodule.cpp
         ../src/pymodule.h
-        ../include/qtpyt/conversions.h
+        ../src/conversions.h
 
 )
 

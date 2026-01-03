@@ -3,7 +3,7 @@
 
 #include "../include/qtpyt/qpyslot.h"
 
-#include <qtpyt/conversions.h>
+#include "conversions.h"
 #include <qtpyt/qpythreadpool.h>
 #include <QMetaMethod>
 #include <utility>

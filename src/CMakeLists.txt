@@ -44,8 +44,8 @@ set(LIBRARY_HEADERS
         ../include/qtpyt/qpysharedarray.h
         ../include/qtpyt/qpythreadpool.h
     ../include/qtpyt/qpyfuture.h
-    ../include/qtpyt/conversions.h
-    ../include/qtpyt/pep3118format.h
+        conversions.h
+        pep3118format.h
     ../include/qtpyt/qpyannotation.h
         internal/pycall.h
     ../include/qtpyt/qpyscript.h

@@ -1,7 +1,7 @@
 #include "qpymoduleimpl.h"
 #include "../q_embed_meta_object_py.h"
 #include "annotations.h"
-#include <qtpyt/conversions.h>
+#include "../conversions.h"
 
 #include "q_py_execute_event.h"
 #include "pycall.h"

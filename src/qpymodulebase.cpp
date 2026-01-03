@@ -3,7 +3,6 @@
 #include "internal/qpymoduleimpl.h"
 #include "q_embed_meta_object_py.h"
 #include "internal/annotations.h"
-#include <qtpyt/conversions.h>
 
 #include "internal/q_py_execute_event.h"
 #include "internal/pycall.h"

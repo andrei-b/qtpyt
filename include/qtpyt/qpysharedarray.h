@@ -1,8 +1,8 @@
 #pragma once
 
 #include <pybind11/pybind11.h>
-#include  <qtpyt/pep3118format.h>
-#include <qtpyt/conversions.h>
+#include "../../src/pep3118format.h"
+#include "../../src/conversions.h"
 #include <QtCore/QSharedPointer>
 #include <QtCore/QByteArray>
 #include <QtCore/QtGlobal>

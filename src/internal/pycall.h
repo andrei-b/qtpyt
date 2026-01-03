@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qtpyt/conversions.h>
+#include "../conversions.h"
 #ifdef slots
   #pragma push_macro("slots")
   #undef slots

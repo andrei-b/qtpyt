@@ -12,7 +12,7 @@
 #include <QUuid>
 #include <QVector3D>
 
-#include "qtpyt/conversions.h"
+#include "../src/conversions.h"
 #include  <qtpyt/qpysharedarray.h>
 
 namespace py = pybind11;

@@ -1,7 +1,7 @@
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 #include <pybind11/pybind11.h>
 #include "q_embed_meta_object_py.h"
-#include <qtpyt/conversions.h>
+#include "conversions.h"
 #include "q_embed_meta_object.h"
 #include <QColor>
 #include <QJsonArray>

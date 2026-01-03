@@ -1,5 +1,5 @@
 #include "q_py_future_impl.h"
-#include <qtpyt/conversions.h>
+#include "../conversions.h"
 
 #include <utility>
 
