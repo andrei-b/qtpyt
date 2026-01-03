@@ -20,14 +20,33 @@ set(QT_NO_PRIVATE_MODULE_WARNING ON)
 enable_testing()
 
 include(FetchContent)
-FetchContent_Declare(pybind11 GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG v2.13.5)            # choose a tag
-
-
-FetchContent_MakeAvailable(pybind11)
-pybind11_add_module(qembed src/q_embed_meta_object_py.cpp)
 
 find_package(Python314t REQUIRED COMPONENTS Development Embedding)
+set(Python3_TARGET_VERSION 3.14t)
+set (Python_EXECUTABLE ${Python314t_EXECUTABLE})
+set (Python3_EXECUTABLE ${Python314t_EXECUTABLE})
+set (Python3_INCLUDE_DIRS ${Python314t_INCLUDE_DIR})
+set (Python3_LIBRARIES ${Python314t_LIBRARY})
+set(PYBIND11_PYTHON_VERSION 3.14 CACHE STRING "python version for pybind11")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(PYBIND11_NOPYTHON OFF)
+add_subdirectory(third_party/pybind11)
+
+# Create module (example)
+pybind11_add_module(qembed src/q_embed_meta_object_py.cpp)
+# pybind11_add_module wires up include/link flags automatically; you can still add link/compile options:
+target_include_directories(qembed PRIVATE ${Python3_INCLUDE_DIRS})
+target_link_libraries(qembed PRIVATE ${Python3_LIBRARIES})
+message(STATUS "Python314t_EXECUTABLE=${Python314t_EXECUTABLE}")
+message(STATUS "Python314t_INCLUDE_DIR=${Python314t_INCLUDE_DIR}")
+message(STATUS "Python314t_LIBRARY=${Python314t_LIBRARY}")
+message(STATUS "Python3_EXECUTABLE=${Python3_EXECUTABLE}")
+message(STATUS "Python3_INCLUDE_DIRS=${Python3_INCLUDE_DIRS}")
+message(STATUS "Python3_LIBRARIES=${Python3_LIBRARIES}")
+message(STATUS "Python3_TARGET_VERSION=${Python3_TARGET_VERSION}")
+message(STATUS "pybind11_DIR=${pybind11_DIR}")
+message(STATUS "pybind11_INCLUDE_DIRS=${pybind11_INCLUDE_DIRS}")
+
 
 find_package(Qt6 CONFIG REQUIRED COMPONENTS Core Widgets Gui Test)
 
@@ -35,4 +54,3 @@ find_package(Qt6 OPTIONAL_COMPONENTS CorePrivate)
 
 add_subdirectory(src)
 add_subdirectory(tests)
-add_subdirectory(demos)

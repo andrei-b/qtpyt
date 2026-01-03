@@ -7,12 +7,14 @@ QPyFutureImpl::~QPyFutureImpl() {
 
 }
 
-QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
+QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::IQPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
     : m_returnType(std::move(returnType)), m_module{module}, m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
-     m_arguments = arguments;
+    for (auto& arg : arguments) {
+        m_arguments.append(std::move(arg));
+    }
 }
 
-QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
+QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::IQPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
                              const QVector<int>& types, void** a) : m_returnType(std::move(returnType)), m_module{module},
                              m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
 
@@ -44,7 +46,7 @@ void QPyFutureImpl::run() {
                }
                m_state =  qtpyt::QPyFutureState::Finished;
                if (m_notifier != nullptr) {
-                   m_notifier->notifyFinished();
+                   m_notifier->notifyFinished({});
                }
                return;
             }

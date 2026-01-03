@@ -52,7 +52,7 @@ namespace qtpyt {
     QPyModule::~QPyModule() {}
 
 
-    std::optional<QPyFuture> QPyModule::callAsyncVariant(const QSharedPointer<QPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) const {
+    std::optional<QPyFuture> QPyModule::callAsyncVariant(const QSharedPointer<IQPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) const {
         if (functionName.isEmpty()) {
             return std::nullopt;
         }
@@ -76,7 +76,7 @@ namespace qtpyt {
     }*/
 
     QPySlot QPyModule::makeSlot(const QString &slotName, const QPyRegisteredType &returnType,
-        const QSharedPointer<QPyFutureNotifier> &notifier) {
+        const QSharedPointer<IQPyFutureNotifier> &notifier) {
         return QPySlot(*this, notifier, slotName, returnType);
     }
 

@@ -7,7 +7,37 @@
 #include  <QVector3D>
 #include <QDebug>
 #include "testobject.h"
+#include <qtpyt/qpyfuture.h>
 #include "TestObject_2.h"
+
+
+class QPyFutureNotifier1 : public QObject, public qtpyt::IQPyFutureNotifier {
+    Q_OBJECT
+  public:
+    static QSharedPointer<QPyFutureNotifier1> createNotifier() {
+        return QSharedPointer<QPyFutureNotifier1>(new QPyFutureNotifier1());
+    }
+    QPyFutureNotifier1() = default;
+    ~QPyFutureNotifier1() override = default;
+    void notifyStarted() {
+        emit started();
+    }
+    void notifyFinished(const QVariant& value = QVariant()) override{
+        emit finished(value);
+    }
+    void notifyResultAvailable(const QVariant& value) override {
+        emit resultAvailable(value);
+    }
+    void notifyErrorOccurred(const QString& errorMessage) override {
+        emit errorOccurred(errorMessage);
+    }
+    signals:
+      void started();
+    void finished(const QVariant& value = QVariant());
+    void resultAvailable(const QVariant& value);
+    void errorOccurred(const QString& errorMessage);
+};
+
 
 class AsycSlotsTest: public ::testing::Test {
 protected:
@@ -30,9 +60,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlot) {
                                       "    print(f'Async slot called with point: {p}, set intProperty to {p[0] + p[1]}')\n"
                                       "    return p[0] + p[1]", qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &obj);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     int result = 0;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&obj, &result](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&obj, &result](const QVariant& res) {
         result = res.toInt();
     });
     auto slot = m.makeSlot("slot_async", QMetaType::Int, notifier);
@@ -56,9 +86,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntArg) {
                                       "    qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_int", QMetaType::Void, notifier);
@@ -86,9 +116,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_string", QMetaType::Void, notifier);
@@ -116,9 +146,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotPointArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_point", QMetaType::Void, notifier);
@@ -146,9 +176,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVector3DArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_vec3", QMetaType::Void, notifier);
@@ -177,9 +207,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVariantArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_variant", QMetaType::Void, notifier);
@@ -207,9 +237,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVariantListArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_variant_list", QMetaType::Void, notifier);
@@ -236,9 +266,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_int_list", QMetaType::Void, notifier);
@@ -267,9 +297,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringIntMapArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_string_int_map", QMetaType::Void, notifier);
@@ -296,9 +326,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_string_and_int", QMetaType::Void, notifier);
@@ -326,9 +356,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_shared_array", QMetaType::Void, notifier);
@@ -360,9 +390,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotQPairArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_qpair", QMetaType::Void, notifier);
@@ -390,9 +420,9 @@ TEST_F(AsycSlotsTest, CallAsyncSlotQVariantMapArg) {
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
     bool called = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
         called = true;
     });
     auto slot = m.makeSlot("slot_qvariant_map", QMetaType::Void, notifier);
@@ -413,3 +443,4 @@ TEST_F(AsycSlotsTest, CallAsyncSlotQVariantMapArg) {
     }
     EXPECT_EQ(object.success(), true);
 }
+#include "test_asyncslots.moc"

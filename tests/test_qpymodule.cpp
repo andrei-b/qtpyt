@@ -10,6 +10,33 @@
 
 namespace py = pybind11;
 
+class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
+    Q_OBJECT
+  public:
+    static QSharedPointer<QPyFutureNotifier> createNotifier() {
+        return QSharedPointer<QPyFutureNotifier>(new QPyFutureNotifier());
+    }
+    QPyFutureNotifier() = default;
+    ~QPyFutureNotifier() override = default;
+    void notifyStarted() {
+        emit started();
+    }
+    void notifyFinished(const QVariant& value = QVariant()) override{
+        emit finished(value);
+    }
+    void notifyResultAvailable(const QVariant& value) override {
+        emit resultAvailable(value);
+    }
+    void notifyErrorOccurred(const QString& errorMessage) override {
+        emit errorOccurred(errorMessage);
+    }
+    signals:
+      void started();
+    void finished(const QVariant& value = QVariant());
+    void resultAvailable(const QVariant& value);
+    void errorOccurred(const QString& errorMessage);
+};
+
 TEST(QPyModule, CallAsyncRunsAndReturns) {
     auto m = qtpyt::QPyModule("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);
@@ -44,7 +71,7 @@ TEST(QPyModule, CallAsyncWithVariantListRunsAndReturns) {
     auto m = qtpyt::QPyModule ("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {2.5, 3.5};
-    auto f = m.callAsync(nullptr, "test_func", QMetaType::Double, std::move(args)).value();
+    auto f = m.callAsync(nullptr, "test_func", QMetaType::Double, 2.5, 3.5).value();
     f.waitForFinished();
     auto res = f.resultAs<double>(0);
     EXPECT_EQ(res, 6.0);
@@ -56,7 +83,7 @@ TEST(QPyModule, CallAsyncReturnVoid) {
     QVariant x = 2.5;
     QVariant y = 3.5;
     QVariantList args = {x, y};
-    auto f = m.callAsync(nullptr, "test_func", QMetaType::Void, std::move(args)).value();
+    auto f = m.callAsync(nullptr, "test_func", QMetaType::Void, x, y).value();
     f.waitForFinished();
     EXPECT_EQ(f.state(), qtpyt::QPyFutureState::Finished);
     EXPECT_EQ(f.resultCount(), 0);
@@ -68,7 +95,7 @@ TEST(QPyModule, CallAsyncReturnVoid2) {
     QVariant x = 2.5;
     QVariant y = 3.5;
     QVariantList args = {x, y};
-    auto f = m.callAsync(nullptr, "test_func", "void", std::move(args)).value();
+    auto f = m.callAsync(nullptr, "test_func", "void", x, y).value();
     f.waitForFinished();
     EXPECT_EQ(f.state(), qtpyt::QPyFutureState::Finished);
     EXPECT_EQ(f.resultCount(), 0);
@@ -117,15 +144,15 @@ TEST(QPyModule, TestQPyFutureNotifier) {
                            "def long_task():\n"
                            "    time.sleep(2)\n"
                            "    return 42\n", qtpyt::QPySourceType::SourceString);
-    auto notifier = QSharedPointer<qtpyt::QPyFutureNotifier>();
+    auto notifier = QPyFutureNotifier::createNotifier();
     int oresult;
-
-    auto f = m.callAsync<>(notifier, "long_task", QMetaType::Int);
     bool notified = false;
-    QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&notified, &oresult](const QVariant& result) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier::finished, [&notified, &oresult](const QVariant& result) {
         notified = true;
         oresult = result.toInt();
     });
+    auto f = m.callAsync<>(notifier, "long_task", QMetaType::Int);
+
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
     EXPECT_EQ(oresult, 42);
@@ -190,3 +217,5 @@ TEST (QPyModule, TestAddFunctionWithArgs) {
     double res = m.call<double>("call_test_func", 3.0, 4.0);
     EXPECT_EQ(res, 12.0);
 }
+
+#include "test_qpymodule.moc"

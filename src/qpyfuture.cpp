@@ -6,12 +6,12 @@
 #include "internal/q_py_future_impl.h"
 
 namespace qtpyt {
-    QPyFuture::QPyFuture(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, const QString& functionName, const QByteArray& returnType,
+    QPyFuture::QPyFuture(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, const QString& functionName, const QByteArray& returnType,
                          QVariantList&& arguments) {
         m_impl = std::make_shared<QPyFutureImpl>(std::move(module), std::move(notifier), functionName, returnType, std::move(arguments));
     }
 
-    QPyFuture::QPyFuture(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, QString functionName, const QByteArray& returnType,
+    QPyFuture::QPyFuture(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, QString functionName, const QByteArray& returnType,
         const QVector<int>& types,  void** a) {
         m_impl = std::make_shared<::QPyFutureImpl>(std::move(module), std::move(notifier), std::move(functionName), returnType, types, a);
     }

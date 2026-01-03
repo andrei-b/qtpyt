@@ -61,7 +61,7 @@ set(LIBRARY_HEADERS
 )
 
 # Create the shared library
-add_library(qtpyt ${LIBRARY_SOURCEascS} ${LIBRARY_HEADERS})
+add_library(qtpyt ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
 target_link_libraries(qtpyt
         Qt::Core
@@ -71,8 +71,11 @@ target_link_libraries(qtpyt
         Python314t::Python)
 
 # Set include directories
+target_include_directories(qtpyt PRIVATE ${Python314t_INCLUDE_DIR})
 target_include_directories(qtpyt PRIVATE "${pybind11_SOURCE_DIR}/include")
-target_include_directories(qtpyt PRIVATE ${Python3_INCLUDE_DIR})
+set (pybind11_INCLUDE_DIRS "${pybind11_SOURCE_DIR}/include;${Python314t_INCLUDE_DIR}")
+message (STATUS  "!!!!Python314t_INCLUDE_DIR=${Python314t_INCLUDE_DIR}")
+message (STATUS "!!!!pybind11_SOURCE_DIR=${pybind11_SOURCE_DIR}")
 target_include_directories(qtpyt
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>

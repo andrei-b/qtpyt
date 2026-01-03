@@ -27,12 +27,15 @@ add_executable(qtpyt_tests
         test_asyncslots.cpp
         TestObject_2.cpp
         TestObject_2.h
+
 )
 
 set_target_properties(qtpyt_tests PROPERTIES AUTOMOC ON)
 
 
 target_sources(qtpyt_tests PRIVATE
+        testobject.h
+        ../src/internal/qpymoduleimpl.cpp
         ../src/q_embed_meta_object.cpp
         ../src/qpyslot.cpp
         ../src/q_embed_meta_object_py.cpp
@@ -54,27 +57,41 @@ target_sources(qtpyt_tests PRIVATE
         ../src/qpyscript.cpp
         ../src/pymodule.cpp
         ../src/pymodule.h
-        testobject.h
+        ../include/qtpyt/conversions.h
+
 )
+
+target_include_directories(qtpyt_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/pyextra
+        ${CMAKE_SOURCE_DIR}/src/internal
+        ${CMAKE_SOURCE_DIR}/../../include
+        "${pybind11_SOURCE_DIR}/include"
+        ${Python3_INCLUDE_DIR}
+        )
+
 
 # Link against the library and Google Test
 target_link_libraries(qtpyt_tests
     PRIVATE
-        qtpyt
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        Qt6::Test
         gtest_main
         gtest
         Qt::Core
         Qt::CorePrivate
-        Qt6::Test
         Python314t::Python
 )
 
 # Set include directories
 target_include_directories(qtpyt_tests PRIVATE "${pybind11_SOURCE_DIR}/include")
-target_include_directories(qtpyt_tests PRIVATE ${Python3_INCLUDE_DIR})
-target_link_libraries(qtpyt_tests PRIVATE qtpyt gtest_main)
+target_include_directories(qtpyt_tests PRIVATE ${Python314t_INCLUDE_DIR})
+set (Python_EXECUTABLE, ${Python314t_EXECUTABLE})
+#target_link_libraries(qtpyt_tests PRIVATE qtpyt gtest_main)
 # ensure pybind11 include is available (pybind11 is already FetchContent earlier)
-target_include_directories(qtpyt_tests PRIVATE "${pybind11_SOURCE_DIR}/include")
 add_test(NAME conversions COMMAND test_conversions)
 
 # Discover tests

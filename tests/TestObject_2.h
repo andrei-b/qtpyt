@@ -1,5 +1,5 @@
 #pragma once
-#include "qtpyt/qpysharedarray.h"
+#include "../include/qtpyt/qpysharedarray.h"
 
 #include <QObject>
 #include <QString>

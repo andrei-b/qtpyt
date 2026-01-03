@@ -12,40 +12,20 @@ namespace qtpyt {
     class QPyModule;
     enum class QPyFutureState { NotStarted, Running, Finished, Canceled, Error };
 
-
-    class QPyFutureNotifier : public QObject {
-        Q_OBJECT
+    class IQPyFutureNotifier  {
       public:
-        static QSharedPointer<QPyFutureNotifier> createNotifier() {
-            return QSharedPointer<QPyFutureNotifier>(new QPyFutureNotifier());
-        }
-        QPyFutureNotifier() = default;
-        ~QPyFutureNotifier() override = default;
-        void notifyStarted() {
-            emit started();
-        }
-        void notifyFinished(const QVariant& value = QVariant()) {
-            emit finished(value);
-        }
-        void notifyResultAvailable(const QVariant& value) {
-            emit resultAvailable(value);
-        }
-        void notifyErrorOccurred(const QString& errorMessage) {
-            emit errorOccurred(errorMessage);
-        }
-        signals:
-          void started();
-        void finished(const QVariant& value = QVariant());
-        void resultAvailable(const QVariant& value);
-        void errorOccurred(const QString& errorMessage);
+        virtual void notifyStarted() = 0;
+        virtual void notifyFinished(const QVariant& value) = 0;
+        virtual void notifyResultAvailable(const QVariant& value)  = 0;
+        virtual void notifyErrorOccurred(const QString& errorMessage) = 0;
+        virtual  ~IQPyFutureNotifier() = default;
     };
-
 
     class QPyFuture {
     public:
-        QPyFuture(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, const QString& functionName,  const QByteArray& returnType,
+        QPyFuture(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, const QString& functionName,  const QByteArray& returnType,
             QVariantList&& arguments);
-        QPyFuture(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, QString  functionName,  const QByteArray& returnType,
+        QPyFuture(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, QString  functionName,  const QByteArray& returnType,
                                  const QVector<int>& types, void** a);
         QPyFuture(const QPyFuture& other);
         QPyFuture& operator=(const QPyFuture& other);

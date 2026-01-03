@@ -1,5 +1,4 @@
 #define PYBIND11_DETAILED_ERROR_MESSAGES
-#define PYBIND11_NO_KEYWORDS
 #include <pybind11/pybind11.h>
 #include "q_embed_meta_object_py.h"
 #include <qtpyt/conversions.h>
@@ -10,10 +9,11 @@
 #include <QMetaMethod>
 #include <QVariantList>
 #include <qpoint.h>
+#include <QString>
 
+class QObject;
 namespace qtpyt {
-
-    uintptr_t QEmbedMetaObjectPy::find_object_by_name(const uintptr_t root_ptr, const std::string& name,
+    uintptr_t find_object_by_name(const uintptr_t root_ptr, const std::string& name,
                                                       const bool recursive) {
         const QObject* root = reinterpret_cast<QObject*>(static_cast<uintptr_t>(root_ptr));
         if (!root) {
@@ -34,21 +34,27 @@ namespace qtpyt {
             return 0;
         }
     }
-    bool QEmbedMetaObjectPy::invoke_from_args(const uintptr_t obj_ptr, const std::string& method, py::object& retValue,
+    bool invoke_from_args(const uintptr_t obj_ptr, const std::string& method, py::object& retValue,
                                               const py::args& args) {
         // forward to existing implementation which accepts a py::iterable
-        return QEmbedMetaObjectPy::invoke_from_variant_list(obj_ptr, method, retValue,
+        return invoke_from_variant_list(obj_ptr, method, retValue,
                                                             py::reinterpret_borrow<py::iterable>(args));
     }
 
 
-    void invoke_void_from_args(const uintptr_t obj_ptr, const std::string& method, const py::args& args) {
+    void invoke_void_from_args_2(const uintptr_t obj_ptr, const std::string& method, const py::args& args) {
         py::object retValue; // unused
-        QEmbedMetaObjectPy::invoke_from_args(obj_ptr, method, retValue, args);
+        invoke_from_args(obj_ptr, method, retValue, args);
     }
 
-    bool QEmbedMetaObjectPy::invoke_from_variant_list(uintptr_t obj_ptr, const std::string& method,
-                                                      py::object& return_value, const py::iterable& args) {
+    py::object invoke_returning_from_args(const uintptr_t obj_ptr, const std::string &method, const py::args &args) {
+        py::object retValue;
+        invoke_from_args(obj_ptr, method, retValue, args);
+        return retValue;
+    }
+
+    bool invoke_from_variant_list(uintptr_t obj_ptr, const std::string& method,
+                                  py::object& return_value, const py::iterable& args) {
         const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
         if (!obj) {
             py::print("QEmbedMetaObjectPy.invoke_from_variant_list: null object pointer");
@@ -115,7 +121,7 @@ namespace qtpyt {
         return ok;
     }
 
-    bool QEmbedMetaObjectPy::set_property(uintptr_t obj_ptr, const std::string& property_name, const py::object& value) {
+    bool set_property(uintptr_t obj_ptr, const std::string& property_name, const py::object& value) {
 
         const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
         if (!obj) {
@@ -172,7 +178,7 @@ namespace qtpyt {
             return ok;
         }
     }
-    py::object QEmbedMetaObjectPy::get_property(uintptr_t obj_ptr, const std::string& property_name) {
+    py::object get_property(uintptr_t obj_ptr, const std::string& property_name) {
         const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
         if (!obj) {
             py::print("QEmbedMetaObjectPy.set_property: null object pointer");
@@ -207,7 +213,7 @@ namespace qtpyt {
 
     static py::object invoke_returning(uintptr_t obj_ptr, const std::string& method, py::args args) {
         py::object return_value = py::none();
-        if (const auto ok = QEmbedMetaObjectPy::invoke_from_args(obj_ptr, method, return_value, args);
+        if (const auto ok = invoke_from_args(obj_ptr, method, return_value, args);
             ok && return_value && !return_value.is_none()) {
             return return_value;
             }

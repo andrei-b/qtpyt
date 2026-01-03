@@ -64,11 +64,12 @@ public:
     /// \param args Arguments forwarded and converted into a `QVariantList`.
     /// \return `QPyFuture` on successful scheduling; `std::nullopt` on failure.
     template<typename... Args>
-    std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier,
+    std::optional<QPyFuture> callAsync(const QSharedPointer<IQPyFutureNotifier> &notifier,
                                        const QString &functionName,
                                        const QPyRegisteredType &returnType,
                                        Args... args) const {
-        QVariantList varArgs = {args...};
+        QVariantList varArgs;
+        (varArgs.push_back(QVariant::fromValue(args)), ...);
         return callAsyncVariant(notifier, functionName, returnType, std::move(varArgs));
     }
 
@@ -78,7 +79,7 @@ public:
     /// \param returnType Expected return type information for marshalling.
     /// \param args Argument list; moved into the call to avoid copies.
     /// \return `QPyFuture` on successful scheduling; `std::nullopt` on failure.
-    std::optional<QPyFuture> callAsyncVariant(const QSharedPointer<QPyFutureNotifier> &notifier,
+    std::optional<QPyFuture> callAsyncVariant(const QSharedPointer<IQPyFutureNotifier> &notifier,
                                        const QString &functionName,
                                        const QPyRegisteredType &returnType,
                                        QVariantList &&args) const;
@@ -96,14 +97,14 @@ public:
     /// \throws std::runtime_error If the underlying `callAsync()` returns `std::nullopt`.
     template<typename R, typename... Args>
     std::function<std::optional<QPyFuture>(Args...)> makeAsyncFunction(
-        const QSharedPointer<QPyFutureNotifier> &notifier, const QString &name) {
+        const QSharedPointer<IQPyFutureNotifier> &notifier, const QString &name) {
         const QMetaType returnType = QMetaType::fromType<R>();
         return [module=*this, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
-            QVariantList varArgs;
-            varArgs.reserve(sizeof...(Args));
-            (varArgs.push_back(QVariant::fromValue(args)), ...);
+            //QVariantList varArgs;
+            //varArgs.reserve(sizeof...(Args));
+            //(varArgs.push_back(QVariant::fromValue(args)), ...);
 
-            auto futOpt = module.callAsync(notifier, name, returnType, std::move(varArgs));
+            auto futOpt = module.callAsync(notifier, name, returnType, args...);
             if (!futOpt) {
                 throw std::runtime_error("callAsync failed");
             }
@@ -118,7 +119,7 @@ public:
     /// \return A `QPySlot` bound to \p slotName.
     QPySlot makeSlot(const QString &slotName,
                      const QPyRegisteredType &returnType = QMetaType::Void,
-                     const QSharedPointer<QPyFutureNotifier> &notifier = nullptr);
+                     const QSharedPointer<IQPyFutureNotifier> &notifier = nullptr);
 
 protected:
     /// \brief Returns the thread id associated with this module instance.

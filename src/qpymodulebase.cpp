@@ -37,7 +37,7 @@ namespace qtpyt {
     }
 
     QString QPyModuleBase::functionName() const {
-        return m_callableFunction;
+        return m_internal->functionName();
     }
 
     void QPyModuleBase::addVariable(const QString &name, const QVariant &value) {

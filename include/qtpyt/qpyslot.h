@@ -1,10 +1,8 @@
 #pragma once
 
-#include "../../src/q_embed_meta_object_py.h"
 #include <qtpyt/qpymodule.h>
 #include <qtpyt/qpymodulebase.h>
 #include <qtpyt/q_py_thread.h>
-#include <QThreadPool>
 #include <utility>
 #include <private/qmetaobject_p.h>
 #include <private/qobject_p.h>
@@ -25,17 +23,17 @@ namespace qtpyt {
 
         static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
                                                                   QPyModule module,
-                                                                  const QSharedPointer<QPyFutureNotifier> &notifier,
+                                                                  const QSharedPointer<IQPyFutureNotifier> &notifier,
                                                                   const QString &slot, const QPyRegisteredType &returnType = QMetaType::Void);
         static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
-                                                                  QPyModule module, QSharedPointer<QPyFutureNotifier> notifier,
+                                                                  QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier,
                                                                   const char *slot,
                                                                   const QPyRegisteredType &returnType, QPyThread *thread);
         template <typename SignalFunc>
         static QMetaObject::Connection connectPythonFunction(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
                                                 SignalFunc signal,
                                                 QSharedPointer<QPyModuleBase> module,
-                                                QSharedPointer<QPyFutureNotifier> notifier,
+                                                QSharedPointer<IQPyFutureNotifier> notifier,
                                                 const QString& slot,
                                                 const QPyRegisteredType& returnType = QMetaType::Void,
                                                 Qt::ConnectionType type = Qt::AutoConnection) {
@@ -48,7 +46,7 @@ namespace qtpyt {
         }
 
         template <typename SignalFunc>
-        static QMetaObject::Connection connectPythonFunctionAsync(QObject * sender, const SignalFunc signal, std::shared_ptr<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const QPyRegisteredType& returnType = QMetaType::Void) {
+        static QMetaObject::Connection connectPythonFunctionAsync(QObject * sender, const SignalFunc signal, std::shared_ptr<QPyModule> module, QSharedPointer<IQPyFutureNotifier> notifier, const QPyRegisteredType& returnType = QMetaType::Void) {
             int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
             if (signalIndex < 0) {
                 qWarning("connectCallableAsync: cannot match the signal");
@@ -76,7 +74,7 @@ namespace qtpyt {
         static QMetaObject::Connection connectPythonFunction(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
                                                 SignalFunc signal,
                                                 std::shared_ptr<QPyModule> module,
-                                                QSharedPointer<QPyFutureNotifier> notifier,
+                                                QSharedPointer<IQPyFutureNotifier> notifier,
                                                 const QString& slot,
                                                 const QPyRegisteredType& returnType) {
             int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
@@ -88,7 +86,7 @@ namespace qtpyt {
         }
 
         static QMetaObject::Connection connectPythonFunction(QObject *sender, int signalIndex, QPyModuleBase module,
-                                                             QSharedPointer<QPyFutureNotifier> notifier, const QString &slot, const QPyRegisteredType &returnType, Qt::
+                                                             QSharedPointer<IQPyFutureNotifier> notifier, const QString &slot, const QPyRegisteredType &returnType, Qt::
                                                              ConnectionType type =
                                                                      Qt::AutoConnection);
 
@@ -101,7 +99,7 @@ namespace qtpyt {
             const int signalIndex = QObjectPrivate::get(sender)->signalIndex(signal);
             QObjectPrivate::connect(sender, signalIndex, slotObject, type);
         }
-        QPySlot(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, const QString& slotName,
+        QPySlot(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, const QString& slotName,
             const QPyRegisteredType& returnType);
 
         QMetaObject::Connection connectAsyncToSignal(QObject *sender, const char *signal, Qt::ConnectionType type = Qt::AutoConnection) const;
@@ -218,7 +216,7 @@ namespace qtpyt {
         const PyCallableInfo& pyCallableInfo);
 
         QPyModule m_module;
-        QSharedPointer<QPyFutureNotifier> m_notifier;
+        QSharedPointer<IQPyFutureNotifier> m_notifier;
         QString m_slotName;
         QPyRegisteredType m_returnType;
     };

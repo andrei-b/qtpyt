@@ -326,8 +326,6 @@ namespace qtpyt {
         /// \throws std::runtime_error on file/load failure.
         void buildFromFile(const QString &fileName);
 
-        /// \brief Name of the currently selected callable within the module.
-        QString m_callableFunction;
  /// \brief Cached validity state.
         bool m_isValid{false};
         std::shared_ptr<QPyModuleImpl> m_internal;
