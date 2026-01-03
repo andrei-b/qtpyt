@@ -76,6 +76,59 @@ TEST(QPyModuleBase, TestQPySharedArrayShared) {
     EXPECT_DOUBLE_EQ(arr[1], 3.14);
 }
 
+TEST(QPyModuleBase, TestQPySharedArrayIntShared) {
+    qtpyt::registerSharedArray<long long>("QPySharedArray<long long>");
+    qtpyt::QPySharedArray<long long> arr(4);
+    arr[0] = 12300123000123;
+    arr[1] = 45600456000456;
+    arr[2] = 78900789000789;
+    arr[3] = 10111200101120;
+    qtpyt::QPyModuleBase m("def test_func(arr):\n"
+                               "    if arr[0] == 12300123000123:\n"
+                               "        arr[0] = 10010010010010\n"
+                               "        arr[1] = 20020020020020\n"
+                               "        arr[2] = 30030030030030\n"
+                               "        arr[3] = 40040040040040\n", qtpyt::QPySourceType::SourceString);
+    auto b = arr;
+    m.call<void, qtpyt::QPySharedArray<long long>>("test_func", std::move(b));
+    EXPECT_DOUBLE_EQ(arr[0], 10010010010010);
+    EXPECT_DOUBLE_EQ(arr[1], 20020020020020);
+    EXPECT_DOUBLE_EQ(arr[2], 30030030030030);
+    EXPECT_DOUBLE_EQ(arr[3], 40040040040040);
+}
+
+TEST(QPyModuleBase, TestSumQPySharedArrays) {
+    qtpyt::registerSharedArray<float>("QPySharedArray<long long>");
+    qtpyt::QPySharedArray<float> a(4);
+    a[0] = 1.230123;
+    a[1] = 4.560456;
+    a[2] = 5.780789;
+    a[3] = 10.111200;
+    qtpyt::QPySharedArray<float> b(4);
+    b[0] = 9.870987;
+    b[1] = 5.430543;
+    b[2] = 4.210421;
+    b[3] = 0.888800;
+
+    qtpyt::QPyModuleBase m(    "import array\n"
+                               "import struct\n"
+                               "def add_arrays(a, b):\n"
+                               "     result = []\n"
+                               "     for i in range(len(a)):\n"
+                               "         result.append(a[i] + b[i])\n"
+                               "     arr = array.array('f', result)\n"
+                               "     mv = memoryview(arr)\n"
+                               "     return mv\n",
+                               qtpyt::QPySourceType::SourceString);
+
+    auto r = m.call<qtpyt::QPySharedArray<float>, qtpyt::QPySharedArray<float>, qtpyt::QPySharedArray<float>>("add_arrays", std::move(a), std::move(b));
+    EXPECT_FLOAT_EQ(r[0], 11.101110);
+    EXPECT_FLOAT_EQ(r[1], 9.9909992);
+    EXPECT_FLOAT_EQ(r[2], 9.991210);
+    EXPECT_FLOAT_EQ(r[3], 10.999999);
+}
+
+
 static std::filesystem::path testdata_path(std::string_view rel) {
     return std::filesystem::path("pyfiles") / rel;
 }

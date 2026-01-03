@@ -162,13 +162,13 @@ namespace qtpyt {
             QVariantList varArgs = {std::forward<Args>(args)...};
             setCallableFunction(function);
             auto result = call(function, QMetaType::fromType<R>(), varArgs);
+            if (!result.second.isEmpty()) {
+                throw std::runtime_error("QPyModuleBase::call: " + result.second.toStdString());
+            }
             if constexpr (std::is_same_v<R, void>) {
                 (void) result;
                 return;
             } else {
-                if (!result.first.has_value()) {
-                    throw std::runtime_error("QPyModuleBase::call: " + result.second.toStdString());
-                }
                 return result.first.value().template value<R>();
             }
         }
