@@ -38,21 +38,13 @@ class QPySlot;
 /// Lifetime:\n
 /// The object is intended to be managed by `QSharedPointer` and supports
 /// `sharedFromThis()` via `QEnableSharedFromThis`.
-class QPyModule : public QPyModuleBase, public QEnableSharedFromThis<QPyModule> {
+class QPyModule : public QPyModuleBase {
 public:
     /// \brief Creates/initializes the Python async module glue (pybind11 module).
     /// \details
     /// Registers/constructs bindings necessary for asynchronous execution.
     /// \note Call semantics depend on the embedding/binding layer configuration.
     static void makeQPyAsyncModule();
-
-    /// \brief Factory that returns a reference\-counted `QPyModule`.
-    /// \param source Python source (content or path) as indicated by \p sourceType.
-    /// \param sourceType Specifies how \p source is interpreted.
-    /// \return A `QSharedPointer` owning the newly created module instance.
-    static QSharedPointer<QPyModule> create(const QString &source, QPySourceType sourceType) {
-        return QSharedPointer<QPyModule>(new QPyModule(source, sourceType));
-    }
 
     /// \brief Constructs a module wrapper from Python source.
     /// \param source Python source (content or path) as indicated by \p sourceType.
@@ -75,9 +67,9 @@ public:
     std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier,
                                        const QString &functionName,
                                        const QPyRegisteredType &returnType,
-                                       Args... args) {
+                                       Args... args) const {
         QVariantList varArgs = {args...};
-        return callAsync(notifier, functionName, returnType, std::move(varArgs));
+        return callAsyncVariant(notifier, functionName, returnType, std::move(varArgs));
     }
 
     /// \brief Asynchronously calls a Python function by name with explicit arguments.
@@ -86,10 +78,11 @@ public:
     /// \param returnType Expected return type information for marshalling.
     /// \param args Argument list; moved into the call to avoid copies.
     /// \return `QPyFuture` on successful scheduling; `std::nullopt` on failure.
-    std::optional<QPyFuture> callAsync(const QSharedPointer<QPyFutureNotifier> &notifier,
+    std::optional<QPyFuture> callAsyncVariant(const QSharedPointer<QPyFutureNotifier> &notifier,
                                        const QString &functionName,
                                        const QPyRegisteredType &returnType,
-                                       QVariantList &&args);
+                                       QVariantList &&args) const;
+
 
     /// \brief Creates a typed async function wrapper bound to this module.
     /// \details
@@ -104,15 +97,13 @@ public:
     template<typename R, typename... Args>
     std::function<std::optional<QPyFuture>(Args...)> makeAsyncFunction(
         const QSharedPointer<QPyFutureNotifier> &notifier, const QString &name) {
-        auto self = sharedFromThis();
         const QMetaType returnType = QMetaType::fromType<R>();
-
-        return [self, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
+        return [module=*this, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
             QVariantList varArgs;
             varArgs.reserve(sizeof...(Args));
             (varArgs.push_back(QVariant::fromValue(args)), ...);
 
-            auto futOpt = self->callAsync(notifier, name, returnType, std::move(varArgs));
+            auto futOpt = module.callAsync(notifier, name, returnType, std::move(varArgs));
             if (!futOpt) {
                 throw std::runtime_error("callAsync failed");
             }

@@ -1,7 +1,6 @@
 #pragma once
+#include "qtpyt/qpysharedarray.h"
 
-#define PYBIND11_NO_KEYWORDS
-#include <pybind11/pybind11.h>
 #include <QObject>
 #include <QString>
 #include <QPoint>
@@ -10,7 +9,6 @@
 #include <QList>
 #include <QMap>
 
-#include "qtpyt/qpysharedarray.h"
 
 class TestObject_2 : public QObject {
     Q_OBJECT

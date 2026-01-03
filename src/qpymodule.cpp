@@ -52,11 +52,7 @@ namespace qtpyt {
     QPyModule::~QPyModule() {}
 
 
-    std::optional<QPyFuture> QPyModule::callAsync(const QSharedPointer<QPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) {
-        const auto self = this->sharedFromThis();
-        if (self == nullptr) {
-            throw std::runtime_error("QPyModule::callAsync: module should be created as a QSharedPointer<QPyModule>");
-        }
+    std::optional<QPyFuture> QPyModule::callAsyncVariant(const QSharedPointer<QPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) const {
         if (functionName.isEmpty()) {
             return std::nullopt;
         }
@@ -69,7 +65,7 @@ namespace qtpyt {
             type = QMetaType(std::get<QMetaType::Type>(returnType)).name();
         }
 
-        QPyFuture me(self, notifier, functionName, type, std::move(args));
+        QPyFuture me(*this, notifier, functionName, type, std::move(args));
         QPyThreadPool::instance().submit(me);
         return me;
     }
@@ -81,11 +77,7 @@ namespace qtpyt {
 
     QPySlot QPyModule::makeSlot(const QString &slotName, const QPyRegisteredType &returnType,
         const QSharedPointer<QPyFutureNotifier> &notifier) {
-        auto self = this->sharedFromThis();
-        if (self == nullptr) {
-            throw std::runtime_error("QPyModule::makeSlot: module should be created as a QSharedPointer<QPyModule>");
-        }
-        return QPySlot(std::move(self), notifier, slotName, returnType);
+        return QPySlot(*this, notifier, slotName, returnType);
     }
 
     auto QPyModule::getThreadId() const {

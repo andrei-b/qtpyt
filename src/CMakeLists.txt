@@ -54,11 +54,14 @@ set(LIBRARY_HEADERS
         internal/normalize.cpp
         internal/normalize.h
         internal/pyobjectw.h
-        internal/mbinternal.h
+        internal/qpymoduleimpl.cpp
+        internal/qpymoduleimpl.h
+        globainit.cpp
+        globainit.h
 )
 
 # Create the shared library
-add_library(qtpyt ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+add_library(qtpyt ${LIBRARY_SOURCEascS} ${LIBRARY_HEADERS})
 
 target_link_libraries(qtpyt
         Qt::Core

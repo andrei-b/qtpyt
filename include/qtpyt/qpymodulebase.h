@@ -25,8 +25,6 @@
 
 namespace qtpyt {
 
-    struct MBInternal;
-    struct PyObjectWrapper;
     /// \brief Describes how a `QPyModuleBase` should interpret its source string.
     enum class QPySourceType {
         /// \brief Treat the source as a Python module name to import.
@@ -106,6 +104,7 @@ namespace qtpyt {
     /// \-\> `QVariantList` and converting the return `QVariant` back to Python.
     using QVariantFn = std::function<QVariant(const QVariantList&)>;
 
+    class QPyModuleImpl;
     /// \class QPyModuleBase
     /// \brief Core functionality for building a Python module and invoking functions.
     /// \details
@@ -124,17 +123,6 @@ namespace qtpyt {
         /// \throws std::runtime_error on module construction failure.
         QPyModuleBase(const QString &source, QPySourceType sourceType);
 
-        /// \brief Deleted copy constructor.
-        QPyModuleBase(const QPyModuleBase &other) = delete;
-
-        /// \brief Deleted copy assignment.
-        QPyModuleBase &operator=(const QPyModuleBase &other) = delete;
-
-        /// \brief Deleted move constructor.
-        QPyModuleBase(const QPyModuleBase &&other) = delete;
-
-        /// \brief Deleted move assignment.
-        QPyModuleBase &operator=(const QPyModuleBase &&other) = delete;
 
         /// \brief Virtual destructor.
         /// \details Releases owned Python object references.
@@ -152,14 +140,9 @@ namespace qtpyt {
         /// \return Converted return value on success; `std::nullopt` on conversion failure.
         /// \throws std::runtime_error if the function cannot be found or invoked.
         [[nodiscard]] std::pair<std::optional<QVariant>, QString> call(const QString &function,
-                                                                       const QPyRegisteredType &returnType,
-                                                                       const QVariantList &args,
+                                                                 const QPyRegisteredType &returnType,
+                                                                 const QVariantList &args,
                                                                        const QVariantMap &kwargs = {});
-
-        /// \brief Returns a Python callable object for the given function name.
-        /// \param function Name of the attribute in the module.
-        /// \return A Python object if it exists; `std::nullopt` if not found/invalid.
-        MBInternal *makeCallable(const QString &function);
 
         /// \brief Selects which function name is considered the "current" callable.
         /// \details Affects `pythonCallable()`, `call(tuple, dict)`, and `makeFunction()`.
@@ -262,9 +245,6 @@ namespace qtpyt {
         /// \throws std::runtime_error on conversion failures at call time.
         void addFunction(const QString& name, QVariantFn&& function) const;
 
-
-        void addFunctionInternal(const QString &name,const std::function<QVariant(const QVariantList)>& invokeFromList) const;
-
         /// \brief Registers a typed C\+\+ function as a Python function in the module.
         /// \tparam R Return type.
         /// \tparam Args Argument types.
@@ -328,9 +308,12 @@ namespace qtpyt {
         }
 
     protected:
-        /// \brief Returns a mutable reference to the underlying Python module object.
-        /// \return Reference to the module `py::object`.
-        MBInternal* getPyModule();
+        void addFunctionInternal(const QString &name,
+            const std::function<QVariant(const QVariantList)>& invokeFromList) const;
+        /// \brief Provides access to the internal module implementation.
+        /// \return Pointer to the internal module implementation.
+
+        QPyModuleImpl* getInternal();
 
     private:
         /// \brief Builds/initializes the module from literal Python source code.
@@ -347,7 +330,7 @@ namespace qtpyt {
         QString m_callableFunction;
  /// \brief Cached validity state.
         bool m_isValid{false};
-        std::unique_ptr<MBInternal> m_internal;
+        std::shared_ptr<QPyModuleImpl> m_internal;
     };
 
 } // namespace qtpyt

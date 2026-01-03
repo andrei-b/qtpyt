@@ -36,9 +36,9 @@ protected:
 
 TEST_F(QPyScriptTest, TestSlotCalledFromPython) {
   TestObj obj;
-  auto m = qtpyt::QPyModule::create(QString::fromStdString(testdata_path("module6.py").string()),
+  auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module6.py").string()),
                                     qtpyt::QPySourceType::File);
-    m->addVariable<QObject*>("obj", &obj);
+    m.addVariable<QObject*>("obj", &obj);
     qtpyt::QPySlot::connectPythonFunction(&obj, "passPoint(QPoint)", m, "slot", qtpyt::QPyRegisteredType(QMetaType::Void));
     obj.setIntProperty(69);
     obj.emitPassPoint(QPoint(12, 24));
@@ -48,10 +48,10 @@ TEST_F(QPyScriptTest, TestSlotCalledFromPython) {
 
 TEST_F(QPyScriptTest, TestSlotCalledFromPython2) {
     TestObj obj;
-    auto m = qtpyt::QPyModule::create(QString::fromStdString(testdata_path("module6.py").string()),
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module6.py").string()),
                                       qtpyt::QPySourceType::File);
-    m->addVariable<QObject*>("obj", &obj);
-    m->makeSlot("slot_2", QMetaType::Void).connectToSignal(&obj, &TestObj::passPoint);
+    m.addVariable<QObject*>("obj", &obj);
+    m.makeSlot("slot_2", QMetaType::Void).connectToSignal(&obj, &TestObj::passPoint);
     obj.setIntProperty(69);
     obj.emitPassPoint(QPoint(12, 24));
     auto value = obj.value();

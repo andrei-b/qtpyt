@@ -14,9 +14,9 @@ namespace qtpyt {
         template <typename CallableType, typename AdditionalType>
         class QPySlotInternal : public QtPrivate::QSlotObjectBase {
         public:
-            QPySlotInternal(QSharedPointer<CallableType> callable, QSharedPointer<QPyFutureNotifier> notifier, QMetaMethod method, void (*fn)(int which, QtPrivate::QSlotObjectBase* this_, QObject *receiver, void **args, bool *ret), const QPyRegisteredType& returnType, AdditionalType *additional = nullptr ) :
-            QSlotObjectBase(fn), m_callable(std::move(callable)), m_notifier(std::move(notifier)), m_method(method), m_returnType(returnType), m_additional(additional) {
-                m_functionName = m_callable->functionName();
+            QPySlotInternal(const CallableType& callable, QSharedPointer<QPyFutureNotifier> notifier, QMetaMethod method, void (*fn)(int which, QtPrivate::QSlotObjectBase* this_, QObject *receiver, void **args, bool *ret), const QPyRegisteredType& returnType, AdditionalType *additional = nullptr ) :
+            QSlotObjectBase(fn), m_callable{callable}, m_notifier(std::move(notifier)), m_method(method), m_returnType(returnType), m_additional(additional) {
+                m_functionName = m_callable.functionName();
             };
             pybind11::object makeArgsTuple(void **a) const {
                 const int n = m_method.parameterCount();
@@ -60,11 +60,8 @@ namespace qtpyt {
 
 
             auto module()  {
-                if (!m_callable) {
-                    qWarning() << "QPySlot: module is null for function" << m_functionName;
-                }
-                if (m_callable->functionName() != m_functionName) {
-                    m_callable->setCallableFunction(m_functionName);
+                if (m_callable.functionName() != m_functionName) {
+                    m_callable.setCallableFunction(m_functionName);
                 }
                 return m_callable;
             }
@@ -120,7 +117,7 @@ namespace qtpyt {
 
         private:
             QVector<int> m_parameterTypes;
-            QSharedPointer<CallableType> m_callable;
+            CallableType m_callable;
             QMetaMethod m_method;
             QString m_functionName;
             QSharedPointer<QPyFutureNotifier> m_notifier;
@@ -137,17 +134,17 @@ namespace qtpyt {
         try {
             auto* slot = static_cast<QPySlotInternal<QPyModuleBase, void>*>(this_);
             const auto argsTuple = slot->makeArgsTupleVariant(a);
-            slot->module()->call(slot->functionName(), slot->returnType(), argsTuple, {});
+            slot->module().call(slot->functionName(), slot->returnType(), argsTuple, {});
         } catch (const pybind11::error_already_set& e) {
             qWarning() << "Error in slot module:" << e.what();
         }
     };
 
-     QMetaObject::Connection QPySlot::connectPythonFunction(QObject* sender, const char* signal, const QSharedPointer<QPyModuleBase> module,
+     QMetaObject::Connection QPySlot::connectPythonFunction(QObject* sender, const char* signal, QPyModuleBase module,
      const QString&  slot,
      const QPyRegisteredType& returnType, Qt::ConnectionType type) {
-        module->setCallableFunction(slot);
-        const auto pyCallableInfo = module->inspectCallable();
+        module.setCallableFunction(slot);
+        const auto pyCallableInfo = module.inspectCallable();
         const auto signalMethod = findMatchingSignal(sender, signal, pyCallableInfo);
         if (!signalMethod) {
             qWarning() << "QPySlot::connectCallable: no matching signal found for" << signal;
@@ -160,7 +157,24 @@ namespace qtpyt {
         return QObjectPrivate::connect(sender, signalIndex, slotObject, type);
     }
 
-    void callInThreadPool(int which, QtPrivate::QSlotObjectBase* this_, QObject* r, void** a, bool* ret)  {
+     QMetaObject::Connection QPySlot::connectPythonFunction(QObject *sender, const char *signal, QPyModule module,
+     const QString&  slot,
+     const QPyRegisteredType& returnType, Qt::ConnectionType type) {
+         module.setCallableFunction(slot);
+         const auto pyCallableInfo = module.inspectCallable();
+         const auto signalMethod = findMatchingSignal(sender, signal, pyCallableInfo);
+         if (!signalMethod) {
+             qWarning() << "QPySlot::connectCallable: no matching signal found for" << signal;
+             return {};
+         }
+         const auto mmethod = signalMethod.value();
+         auto* slotObject = new QPySlotInternal<QPyModule, void>(module, nullptr, mmethod, callProc, returnType);
+         slotObject->setCallableFunction(slot);
+         const int signalIndex = mmethod.methodIndex();
+         return QObjectPrivate::connect(sender, signalIndex, slotObject, type);
+     }
+
+     void callInThreadPool(int which, QtPrivate::QSlotObjectBase* this_, QObject* r, void** a, bool* ret)  {
         if (which == 0) {
             this_->destroyIfLastRef();
             return;
@@ -168,22 +182,17 @@ namespace qtpyt {
         try {
             auto* slot = static_cast<QPySlotInternal<QPyModule, void>*>(this_);
             auto asyncModule = slot->module();
-
-            if (asyncModule.get()) {
-                QPyFuture f = QPyFuture(asyncModule, slot->notifier(), slot->functionName(), slot->returnType(), slot->parameterTypes(),  a);
-                QPyThreadPool::instance().submit(std::move(f));
-            } else {
-                qWarning() << "QPySlot::connectCallableAsync: module is not a QPyModule";
-            }
+            QPyFuture f = QPyFuture(asyncModule, slot->notifier(), slot->functionName(), slot->returnType(), slot->parameterTypes(),  a);
+            QPyThreadPool::instance().submit(std::move(f));
             this_->destroyIfLastRef();
         } catch (const pybind11::error_already_set& e) {
             qWarning() << "Error in async slot module:" << e.what();
         }
     };
 
-    QMetaObject::Connection QPySlot::connectPythonFunctionAsync(QObject* sender, const char* signal, QSharedPointer<QPyModule> module, const QSharedPointer<QPyFutureNotifier>& notifier, const QString& slot, const QPyRegisteredType& returnType) {
-        module->setCallableFunction(slot);
-        const auto pyCallableInfo = module->inspectCallable();
+    QMetaObject::Connection QPySlot::connectPythonFunctionAsync(QObject* sender, const char* signal, QPyModule module, const QSharedPointer<QPyFutureNotifier>& notifier, const QString& slot, const QPyRegisteredType& returnType) {
+        module.setCallableFunction(slot);
+        const auto pyCallableInfo = module.inspectCallable();
         const auto signalMethod = findMatchingSignal(sender, signal, pyCallableInfo);
         if (!signalMethod) {
             qWarning() << "QPySlot::connectCallableAsync: no matching signal found for" << signal;
@@ -217,9 +226,9 @@ namespace qtpyt {
     };
 
     QMetaObject::Connection QPySlot::connectPythonFunctionAsync(QObject* sender, const char* signal,
-        QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const char *slot, const QPyRegisteredType& returnType, QPyThread* thread) {
-        module->setCallableFunction(slot);
-        const auto pyCallableInfo = module->inspectCallable();
+        QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, const char *slot, const QPyRegisteredType& returnType, QPyThread* thread) {
+        module.setCallableFunction(slot);
+        const auto pyCallableInfo = module.inspectCallable();
         const auto signalMethod = findMatchingSignal(sender, signal, pyCallableInfo);
         if (!signalMethod) {
             qWarning() << "QPySlot::connectCallableAsync: no matching signal found for" << signal;
@@ -227,12 +236,12 @@ namespace qtpyt {
         }
         const auto mmethod = signalMethod.value();
         //auto callableFunc = []
-        auto* slotObject = new QPySlotInternal<QPyModule, QPyThread>(std::move(module), std::move(notifier), mmethod, callInThread, returnType, thread);
+        auto* slotObject = new QPySlotInternal<QPyModule, QPyThread>(module, std::move(notifier), mmethod, callInThread, returnType, thread);
         const int signalIndex = mmethod.methodIndex();
         return QObjectPrivate::connect(sender, signalIndex, slotObject, Qt::DirectConnection);
     }
 
-    QMetaObject::Connection QPySlot::connectPythonFunction(QObject* sender, int signalIndex, QSharedPointer<QPyModuleBase> module,
+    QMetaObject::Connection QPySlot::connectPythonFunction(QObject* sender, int signalIndex, QPyModuleBase module,
                                   QSharedPointer<QPyFutureNotifier> notifier, const QString& slot, const QPyRegisteredType& returnType, Qt::ConnectionType type) {
         auto mmethod = sender->metaObject()->method(signalIndex);
         auto* slotObject = new QPySlotInternal<QPyModuleBase, void>(std::move(module), std::move(notifier), mmethod, callProc, returnType);
@@ -240,7 +249,7 @@ namespace qtpyt {
         return QObjectPrivate::connect(sender, signalIndex, slotObject, type);
     }
 
-    QPySlot::QPySlot(QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier,
+    QPySlot::QPySlot(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier,
         const QString &slotName, const QPyRegisteredType &returnType) : m_module(std::move(module)),
     m_notifier(std::move(notifier)), m_slotName(slotName), m_returnType(returnType)
     {}

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <pybind11/pybind11.h>
 #include  <qtpyt/pep3118format.h>
 #include <qtpyt/conversions.h>
 #include <QtCore/QSharedPointer>
@@ -10,7 +10,6 @@
 #include <type_traits>
 #include <utility>
 #include <algorithm>
-#include <pybind11/pybind11.h>
 namespace py = pybind11;
 
 namespace qtpyt {

@@ -10,8 +10,8 @@
 class QPyFutureImpl {
   public:
     virtual ~QPyFutureImpl();
-    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
-    QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
+    QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
+    QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
     void run();
 
     int resultCount() const;
@@ -21,8 +21,8 @@ class QPyFutureImpl {
         return m_state;
     }
 
-    qtpyt::QPyModule * modulePtr() const {
-        return m_module.get();
+    qtpyt::QPyModule * modulePtr() {
+        return &m_module;
     }
     QString errorMessage() const;
 
@@ -30,7 +30,7 @@ class QPyFutureImpl {
     void pushResult(QVariant result);
     QByteArray m_returnType;
     mutable std::mutex m_mutex;
-    QSharedPointer<qtpyt::QPyModule> m_module;
+    qtpyt::QPyModule m_module;
     QString m_functionName;
     QVariantList m_arguments;
     QVariantList m_result;

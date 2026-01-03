@@ -1,6 +1,3 @@
-#define  PYBIND11_NO_KEYWORDS
-#include <pybind11/pybind11.h>
-#include "../include/qtpyt/qpyslot.h"
 #include "qtpyt/qpysharedarray.h"
 #include <qtpyt/qpyslot.h>
 #include <filesystem>
@@ -27,18 +24,18 @@ protected:
 
 TEST_F(AsycSlotsTest, CallAsyncSlot) {
     TestObj obj;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_async(p):\n"
                                       "    qembed.set_property(obj, 'intProperty', p[0] + p[1])\n"
                                       "    print(f'Async slot called with point: {p}, set intProperty to {p[0] + p[1]}')\n"
                                       "    return p[0] + p[1]", qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &obj);
+    m.addVariable<QObject*>("obj", &obj);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     int result = 0;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&obj, &result](const QVariant& res) {
         result = res.toInt();
     });
-    auto slot = m->makeSlot("slot_async", QMetaType::Int, notifier);
+    auto slot = m.makeSlot("slot_async", QMetaType::Int, notifier);
     slot.connectAsyncToSignal(&obj, &TestObj::passPoint);
     obj.setIntProperty(0);
     obj.emitPassPoint(QPoint(10, 20));
@@ -53,18 +50,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlot) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotIntArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_int(i):\n"
                                       "    if i == 42:"
                                       "    qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_int", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_int", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passInt);
     object.setSuccessProperty(false);
     object.emitInt(42);
@@ -83,18 +80,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotStringArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_string(s):\n"
                                       "    if s == 'hello':\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_string", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_string", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passString);
     object.setSuccessProperty(false);
     object.emitString("hello");
@@ -113,18 +110,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotPointArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_point(p):\n"
                                       "    if p[0] == 5 and p[1] == 10:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_point", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_point", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passPoint);
     object.setSuccessProperty(false);
     object.emitPoint(QPoint(5, 10));
@@ -143,18 +140,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotPointArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotVector3DArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_vec3(v):\n"
                                       "    if v[0] == 1.0 and v[1] == 2.0 and v[2] == 3.0:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_vec3", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_vec3", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passVector3D);
     object.setSuccessProperty(false);
     object.emitVector3D(QVector3D(1.0f, 2.0f, 3.0f));
@@ -173,19 +170,19 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVector3DArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotVariantArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_variant(v):\n"
                                       "    print(\"v=\", v)\n"
                                       "    if v == 3.14:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_variant", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_variant", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passVariant);
     object.setSuccessProperty(false);
     object.emitVariant(QVariant(3.14));
@@ -204,18 +201,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVariantArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotVariantListArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_variant_list(v):\n"
                                       "    if v == (1, 2, 3, 4, 5):\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_variant_list", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_variant_list", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passVariantList);
     object.setSuccessProperty(false);
     object.emitVariantList(QVariantList{1, 2, 3, 4, 5});
@@ -233,18 +230,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVariantListArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_int_list(v):\n"
                                       "    if v == (10, 20, 30):\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_int_list", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_int_list", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passIntList);
     object.setSuccessProperty(false);
     object.emitIntList(QList<int>{10, 20, 30});
@@ -263,19 +260,19 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
 TEST_F(AsycSlotsTest, CallAsyncSlotStringIntMapArg) {
     TestObject_2 object;
     qtpyt::registerQMapType<QString, int>("QMap<QString, int>");
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_string_int_map(m):\n"
                                       "    print('m=', m)\n"
                                       "    if m == {'a': 1, 'b': 2}:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_string_int_map", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_string_int_map", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passStringIntMap);
     object.setSuccessProperty(false);
     object.emitStringIntMap(QMap<QString, int>{{"a", 1}, {"b", 2}});
@@ -293,18 +290,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringIntMapArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_string_and_int(s, i):\n"
                                       "    if s == 'value' and i == 99:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_string_and_int", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_string_and_int", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passStringAndInt);
     object.setSuccessProperty(false);
     object.emitStringAndInt("value", 99);
@@ -323,18 +320,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
 TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
     TestObject_2 object;
     qtpyt::registerSharedArray<double>("QPySharedArray<double>");
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_shared_array(arr):\n"
                                       "    if len(arr) == 3 and arr[0] == 1.1 and arr[1] == 2.2 and arr[2] == 3.3:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_shared_array", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_shared_array", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passSharedArray);
     object.setSuccessProperty(false);
     qtpyt::QPySharedArray<double> arr(3);
@@ -357,18 +354,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
 TEST_F(AsycSlotsTest, CallAsyncSlotQPairArg) {
     TestObject_2 object;
     qtpyt::registerQPairType<QString, int>("QPair<QString, int>");
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_qpair(p):\n"
                                       "    if p[0] == 'key' and p[1] == 123:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_qpair", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_qpair", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passQPair);
     object.setSuccessProperty(false);
     QPair<QString, int> p("key", 123);
@@ -387,18 +384,18 @@ TEST_F(AsycSlotsTest, CallAsyncSlotQPairArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotQVariantMapArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule::create("import qembed\n"
+    auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_qvariant_map(m):\n"
                                       "    if m == {'x': 10, 'y': 20}:\n"
                                       "        qembed.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
-    m->addVariable<QObject*>("obj", &object);
+    m.addVariable<QObject*>("obj", &object);
     QSharedPointer<qtpyt::QPyFutureNotifier> notifier = QSharedPointer<qtpyt::QPyFutureNotifier>::create();
     bool called = false;
     QObject::connect(notifier.data(), &qtpyt::QPyFutureNotifier::finished, [&called](const QVariant& res) {
         called = true;
     });
-    auto slot = m->makeSlot("slot_qvariant_map", QMetaType::Void, notifier);
+    auto slot = m.makeSlot("slot_qvariant_map", QMetaType::Void, notifier);
     slot.connectAsyncToSignal(&object, &TestObject_2::passQVariantMap);
     object.setSuccessProperty(false);
     QVariantMap map;

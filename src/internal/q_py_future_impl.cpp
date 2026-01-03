@@ -7,20 +7,14 @@ QPyFutureImpl::~QPyFutureImpl() {
 
 }
 
-QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
-    : m_returnType(std::move(returnType)), m_module{std::move(module)}, m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
-    if (m_module == nullptr) {
-        throw std::runtime_error("QPyFutureImpl: null module module");
-    }
+QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
+    : m_returnType(std::move(returnType)), m_module{module}, m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
      m_arguments = arguments;
 }
 
-QPyFutureImpl::QPyFutureImpl(QSharedPointer<qtpyt::QPyModule> module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
-                             const QVector<int>& types, void** a) : m_returnType(std::move(returnType)), m_module{std::move(module)},
+QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::QPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
+                             const QVector<int>& types, void** a) : m_returnType(std::move(returnType)), m_module{module},
                              m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
-    if (m_module == nullptr) {
-        throw std::runtime_error("QPyFutureImpl: null module module");
-    }
 
     for (int i = 0; i < types.size(); ++i) {
         const int typeId = types.at(i);
@@ -44,7 +38,7 @@ void QPyFutureImpl::run() {
             }
             // specify the return type explicitly and pass an explicit empty kwargs dict
             if (m_returnType == "void" || m_returnType == "NoneType") {
-               auto res = m_module->call(m_functionName, QMetaType::Void, m_arguments);
+               auto res = m_module.call(m_functionName, QMetaType::Void, m_arguments);
                if (!res.second.isEmpty()) {
                      throw std::runtime_error("QPyFutureImpl::run: " + res.second.toStdString());
                }
@@ -56,7 +50,7 @@ void QPyFutureImpl::run() {
             }
 
 
-            auto result = m_module->call(m_functionName, QMetaType::fromName(m_returnType), m_arguments);
+            auto result = m_module.call(m_functionName, QMetaType::fromName(m_returnType), m_arguments);
             if (!result.first.has_value()) {
                 throw std::runtime_error("QPyFutureImpl::run: " + result.second.toStdString());
             }

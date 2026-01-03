@@ -43,9 +43,9 @@ namespace qtpyt {
 
     class QPyFuture {
     public:
-        QPyFuture(QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const QString& functionName,  const QByteArray& returnType,
+        QPyFuture(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, const QString& functionName,  const QByteArray& returnType,
             QVariantList&& arguments);
-        QPyFuture(QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, QString  functionName,  const QByteArray& returnType,
+        QPyFuture(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, QString  functionName,  const QByteArray& returnType,
                                  const QVector<int>& types, void** a);
         QPyFuture(const QPyFuture& other);
         QPyFuture& operator=(const QPyFuture& other);

@@ -15,15 +15,20 @@ namespace qtpyt {
     class QPySlot {
     public:
         static QMetaObject::Connection connectPythonFunction(QObject *sender, const char *signal,
-                                                             QSharedPointer<QPyModuleBase> module,
+                                                             QPyModuleBase module,
                                                              const QString &slot, const QPyRegisteredType &returnType = QMetaType::Void, Qt::ConnectionType type =
                                                                      Qt::AutoConnection);
+        static QMetaObject::Connection connectPythonFunction(QObject *sender, const char *signal,
+                                                             QPyModule module,
+                                                             const QString &slot, const QPyRegisteredType &returnType = QMetaType::Void, Qt::ConnectionType type =
+                                                                     Qt::AutoConnection);
+
         static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
-                                                                  QSharedPointer<QPyModule> module,
+                                                                  QPyModule module,
                                                                   const QSharedPointer<QPyFutureNotifier> &notifier,
                                                                   const QString &slot, const QPyRegisteredType &returnType = QMetaType::Void);
         static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
-                                                                  QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier,
+                                                                  QPyModule module, QSharedPointer<QPyFutureNotifier> notifier,
                                                                   const char *slot,
                                                                   const QPyRegisteredType &returnType, QPyThread *thread);
         template <typename SignalFunc>
@@ -82,7 +87,7 @@ namespace qtpyt {
             return connectPythonFunction(sender, signalIndex, module, std::move(notifier), slot, returnType);
         }
 
-        static QMetaObject::Connection connectPythonFunction(QObject *sender, int signalIndex, QSharedPointer<QPyModuleBase> module,
+        static QMetaObject::Connection connectPythonFunction(QObject *sender, int signalIndex, QPyModuleBase module,
                                                              QSharedPointer<QPyFutureNotifier> notifier, const QString &slot, const QPyRegisteredType &returnType, Qt::
                                                              ConnectionType type =
                                                                      Qt::AutoConnection);
@@ -96,7 +101,7 @@ namespace qtpyt {
             const int signalIndex = QObjectPrivate::get(sender)->signalIndex(signal);
             QObjectPrivate::connect(sender, signalIndex, slotObject, type);
         }
-        QPySlot(QSharedPointer<QPyModule> module, QSharedPointer<QPyFutureNotifier> notifier, const QString& slotName,
+        QPySlot(QPyModule module, QSharedPointer<QPyFutureNotifier> notifier, const QString& slotName,
             const QPyRegisteredType& returnType);
 
         QMetaObject::Connection connectAsyncToSignal(QObject *sender, const char *signal, Qt::ConnectionType type = Qt::AutoConnection) const;
@@ -212,7 +217,7 @@ namespace qtpyt {
         static std::optional<QMetaMethod> findMatchingSignal(QObject* sender, const char* signal,
         const PyCallableInfo& pyCallableInfo);
 
-        QSharedPointer<QPyModule> m_module;
+        QPyModule m_module;
         QSharedPointer<QPyFutureNotifier> m_notifier;
         QString m_slotName;
         QPyRegisteredType m_returnType;
