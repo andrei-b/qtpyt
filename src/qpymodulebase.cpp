@@ -6,7 +6,7 @@
 #include <qtpyt/conversions.h>
 
 #include "internal/q_py_execute_event.h"
-#include "qtpyt/pycall.h"
+#include "internal/pycall.h"
 
 namespace qtpyt {
 

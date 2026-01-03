@@ -4,7 +4,7 @@
 #include <qtpyt/conversions.h>
 
 #include "q_py_execute_event.h"
-#include "qtpyt/pycall.h"
+#include "pycall.h"
 
 namespace qtpyt {
 

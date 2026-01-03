@@ -1,4 +1,4 @@
-#include <qtpyt/pycall.h>
+#include "pycall.h"
 
 namespace pycall_internal__ {
 

@@ -47,7 +47,7 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/conversions.h
     ../include/qtpyt/pep3118format.h
     ../include/qtpyt/qpyannotation.h
-    ../include/qtpyt/pycall.h
+        internal/pycall.h
     ../include/qtpyt/qpyscript.h
         pymodule.cpp
         pymodule.h
