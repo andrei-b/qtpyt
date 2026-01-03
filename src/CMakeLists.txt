@@ -56,8 +56,8 @@ set(LIBRARY_HEADERS
         internal/pyobjectw.h
         internal/qpymoduleimpl.cpp
         internal/qpymoduleimpl.h
-        globainit.cpp
-        globainit.h
+        globalinit.cpp
+        ../include/qtpyt/globalinit.h
 )
 
 # Create the shared library
