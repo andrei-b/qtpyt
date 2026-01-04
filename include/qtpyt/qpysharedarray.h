@@ -37,6 +37,8 @@ inline std::shared_ptr<OwnerState> make_owner(void* estate, void (*deleter)(void
 
 } // namespace detail
 
+
+class external;
 template <typename T>
 class QPySharedArray {
 public:
@@ -139,6 +141,7 @@ public:
     }
 
 private:
+
     struct Data {
 
         QByteArray owned;

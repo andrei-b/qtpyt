@@ -60,6 +60,7 @@ TEST(QPyModuleBase, TestQPySharedArrayShared) {
     arr[0] = 1.23;
     arr[1] = 4.56;
     qtpyt::QPyModuleBase m("def test_func(arr):\n"
+                               "    print(f'Before: {arr[0]}')\n"
                                "    print(f'Before: {arr[1]}')\n"
                                "    arr[0] = 2.72\n"
                                "    arr[1] = 3.14\n"

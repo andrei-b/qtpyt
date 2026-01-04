@@ -141,6 +141,34 @@ qtpyt::QPySharedArray<T> from_buffer(py::buffer b, bool allowZeroCopy = true, bo
         return QVariant();
     }
 
+    class external {
+public:
+    external(const pybind11::memoryview &m) : memoryview(m) {
+    }
+    pybind11::memoryview memoryview;
+
+    ~external() = default;
+
+};
+
+    template<typename  T>
+    auto toMemoryView(QPySharedArray<T>* _this)  {
+    static_assert(std::is_trivially_copyable_v<T>,
+                  "Typed memoryview requires trivially copyable T");
+
+    const py::ssize_t n = static_cast<py::ssize_t>(_this->size());
+
+    py::gil_scoped_acquire gil;
+
+    return py::memoryview::from_buffer(const_cast<void *>(static_cast<const void *>(_this->constData())),
+                                       static_cast<py::ssize_t>(sizeof(T)), // itemsize
+                                       py::format_descriptor<T>::format().c_str(),
+                                       std::vector<py::ssize_t>{n}, // shape
+                                       std::vector<py::ssize_t>{static_cast<py::ssize_t>(sizeof(T))},
+                                       _this->isReadOnly());
+    //    _this->storeExternal(std::make_shared<external>(mm));
+   //return mm;
+}
 
     template<typename T>
     static int registerSharedArray(const QString &name, bool allowZeroCopy = true) {
@@ -152,7 +180,7 @@ qtpyt::QPySharedArray<T> from_buffer(py::buffer b, bool allowZeroCopy = true, bo
 
         addFromQVariantFunc(id, [](const QVariant &v) {
             QPySharedArray<T> arr = v.template value<QPySharedArray<T> >();
-            auto obj = to_memoryview<T>(&arr);
+            auto obj = toMemoryView<T>(&arr);
             return obj;
         });
 
