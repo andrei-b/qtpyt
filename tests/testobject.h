@@ -1,7 +1,4 @@
 #pragma once
-
-#define PYBIND11_NO_KEYWORDS
-#include <pybind11/pybind11.h>
 #include <qtpyt/qpysharedarray.h>
 #include <QObject>
 #include <QPoint>

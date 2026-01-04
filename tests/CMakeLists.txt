@@ -14,7 +14,6 @@ include(GoogleTest)
 
 # Create test executable
 add_executable(qtpyt_tests
-        test_conversions.cpp
         test_qpymodulebase.cpp
         test_qpyfuture.cpp
         test_qpymodule.cpp
@@ -27,6 +26,9 @@ add_executable(qtpyt_tests
         test_asyncslots.cpp
         TestObject_2.cpp
         TestObject_2.h
+        registertypes.cpp
+        registertypes.h
+        test_conversions.cpp
 
 )
 
@@ -86,10 +88,13 @@ target_link_libraries(qtpyt_tests
         Qt::CorePrivate
         Python314t::Python
 )
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/tests/registertypes.cpp PROPERTIES SKIP_AUTOMOC ON)
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/tests/registertypes.h PROPERTIES SKIP_AUTOMOC ON)
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/tests/test_conversions.cpp PROPERTIES SKIP_AUTOMOC ON)
+
 
 # Set include directories
-target_include_directories(qtpyt_tests PRIVATE "${pybind11_SOURCE_DIR}/include")
-target_include_directories(qtpyt_tests PRIVATE ${Python314t_INCLUDE_DIR})
+
 set (Python_EXECUTABLE, ${Python314t_EXECUTABLE})
 #target_link_libraries(qtpyt_tests PRIVATE qtpyt gtest_main)
 # ensure pybind11 include is available (pybind11 is already FetchContent earlier)

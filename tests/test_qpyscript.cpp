@@ -1,6 +1,3 @@
-#define  PYBIND11_NO_KEYWORDS
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
 #include "qtpyt/qpyscript.h"
 #include "qtpyt/qpysharedarray.h"
 #include <filesystem>
@@ -24,13 +21,6 @@ static std::filesystem::path testdata_path(std::string_view rel) {
 class QPyScriptTest : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {
-        qtpyt::registerSharedArray<float>("const QPySharedArray<float>&", true);
-        qtpyt::registerSharedArray<double>("QPySharedArray<double>", true);
-        qtpyt::registerSharedArray<long long>(" QPySharedArray<long long>", true);
-        auto newid = qtpyt::registerContainerType<QList<int>>("QList<int>");
-        qtpyt::registerContainerType<QList<QVector3D>>("QList<QVector3D>");
-        qtpyt::registerContainerType<std::map<int, QString>>("std::map<int, QString>");
-        qWarning() <<" Registered std::list<int> with type id " << newid;
     }
     static void TearDownTestSuite() {
         // runs once after all tests in this fixture

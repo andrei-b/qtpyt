@@ -42,9 +42,6 @@ class QPyFutureNotifier1 : public QObject, public qtpyt::IQPyFutureNotifier {
 class AsycSlotsTest: public ::testing::Test {
 protected:
     static void SetUpTestSuite() {
-        qtpyt::registerSharedArray<float>("const QPySharedArray<float>&", true);
-        auto newid = qtpyt::registerContainerType<QList<int>>("QList<int>");
-        qtpyt::registerContainerType<std::map<int, QString>>("std::map<int, QString>");
 
     }
     static void TearDownTestSuite() {
@@ -289,7 +286,6 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotStringIntMapArg) {
     TestObject_2 object;
-    qtpyt::registerQMapType<QString, int>("QMap<QString, int>");
     auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_string_int_map(m):\n"
                                       "    print('m=', m)\n"
@@ -349,7 +345,6 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
     TestObject_2 object;
-    qtpyt::registerSharedArray<double>("QPySharedArray<double>");
     auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_shared_array(arr):\n"
                                       "    if len(arr) == 3 and arr[0] == 1.1 and arr[1] == 2.2 and arr[2] == 3.3:\n"
@@ -383,7 +378,6 @@ TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotQPairArg) {
     TestObject_2 object;
-    qtpyt::registerQPairType<QString, int>("QPair<QString, int>");
     auto m = qtpyt::QPyModule("import qembed\n"
                                       "def slot_qpair(p):\n"
                                       "    if p[0] == 'key' and p[1] == 123:\n"

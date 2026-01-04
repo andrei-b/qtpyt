@@ -1,11 +1,6 @@
 #include <gtest/gtest.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-
 #include "qtpyt/qpymodule.h"
-
-namespace py = pybind11;
-
+#include "qtpyt/qpyfuture.h"
 TEST(QPyFuture, QPyFutureRun) {
     auto m = qtpyt::QPyModule("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);

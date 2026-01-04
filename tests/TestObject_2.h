@@ -16,8 +16,6 @@ class TestObject_2 : public QObject {
 
 public:
     explicit TestObject_2(QObject* parent = nullptr) : QObject(parent) {
-        qtpyt::registerSharedArray<double>("QPySharedArray<double>");
-        qtpyt::registerQPairType<QString, int>("QPair<QString, int>");
     }
 
     bool success() const { return m_success; }

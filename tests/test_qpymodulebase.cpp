@@ -1,13 +1,8 @@
 #include <filesystem>
 #include <gtest/gtest.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-
 #include "qtpyt/qpymodule.h"
 #include <qtpyt/qpysharedarray.h>
 #include <QPoint>
-
-namespace py = pybind11;
 
 TEST(QPyModuleBase, MakeFunctionRunsAndReturns) {
     qtpyt::QPyModuleBase m("def test_func(x, y):\n"
@@ -61,7 +56,6 @@ TEST(QPyModuleBase, TestQPointReturnValue) {
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayShared) {
-    qtpyt::registerSharedArray<double>("QPySharedArray<double>", true);
     qtpyt::QPySharedArray<double> arr(2);
     arr[0] = 1.23;
     arr[1] = 4.56;
@@ -77,7 +71,6 @@ TEST(QPyModuleBase, TestQPySharedArrayShared) {
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayIntShared) {
-    qtpyt::registerSharedArray<long long>("QPySharedArray<long long>");
     qtpyt::QPySharedArray<long long> arr(4);
     arr[0] = 12300123000123;
     arr[1] = 45600456000456;
@@ -98,7 +91,6 @@ TEST(QPyModuleBase, TestQPySharedArrayIntShared) {
 }
 
 TEST(QPyModuleBase, TestSumQPySharedArrays) {
-    qtpyt::registerSharedArray<float>("QPySharedArray<long long>");
     qtpyt::QPySharedArray<float> a(4);
     a[0] = 1.230123;
     a[1] = 4.560456;
@@ -134,7 +126,6 @@ static std::filesystem::path testdata_path(std::string_view rel) {
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayReturned) {
-    qtpyt::registerSharedArray<int>("QPySharedArray<int>", true);
     qtpyt::QPyModuleBase m(QString::fromStdString(testdata_path("module7.py").string()), qtpyt::QPySourceType::File);
     qtpyt::QPySharedArray<int> a = m.call<qtpyt::QPySharedArray<int>>("make_memoryview" );
     EXPECT_EQ(a[0], 10);
@@ -144,7 +135,6 @@ TEST(QPyModuleBase, TestQPySharedArrayReturned) {
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayReturned2) {
-    qtpyt::registerSharedArray<double>("QPySharedArray<Double>", true);
     qtpyt::QPyModuleBase m(QString::fromStdString(testdata_path("module7.py").string()), qtpyt::QPySourceType::File);
     qtpyt::QPySharedArray<double> a = m.call<qtpyt::QPySharedArray<double>>("make_memoryview_2" );
     EXPECT_EQ(a[0], 1.0);
@@ -154,7 +144,6 @@ TEST(QPyModuleBase, TestQPySharedArrayReturned2) {
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayReturned3) {
-    qtpyt::registerSharedArray<int>("QPySharedArray<int>", true);
     qtpyt::QPyModuleBase m(QString::fromStdString(testdata_path("module7.py").string()), qtpyt::QPySourceType::File);
     auto a = m.call("make_memoryview", "QPySharedArray<int>", {});
     auto b = a.first.value().value<qtpyt::QPySharedArray<int>>();
@@ -165,7 +154,6 @@ TEST(QPyModuleBase, TestQPySharedArrayReturned3) {
 }
 
 TEST(QPyModuleBase, TestQPySharedArrayReturned4) {
-    qtpyt::registerSharedArray<double>("QPySharedArray<Double>", true);
     qtpyt::QPyModuleBase m(QString::fromStdString(testdata_path("module7.py").string()), qtpyt::QPySourceType::File);
     auto a = m.call("make_memoryview_2", "QPySharedArray<double>", {});
     auto b = a.first.value().value<qtpyt::QPySharedArray<double>>();

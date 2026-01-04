@@ -1,14 +1,10 @@
 #include <gtest/gtest.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-
 #include "qtpyt/qpymodule.h"
 
 #include <QVector3D>
 
 #include "qtpyt/qpysharedarray.h"
 
-namespace py = pybind11;
 
 class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
     Q_OBJECT
@@ -122,7 +118,6 @@ TEST(QPyModule, TestMakeAsyncFunction) {
 }
 
 TEST(QPyModule, TestAsincFunctionWithQSharedArray) {
-    qtpyt::registerSharedArray<double>("QPySharedArray<double>", true);
     auto m = qtpyt::QPyModule("def scale_array(arr, factor):\n"
                            "    for i in range(len(arr)):\n"
                            "        arr[i] = arr[i] * factor\n", qtpyt::QPySourceType::SourceString);
@@ -161,7 +156,6 @@ TEST(QPyModule, TestQPyFutureNotifier) {
 }
 
 TEST(QPyModule, TestAsyncReturningPySharedArray) {
-    qtpyt::registerSharedArray<int>("QPySharedArray<int>", true);
     auto m = qtpyt::QPyModule("def create_array(n):\n"
                            "    arr = [i * 10 for i in range(n)]\n"
                            "    return arr\n", qtpyt::QPySourceType::SourceString);

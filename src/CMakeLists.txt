@@ -58,6 +58,7 @@ set(LIBRARY_HEADERS
         internal/qpymoduleimpl.h
         globalinit.cpp
         ../include/qtpyt/globalinit.h
+        internal/sharedarrayinternal.h
 )
 
 # Create the shared library

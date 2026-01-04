@@ -198,7 +198,6 @@ TEST(Conversions, QListQPStringRoundTrip) {
 }
 
 TEST(Conversions, QSharedArrayRoundTrip) {
-    qtpyt::registerSharedArray<float>("QPySharedArray<float>");
     QVector<float> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     qtpyt::QPySharedArray<float> sharedArray(6);
     for (int i = 0; i < data.size(); ++i) {
@@ -216,7 +215,6 @@ TEST(Conversions, QSharedArrayRoundTrip) {
 }
 
 TEST(Conversions, QSharedArrayRoundTrip2) {
-    qtpyt::registerSharedArray<double>("QPySharedArray<double>");
     QVector<double> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     qtpyt::QPySharedArray<double> sharedArray(6);
     for (int i = 0; i < data.size(); ++i) {
@@ -235,7 +233,6 @@ TEST(Conversions, QSharedArrayRoundTrip2) {
 
 
 TEST(Conversions, QSharedArrayRoundTrip3) {
-    qtpyt::registerSharedArray<long long>("QPySharedArray<long long>", false);
     QVector<int64_t> data = {500000000, 4, 3, 2, 1};
     qtpyt::QPySharedArray<long long> sharedArray(6);
     for (int i = 0; i < data.size(); ++i) {
@@ -374,7 +371,6 @@ TEST(Conversions, QMapIntQVector4DRoundTrip) {
 }
 
 TEST(Conversions, QSharedArrayUShortRoundTrip) {
-    qtpyt::registerSharedArray<unsigned short>("QPySharedArray<unsigned short>");
 
     qtpyt::QPySharedArray<unsigned short> sharedArray(6);
     sharedArray[0] = static_cast<unsigned short>(0);
