@@ -104,41 +104,11 @@ public:
     }
 
     operator QVariant() const {
-        return toQVariant();
+        return QVariant::fromValue(*this);
     }
 
-    QVariant toQVariant() const {
-        QVariantMap m;
-        m.insert(QStringLiteral("size"), QVariant::fromValue<int>(static_cast<int>(size())));
-        QByteArray bytes;
-        if (size() > 0) {
-            bytes = QByteArray(reinterpret_cast<const char*>(constData()),
-                               static_cast<int>(size() * sizeof(T)));
-        }
-        m.insert(QStringLiteral("data"), bytes);
-        m.insert(QStringLiteral("readonly"), isReadOnly());
-        return QVariant::fromValue(m);
-    }
 
-    // Reconstruct from a QVariant produced by toQVariant()
-    static QPySharedArray fromQVariant(const QVariant &v) {
-        if (!v.canConvert<QVariantMap>()) return QPySharedArray();
-        QVariantMap m = v.toMap();
-        QByteArray bytes = m.value(QStringLiteral("data")).toByteArray();
-        int n_bytes = bytes.size();
-        if (n_bytes == 0) {
-            QPySharedArray empty;
-            if (m.value(QStringLiteral("readonly")).toBool()) empty.setReadOnly(true);
-            return empty;
-        }
-        size_type n = static_cast<size_type>(n_bytes / sizeof(T));
-        QPySharedArray a(n);
-        if (n > 0 && a.data()) {
-            std::memcpy(a.data(), bytes.constData(), static_cast<size_t>(n_bytes));
-        }
-        if (m.value(QStringLiteral("readonly")).toBool()) a.setReadOnly(true);
-        return a;
-    }
+
 
 private:
 

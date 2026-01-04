@@ -15,6 +15,7 @@
 #include "../conversions.h"
 #include <QVariant>
 #include <vector>
+#include "pep3118format.h"
 
 namespace qtpyt {
 namespace py = pybind11;
@@ -159,15 +160,12 @@ public:
     const py::ssize_t n = static_cast<py::ssize_t>(_this->size());
 
     py::gil_scoped_acquire gil;
-
     return py::memoryview::from_buffer(const_cast<void *>(static_cast<const void *>(_this->constData())),
                                        static_cast<py::ssize_t>(sizeof(T)), // itemsize
                                        py::format_descriptor<T>::format().c_str(),
                                        std::vector<py::ssize_t>{n}, // shape
                                        std::vector<py::ssize_t>{static_cast<py::ssize_t>(sizeof(T))},
                                        _this->isReadOnly());
-    //    _this->storeExternal(std::make_shared<external>(mm));
-   //return mm;
 }
 
     template<typename T>
