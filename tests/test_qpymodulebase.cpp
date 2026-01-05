@@ -93,16 +93,14 @@ TEST(QPyModuleBase, TestQPySharedArrayIntShared) {
 }
 
 TEST(QPyModuleBase, TestSumQPySharedArrays) {
-    qtpyt::QPySharedArray<float> a(4);
-    a[0] = 1.230123;
-    a[1] = 4.560456;
-    a[2] = 5.780789;
-    a[3] = 10.111200;
-    qtpyt::QPySharedArray<float> b(4);
-    b[0] = 9.870987;
-    b[1] = 5.430543;
-    b[2] = 4.210421;
-    b[3] = 0.888800;
+    qtpyt::QPySharedArray<float> a(4096);
+    qtpyt::QPySharedArray<float> b(4096);
+    for (int i = 0; i < 4096; ++i) {
+        // set a[i] to random value [0..1.0]
+        float random = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        a[i] = random;
+        b[i] = 1 - random;
+    }
 
     qtpyt::QPyModuleBase m(    "import array\n"
                                "import struct\n"
@@ -116,10 +114,9 @@ TEST(QPyModuleBase, TestSumQPySharedArrays) {
                                qtpyt::QPySourceType::SourceString);
 
     auto r = m.call<qtpyt::QPySharedArray<float>, qtpyt::QPySharedArray<float>, qtpyt::QPySharedArray<float>>("add_arrays", std::move(a), std::move(b));
-    EXPECT_FLOAT_EQ(r[0], 11.101110);
-    EXPECT_FLOAT_EQ(r[1], 9.9909992);
-    EXPECT_FLOAT_EQ(r[2], 9.991210);
-    EXPECT_FLOAT_EQ(r[3], 10.999999);
+    for (int i = 0; i < 4096; ++i) {
+        EXPECT_FLOAT_EQ(r[i], 1.0f);
+    }
 }
 
 
