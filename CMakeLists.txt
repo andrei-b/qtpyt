@@ -35,6 +35,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PYBIND11_NOPYTHON OFF)
 add_subdirectory(third_party/pybind11)
 
+set (QTPYT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set (QTPYT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set (QTPYT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 # Create module (example)
 pybind11_add_module(qembed src/q_embed_meta_object_py.cpp)
 # pybind11_add_module wires up include/link flags automatically; you can still add link/compile options:
@@ -57,3 +61,4 @@ find_package(Qt6 OPTIONAL_COMPONENTS CorePrivate)
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(demos)

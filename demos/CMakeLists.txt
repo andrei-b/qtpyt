@@ -17,4 +17,4 @@ qt_policy(SET QTP0004 NEW)
 qt_policy(SET QTP0001 NEW)
 qt_standard_project_setup()
 
-add_subdirectory(alarmclock)
+add_subdirectory(timer_app)
