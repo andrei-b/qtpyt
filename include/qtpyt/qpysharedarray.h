@@ -227,9 +227,6 @@ public:
         return QVariant::fromValue(*this);
     }
 
-
-
-
 private:
 
     /**

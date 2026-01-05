@@ -60,6 +60,7 @@ set(LIBRARY_HEADERS
         ../include/qtpyt/globalinit.h
         internal/sharedarrayinternal.h
         ../demos/timer_app/mainwindow.cpp
+        internal/stringpool.h
 )
 
 # Create the shared library

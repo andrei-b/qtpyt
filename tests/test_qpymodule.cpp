@@ -2,6 +2,8 @@
 #include "qtpyt/qpymodule.h"
 
 #include <QVector3D>
+#include <utility>
+#include <utility>
 
 #include "qtpyt/qpysharedarray.h"
 
@@ -117,7 +119,7 @@ TEST(QPyModule, TestMakeAsyncFunction) {
     EXPECT_EQ(f.value().resultAs<QVector3D>(0), QVector3D(6.0, 10.0, 13.0));
 }
 
-TEST(QPyModule, TestAsincFunctionWithQSharedArray) {
+TEST(QPyModule, TestAsincFunctionWithQPySharedArray) {
     auto m = qtpyt::QPyModule("def scale_array(arr, factor):\n"
                            "    for i in range(len(arr)):\n"
                            "        arr[i] = arr[i] * factor\n", qtpyt::QPySourceType::SourceString);
@@ -211,5 +213,68 @@ TEST (QPyModule, TestAddFunctionWithArgs) {
     double res = m.call<double>("call_test_func", 3.0, 4.0);
     EXPECT_EQ(res, 12.0);
 }
+
+
+
+TEST(QPyModule, TestAsyncFunctionWithQPySharedArray2) {
+    bool finish =false;
+    bool error = false;
+    std::function<void()> n_finish = [&finish]() {
+        finish = true;
+    };
+    std::function<void()> n_error = [&error]() {
+        error = true;
+    };
+
+    class AsyncNotifier : public QPyFutureNotifier {
+    public:
+        AsyncNotifier(std::function<void()> onFinish,
+                      std::function<void()> onError)
+            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
+        void notifyStarted()  override {
+        }
+        void notifyFinished(const QVariant& value = QVariant()) override{
+            onFinish_();
+        }
+        void notifyResultAvailable(const QVariant& value) override {
+        }
+        void notifyErrorOccurred(const QString& errorMessage) override {
+            onError_();
+        }
+    private:
+        std::function<void()> onFinish_;
+        std::function<void()> onError_;
+    };
+
+    auto m = qtpyt::QPyModule("def scale_array(arr, factor):\n"
+                           "    for i in range(len(arr)):\n"
+                           "        arr[i] = arr[i] * factor\n"
+                           "    for i in range(len(arr)):\n"
+                           "        if arr[i] != i * factor:\n"
+                           "            raise RuntimeError(\"Memory check error\")\n",
+                           qtpyt::QPySourceType::SourceString);
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySharedArray<double>, double>(
+        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
+{
+    qtpyt::QPySharedArray<double> arr(4096*4096);
+    for (int i = 0; i < 4096*4096; ++i) {
+        arr[i] = static_cast<double>(i);
+    }
+    scale_array(arr, 2.5);
+}
+    int count = 0;
+    while (!finish && !error) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        QThread::msleep(1);
+        count++;
+        if (count > 12060000) {
+            qWarning() << "TestAsyncFunctionWithQPySharedArray2: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
+            break;
+        }
+    }
+    EXPECT_TRUE(finish);
+    EXPECT_FALSE(error);
+}
+
 
 #include "test_qpymodule.moc"
