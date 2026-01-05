@@ -10,11 +10,21 @@
 #   Python314t_LIBRARY
 #   Python314t_VERSION
 
+if(DEFINED ENV{PYTHON314T_HOME})
+    set(PYTHON314T_HOME "$ENV{PYTHON314T_HOME}")
+else()
+    message(WARNING "Environment variable `PYTHON314T_HOME` not set; falling back to `/opt/python-3.14t`")
+    set(PYTHON314T_HOME "/opt/python-3.14t")
+endif()
+
+set(PYTHON314T_BIN_HINT "${PYTHON314T_HOME}/bin")
+message(STATUS "Looking for python3.14t in: ${PYTHON314T_BIN_HINT} and \$ENV{PATH}")
+
 find_program(Python314t_EXECUTABLE
-    NAMES python3.14t python3.14
-    HINTS
+        NAMES python3.14t python3.14
+        HINTS
         ENV PATH
-        /opt/python-3.14t/bin
+        "${PYTHON314T_BIN_HINT}"
 )
 
 if (NOT Python314t_EXECUTABLE)

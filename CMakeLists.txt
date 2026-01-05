@@ -4,8 +4,11 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-list(PREPEND CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.10.1/gcc_64")
-
+if(DEFINED ENV{QT_DIR})
+    list(PREPEND CMAKE_PREFIX_PATH "$ENV{QT_DIR}")
+else()
+    message(FATAL_ERROR "Environment variable `QT_DIR` not set; please set `QT_DIR` to your Qt installation path (e.g. $HOME/Qt/6.10.1/gcc_64).")
+endif()
 project(qtpyt VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
