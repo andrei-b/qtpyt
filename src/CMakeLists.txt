@@ -61,6 +61,8 @@ set(LIBRARY_HEADERS
         internal/sharedarrayinternal.h
         ../demos/timer_app/mainwindow.cpp
         internal/stringpool.h
+        internal/qpymemoryviewinternal.cpp
+        internal/qpymemoryviewinternal.h
 )
 
 # Create the shared library
