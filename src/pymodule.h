@@ -3,6 +3,6 @@
 class QObject;
 namespace qtpyt {
 
-    void makeEmbeddedModule(QObject * root_obj);
+    void makeEmbeddedModule();
 
 } // namespace qtpyt

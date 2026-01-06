@@ -51,9 +51,9 @@ protected:
 
 TEST_F(AsycSlotsTest, CallAsyncSlot) {
     TestObj obj;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_async(p):\n"
-                                      "    qembed.set_property(obj, 'intProperty', p[0] + p[1])\n"
+                                      "    qt_interop.set_property(obj, 'intProperty', p[0] + p[1])\n"
                                       "    print(f'Async slot called with point: {p}, set intProperty to {p[0] + p[1]}')\n"
                                       "    return p[0] + p[1]", qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &obj);
@@ -77,10 +77,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlot) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotIntArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_int(i):\n"
                                       "    if i == 42:"
-                                      "    qembed.set_property(obj, 'success', True)\n",
+                                      "    qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -107,10 +107,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotStringArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_string(s):\n"
                                       "    if s == 'hello':\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -137,10 +137,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotPointArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_point(p):\n"
                                       "    if p[0] == 5 and p[1] == 10:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -167,10 +167,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotPointArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotVector3DArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_vec3(v):\n"
                                       "    if v[0] == 1.0 and v[1] == 2.0 and v[2] == 3.0:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -197,11 +197,11 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVector3DArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotVariantArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_variant(v):\n"
                                       "    print(\"v=\", v)\n"
                                       "    if v == 3.14:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -228,10 +228,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVariantArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotVariantListArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_variant_list(v):\n"
                                       "    if v == (1, 2, 3, 4, 5):\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -257,10 +257,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotVariantListArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_int_list(v):\n"
                                       "    if v == (10, 20, 30):\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -286,11 +286,11 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotStringIntMapArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_string_int_map(m):\n"
                                       "    print('m=', m)\n"
                                       "    if m == {'a': 1, 'b': 2}:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -316,10 +316,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringIntMapArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_string_and_int(s, i):\n"
                                       "    if s == 'value' and i == 99:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -345,10 +345,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_shared_array(arr):\n"
                                       "    if len(arr) == 3 and arr[0] == 1.1 and arr[1] == 2.2 and arr[2] == 3.3:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -378,10 +378,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotQPairArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_qpair(p):\n"
                                       "    if p[0] == 'key' and p[1] == 123:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -408,10 +408,10 @@ TEST_F(AsycSlotsTest, CallAsyncSlotQPairArg) {
 
 TEST_F(AsycSlotsTest, CallAsyncSlotQVariantMapArg) {
     TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qembed\n"
+    auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_qvariant_map(m):\n"
                                       "    if m == {'x': 10, 'y': 20}:\n"
-                                      "        qembed.set_property(obj, 'success', True)\n",
+                                      "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();

@@ -18,14 +18,15 @@ static const char* names[] = {"get_property", "set_property", "invoke", "find_ob
 
 std::tuple<bool, QString> QPyScript::runScriptFileGlobal(const QString& script_path, QObject* root_obj) {
     try {
-        makeEmbeddedModule(root_obj);
         py::module_ sys = py::module_::import("sys");
 
         py::module_ main = py::module_::import("__main__");
+        py::dict globals = main.attr("__dict__");
         const auto ptr = reinterpret_cast<uintptr_t>(root_obj);
-        py::int_ py_ptr = py::int_(ptr);
+        globals["root_obj"] = py::int_(ptr);
         py::module_ runpy = py::module_::import("runpy");
-        runpy.attr("run_path")(script_path.toStdString());
+
+        runpy.attr("run_path")(script_path.toStdString(), py::arg("init_globals") = globals);
 
         return {true, {}};
     } catch (const py::error_already_set& e) {
@@ -37,11 +38,13 @@ std::tuple<bool, QString> QPyScript::runScriptFileGlobal(const QString& script_p
 
 std::tuple<bool, QString> QPyScript::runScriptGlobal(const QString& script, QObject* root_obj) {
     try {
-        makeEmbeddedModule(root_obj);
         py::module_ main = py::module_::import("__main__");
         py::dict globals = main.attr("__dict__");
-        py::exec(script.toStdString(), globals);
 
+        const auto ptr = reinterpret_cast<uintptr_t>(root_obj);
+        globals["root_obj"] = py::int_(ptr);
+
+        py::exec(script.toStdString(), globals);
         return {true, {}};
     } catch (const py::error_already_set& e) {
         return {false, QStringLiteral("Python error: ").append(QString::fromStdString(e.what()))};

@@ -18,11 +18,11 @@ namespace qtpyt {
 
         extern "C" {
             // CPython will call this to create the module
-            PyObject* PyInit_qembed();
+            PyObject* PyInit_qt_interop();
         }
 
 
-        PYBIND11_EMBEDDED_MODULE(qembed, m, py::mod_gil_not_used()) {
+        PYBIND11_EMBEDDED_MODULE(qt_interop, m, py::mod_gil_not_used()) {
             m.doc() = "pybind11 bindings for QEmbedMetaObject invokeFromVariantListDynamic";
 
             // wrapper: (uintptr_t obj_ptr, const std::string& method, py::args args)
@@ -61,9 +61,9 @@ namespace qtpyt {
 
     static std::mutex m;
 
-    static const auto module_name = "qembed";
+    static const auto module_name = "qt_interop";
 
-    void makeEmbeddedModule(QObject * root_obj) {
+    void makeEmbeddedModule() {
         std::lock_guard<std::mutex> lock(m);
         if (!initialized) {
             initialized = true;
@@ -74,10 +74,7 @@ namespace qtpyt {
 
             pybind11::gil_scoped_acquire acquire;
 
-            py::module_ qembed = py::module_::import(module_name);
-            const auto ptr = reinterpret_cast<uintptr_t>(root_obj);
-            py::int_ py_ptr = py::int_(ptr);
-            qembed.attr("root_obj") = py_ptr;
+            py::module_ qt_interop = py::module_::import(module_name);
         }
     }
 

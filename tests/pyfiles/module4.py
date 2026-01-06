@@ -1,6 +1,6 @@
-import qembed
+import qt_interop
 
-v = qembed.invoke(qembed.root_obj, 'mulVect', (2, 3), 2)
+v = qt_interop.invoke(root_obj, 'mulVect', (2, 3), 2)
 print("Returned vect:", v)
 
 if (v != (4, 6)):

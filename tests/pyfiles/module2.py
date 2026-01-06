@@ -1,3 +1,3 @@
-import qembed
+import qt_interop
 
-qembed.invoke_ret_void(qembed.root_obj, 'setPoints', (10,20), (30,40))
+qt_interop.invoke_ret_void(root_obj, 'setPoints', (10,20), (30,40))

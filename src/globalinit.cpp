@@ -15,6 +15,7 @@
 #include <QQuaternion>
 #include <QMatrix4x4>
 #include <complex>
+#include "pymodule.h"
 
 namespace qtpyt {
     bool g_PyInitialized = false;
@@ -31,6 +32,8 @@ namespace qtpyt {
                 qInfo() << "Python initialized.";
                 qInfo() << "Version:" << QString::fromStdString(version.cast<std::string>());
                 qInfo() << "Platform:" << QString::fromStdString(platform.cast<std::string>());
+            }
+                makeEmbeddedModule();
                 registerSharedArray<int>("QPySharedArray<int>");
                 registerSharedArray<double>("QPySharedArray<double>");
                 registerSharedArray<float>("QPySharedArray<float>");
@@ -56,7 +59,7 @@ namespace qtpyt {
                 registerContainerType<QList<QPointF>>("QList<QPointF>");
                 registerContainerType<QList<QVector3D>>("QList<QVector3D>");
                 registerContainerType<QList<QVector4D>>("QList<QVector4D>");
-            }
+
         }
     }
 

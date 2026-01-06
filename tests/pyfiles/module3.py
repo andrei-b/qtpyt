@@ -1,6 +1,6 @@
-import qembed
+import qt_interop
 
-v = qembed.invoke(qembed.root_obj, 'getInts')
+v = qt_interop.invoke(root_obj, 'getInts')
 
 print("Returned ints:", v)
 
@@ -10,7 +10,7 @@ else:
     print("Return value is as expected")
 
 
-u = qembed.invoke(qembed.root_obj, 'retMap')
+u = qt_interop.invoke(root_obj, 'retMap')
 
 print("Returned map:", u)
 

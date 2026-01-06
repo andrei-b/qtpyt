@@ -1,10 +1,10 @@
-import qembed
+import qt_interop
 
-qembed.set_property(qembed.root_obj, 'intProperty', 111)
+qt_interop.set_property(root_obj, 'intProperty', 111)
 
-qembed.set_property(qembed.root_obj, 'value', (24,56))
+qt_interop.set_property(root_obj, 'value', (24,56))
 
-v = qembed.get_property(qembed.root_obj, 'value')
+v = qt_interop.get_property(root_obj, 'value')
 
 print("Got property 'value':", v)
 
