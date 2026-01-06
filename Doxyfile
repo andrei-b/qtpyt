@@ -130,7 +130,9 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 
 INPUT                  = include/qtpyt \
-                         src
+                         src \
+                         docs/type_conversion.md \
+                         USE_MDFILE_AS_MAINPAGE = README.md
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.c \
@@ -142,7 +144,9 @@ FILE_PATTERNS          = *.c \
                          *.hh \
                          *.hxx \
                          *.hpp \
-                         *.h++
+                         *.h++ \
+                         *.md \
+                         *.dox
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO

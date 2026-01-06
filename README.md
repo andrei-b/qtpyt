@@ -1,3 +1,16 @@
+/**
+@mainpage qtpyt Documentation
+
+@section intro Introduction
+qtpyt embeds multi-threaded Python into C++ Qt applications.
+
+@section topics Key Topics
+- @subpage type_conversion - Variable type conversion rules
+- ...
+
+@see qtpyt::QtPyT
+*/
+
 # qtpyt
 Embeds multi-threaded Python into the C++ Qt Application
 
