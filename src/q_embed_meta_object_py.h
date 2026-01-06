@@ -16,15 +16,18 @@ namespace qtpyt {
 
         py::object invoke_returning_from_args(const uintptr_t obj_ptr, const std::string& method, const py::args& args);
 
-        // obj_ptr: numeric pointer to QObject (uintptr_t)
-        // method: method name (e.g. "setWindowTitle")
-        // args: Python list of arguments convertible to QVariant
         bool invoke_from_variant_list(uintptr_t obj_ptr, const std::string& method, py::object& return_value,
                                              const py::iterable& args);
 
         bool set_property(uintptr_t obj_ptr, const std::string& property_name, const py::object& value);
+
         bool set_property_async(uintptr_t obj_ptr, const std::string& property_name, const py::object& value);
 
-    py::object get_property(uintptr_t obj_ptr, const std::string& property_name);
+        py::object get_property(uintptr_t obj_ptr, const std::string& property_name);
+
+        py::object get_property_mt(uintptr_t obj_ptr, const std::string& property_name);
+
+        py::object invoke_returning_from_args_mt(const uintptr_t obj_ptr, const std::string &method,
+            const py::args &args);
 
 } // namespace qtpyt

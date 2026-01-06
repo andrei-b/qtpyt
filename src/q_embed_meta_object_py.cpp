@@ -11,6 +11,11 @@
 #include <qpoint.h>
 #include <QString>
 
+#include "conversions.h"
+#include "conversions.h"
+#include "../../Qt/6.10.1/gcc_64/include/QtCore/QVariant"
+#include "internal/q_py_queue.h"
+
 class QObject;
 namespace qtpyt {
     uintptr_t find_object_by_name(const uintptr_t root_ptr, const std::string& name,
@@ -50,6 +55,21 @@ namespace qtpyt {
     py::object invoke_returning_from_args(const uintptr_t obj_ptr, const std::string &method, const py::args &args) {
         py::object retValue;
         invoke_from_args(obj_ptr, method, retValue, args);
+        return retValue;
+    }
+
+    py::object invoke_returning_from_args_mt(const uintptr_t obj_ptr, const std::string &method,
+        const py::args &args) {
+        QObject* obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
+        if (!obj) {
+            py::print("QEmbedMetaObjectPy.invoke_returning_from_args_async: null object pointer");
+            return py::none();
+        }
+        py::object retValue;
+        QMetaObject::invokeMethod(obj, [obj_ptr, &method, &retValue, &args]() {
+            invoke_from_args(obj_ptr, method, retValue, args);
+            return retValue;
+        }, Qt::BlockingQueuedConnection);
         return retValue;
     }
 
@@ -185,7 +205,7 @@ namespace qtpyt {
             }
             QMetaObject::invokeMethod(obj, [obj, v, propNameStr]() {
                     obj->setProperty(propNameStr.c_str(), v.value());
-                }, Qt::QueuedConnection);
+                }, Qt::AutoConnection);
             return true;
         }
         auto v = pyObjectToQVariant(value, QByteArray());
@@ -196,7 +216,7 @@ namespace qtpyt {
         }
         QMetaObject::invokeMethod(obj, [obj, v, propNameStr]() {
              obj->setProperty(propNameStr.c_str(), v.value());
-        }, Qt::QueuedConnection);
+        }, Qt::AutoConnection);
         return true;
     }
     py::object get_property(uintptr_t obj_ptr, const std::string& property_name) {
@@ -230,6 +250,23 @@ namespace qtpyt {
             return py::none();
         }
         return qvariantToPyObject(v);
+    }
+
+    py::object get_property_mt(uintptr_t obj_ptr, const std::string &property_name) {
+        const auto obj = reinterpret_cast<QObject *>(static_cast<uintptr_t>(obj_ptr));
+        if (!obj) {
+            py::print("QEmbedMetaObjectPy.set_property: null object pointer");
+            return py::none();
+        }
+
+        const QByteArray propName = QByteArray::fromStdString(property_name);
+        const std::string propNameStr = propName.toStdString(); // для py::print
+        QVariant val;
+        QMetaObject::invokeMethod(obj, [&val, obj, propNameStr]() {
+            const auto v = obj->property(propNameStr.c_str());
+            val = v;
+        }, Qt::BlockingQueuedConnection);
+        return qvariantToPyObject(val);
     }
 
     static py::object invoke_returning(uintptr_t obj_ptr, const std::string& method, py::args args) {

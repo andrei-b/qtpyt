@@ -21,15 +21,8 @@ namespace qtpyt {
             PyObject* PyInit_qembed();
         }
 
-#if PY_VERSION_HEX >= 0x030D0000
-        // Declare module can run with GIL disabled (free-threaded)
-        static PyModuleDef_Slot qembed_slots[] = {
-            {Py_mod_gil, Py_MOD_GIL_NOT_USED},
-            {0, nullptr}
-        };
-#endif
 
-        PYBIND11_EMBEDDED_MODULE(qembed, m) {
+        PYBIND11_EMBEDDED_MODULE(qembed, m, py::mod_gil_not_used()) {
             m.doc() = "pybind11 bindings for QEmbedMetaObject invokeFromVariantListDynamic";
 
             // wrapper: (uintptr_t obj_ptr, const std::string& method, py::args args)
@@ -53,13 +46,9 @@ namespace qtpyt {
             // get_property(obj_ptr, property_name)
             m.def("get_property", &get_property, py::arg("obj_ptr"), py::arg("property_name"));
 
+            m.def("get_property_mt", &get_property_mt, py::arg("obj_ptr"), py::arg("property_name"));
 
-#if PY_VERSION_HEX >= 0x030D0000
-            // Patch the module definition to include the slot.
-            // This uses pybind11 internals (stable enough across 2.13.x).
-            auto *def = reinterpret_cast<PyModuleDef*>(PyModule_GetDef(m.ptr()));
-            def->m_slots = qembed_slots;
-#endif
+            m.def("invoke_mt", &invoke_returning_from_args_mt, py::arg("obj_ptr"), py::arg("method"));
 
         }
 
