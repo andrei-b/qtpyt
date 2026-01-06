@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QTime>
 #include <QWidget>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -40,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle("QtPyT Timer");
     resize(200, 140);
+
+    connect(this, &MainWindow::elapsed, m_pythonRunner, &PythonRunner::runFunction);
 }
 
 void MainWindow::onTick()
@@ -55,8 +58,10 @@ void MainWindow::onTick()
 
 void MainWindow::startTimer()
 {
-    if (!m_timer.isActive())
+
+    if (!m_timer.isActive()) {
         m_timer.start();
+    }
 }
 
 void MainWindow::stopTimer()

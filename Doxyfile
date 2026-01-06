@@ -5,9 +5,9 @@
 #---------------------------------------------------------------------------
 
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "qtpyt"
-PROJECT_NUMBER         = "1.0.0"
-PROJECT_BRIEF          = "Embeds multi-threaded Python into the C++ Qt Application"
+PROJECT_NAME           = "QtPyT"
+PROJECT_NUMBER         = "0.0.1"
+PROJECT_BRIEF          = "Interoperation between multi-threaded Python and C++/Qt"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = docs
 CREATE_SUBDIRS         = NO

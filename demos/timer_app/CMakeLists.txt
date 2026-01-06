@@ -14,6 +14,7 @@ qt_add_executable(timer_app
         mainwindow.cpp
         pythonrunner.cpp
         pythonrunner.h
+        resources.qrc
 )
 
 target_include_directories(timer_app PRIVATE
@@ -25,3 +26,9 @@ target_include_directories(timer_app PRIVATE
 )
 
 target_link_libraries(timer_app PRIVATE Qt6::Widgets qtpyt)
+
+qt_add_resources(timer_app "resources"
+        PREFIX "/"
+        FILES
+        slot.py
+)

@@ -5,13 +5,26 @@
 
 #include "q_py_execute_event.h"
 #include "pycall.h"
+#include <qfile.h>
 
 namespace qtpyt {
 
     QPyModuleImpl::QPyModuleImpl(const QString &source, const QPySourceType sourceType)  {
         switch (sourceType) {
-            case QPySourceType::File:
-                buildFromFile(source);
+            case QPySourceType::File: {
+                if (source.startsWith(":")) {
+                    QFile scriptFile(source);
+                    if (!scriptFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                        throw std::runtime_error("QPyModule:: Failed to open resource file: " + source.toStdString());
+                    }
+
+                    const QByteArray scriptContent = scriptFile.readAll();
+                    scriptFile.close();
+                    buildFromString(QString::fromUtf8(scriptContent));
+                } else {
+                    buildFromFile(source);
+                }
+            }
                 break;
             case QPySourceType::SourceString:
                 buildFromString(source);

@@ -1,17 +1,4 @@
-/**
-@mainpage qtpyt Documentation
-
-@section intro Introduction
-qtpyt embeds multi-threaded Python into C++ Qt applications.
-
-@section topics Key Topics
-- @subpage type_conversion - Variable type conversion rules
-- ...
-
-@see qtpyt::QtPyT
-*/
-
-# qtpyt
+# QtPyT
 Embeds multi-threaded Python into the C++ Qt Application
 
 ## Overview
@@ -21,7 +8,7 @@ qtpyt is a powerful integration library that seamlessly bridges Python and Qt/C+
 ## Key Features
 
 - **Bidirectional Integration**: Call Python from C++ and C++ from Python with automatic type conversion
-- **Use special data types to pass large amounts of data between Python and C++ without extra copying
+- **Zero copy data transfer** between the Python and C++ code for many types of vectors and arrays
 - **True Multithreading**: Thanks to the new Python Free-Threaded interpreters one can execute multiple Python routines simultaneously using free-threaded Python 3.14+
 - **Qt Signal/Slot Support**: Connect Python functions directly to Qt signals as slots
 - **Asynchronous Execution**: Run Python code in background threads without blocking the Qt event loop

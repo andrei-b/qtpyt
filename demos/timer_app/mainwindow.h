@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QSpinBox>
+#include "pythonrunner.h"
 
 class QLabel;
 class QPushButton;
@@ -27,4 +28,5 @@ private:
     QSpinBox *m_spin_box_;
     QPushButton *m_startBtn;
     QPushButton *m_stopBtn;
+    PythonRunner* m_pythonRunner{new PythonRunner(QStringLiteral(":/slot.py"), this)};
 };

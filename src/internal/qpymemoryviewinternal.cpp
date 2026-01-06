@@ -77,6 +77,6 @@ void qtpyt::QPyMemoryViewInternal::write_bytes(std::size_t offset, py::bytes src
 py::bytes qtpyt::QPyMemoryViewInternal::read_bytes(std::size_t offset, std::size_t len) const {
     if (offset > nbytes_ || len > (nbytes_ - offset))
         throw std::out_of_range("read_bytes out of range");
-    return py::bytes(reinterpret_cast<const char*>(data_u8() + offset),
+    return py::bytes(reinterpret_cast<const char*>(cdata_u8() + offset),
                      static_cast<py::ssize_t>(len));
 }
