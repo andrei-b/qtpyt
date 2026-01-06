@@ -132,7 +132,8 @@ WARN_LOGFILE           =
 INPUT                  = include/qtpyt \
                          src \
                          docs/type_conversion.md \
-                         USE_MDFILE_AS_MAINPAGE = README.md
+                         docs/mainpage.md \
+                         USE_MDFILE_AS_MAINPAGE = mainpage.md
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.c \
