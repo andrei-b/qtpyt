@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_spin_box_ = new QSpinBox(this);
     m_spin_box_->setRange(0, 3600);
-    m_spin_box_->setValue(10);
+    m_spin_box_->setValue(5);
 
     m_spin_box_->setAlignment(Qt::AlignCenter);
     m_spin_box_->setStyleSheet("font-size: 32px;");

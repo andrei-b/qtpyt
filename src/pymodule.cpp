@@ -48,7 +48,8 @@ namespace qtpyt {
             // set_property(obj_ptr, property_name, value)
             m.def("set_property", &set_property, py::arg("obj_ptr"), py::arg("property_name"),
                   py::arg("value"));
-
+            m.def("set_property_async", &set_property_async, py::arg("obj_ptr"), py::arg("property_name"),
+                             py::arg("value"));
             // get_property(obj_ptr, property_name)
             m.def("get_property", &get_property, py::arg("obj_ptr"), py::arg("property_name"));
 

@@ -23,5 +23,8 @@ namespace qtpyt {
                                              const py::iterable& args);
 
         bool set_property(uintptr_t obj_ptr, const std::string& property_name, const py::object& value);
-        py::object get_property(uintptr_t obj_ptr, const std::string& property_name);
+        bool set_property_async(uintptr_t obj_ptr, const std::string& property_name, const py::object& value);
+
+    py::object get_property(uintptr_t obj_ptr, const std::string& property_name);
+
 } // namespace qtpyt

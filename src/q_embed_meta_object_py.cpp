@@ -122,7 +122,6 @@ namespace qtpyt {
     }
 
     bool set_property(uintptr_t obj_ptr, const std::string& property_name, const py::object& value) {
-
         const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
         if (!obj) {
             py::print("QEmbedMetaObjectPy.set_property: null object pointer");
@@ -146,37 +145,59 @@ namespace qtpyt {
                 py::print("QEmbedMetaObjectPy.set_property: property not writable", propNameStr);
                 return false;
             }
-            if (!prop.write(obj, v.value())) {
-                const std::string expectedTypeStr =
-                    expectedType.isEmpty() ? std::string("<unknown>") : expectedType.toStdString();
-                const char* vTypeC = v.value().typeName() ? v.value().typeName() : "<unknown>";
-                std::string vTypeStr(vTypeC);
-                std::string vStr;
-                if (v.value().canConvert<QString>()) {
-                    vStr = v.value().toString().toStdString();
-                } else {
-                    vStr = "<non-string>";
-                }
-
-                py::print("QEmbedMetaObjectPy.set_property: QMetaProperty::write failed for", propNameStr,
-                          "expectedType=", expectedTypeStr, "qvariantType=", vTypeStr, "value=", vStr);
-                return false;
-            }
+            obj->setProperty(propNameStr.c_str(), v.value());
             return true;
-        } else {
-            // Свойство не найдено в метаобъекте — пробуем динамическое свойство через QObject::setProperty
-            auto v = pyObjectToQVariant(value, QByteArray());
-            if (!v.has_value() || !v.value().isValid()) {
+        }
+         auto v = pyObjectToQVariant(value, QByteArray());
+         if (!v.has_value() || !v.value().isValid()) {
                 py::print("QEmbedMetaObjectPy.set_property: conversion to QVariant failed for dynamic property",
                           propNameStr);
                 return false;
             }
-            bool ok = obj->setProperty(propName.constData(), v.value());
-            if (!ok) {
-                py::print("QEmbedMetaObjectPy.set_property: QObject::setProperty failed for", propNameStr);
-            }
-            return ok;
+            obj->setProperty(propNameStr.c_str(), v.value());
+            return true;
+
+    }
+
+    bool set_property_async(uintptr_t obj_ptr, const std::string& property_name, const py::object& value) {
+        const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
+        if (!obj) {
+            py::print("QEmbedMetaObjectPy.set_property: null object pointer");
+            return false;
         }
+
+        const QByteArray propName = QByteArray::fromStdString(property_name);
+        const std::string propNameStr = propName.toStdString(); // для py::print
+        const QMetaObject* mo = obj->metaObject();
+        int idx = mo->indexOfProperty(propName.constData());
+
+        if (idx >= 0) {
+            QMetaProperty prop = mo->property(idx);
+            QByteArray expectedType = prop.typeName() ? QByteArray(prop.typeName()) : QByteArray();
+            auto v = pyObjectToQVariant(value, expectedType);
+            if (!v.has_value() || !v.value().isValid()) {
+                py::print("QEmbedMetaObjectPy.set_property: conversion to QVariant failed for property", propNameStr);
+                return false;
+            }
+            if (!prop.isWritable()) {
+                py::print("QEmbedMetaObjectPy.set_property: property not writable", propNameStr);
+                return false;
+            }
+            QMetaObject::invokeMethod(obj, [obj, v, propNameStr]() {
+                    obj->setProperty(propNameStr.c_str(), v.value());
+                }, Qt::QueuedConnection);
+            return true;
+        }
+        auto v = pyObjectToQVariant(value, QByteArray());
+        if (!v.has_value() || !v.value().isValid()) {
+             py::print("QEmbedMetaObjectPy.set_property: conversion to QVariant failed for dynamic property",
+                          propNameStr);
+           return false;
+        }
+        QMetaObject::invokeMethod(obj, [obj, v, propNameStr]() {
+             obj->setProperty(propNameStr.c_str(), v.value());
+        }, Qt::QueuedConnection);
+        return true;
     }
     py::object get_property(uintptr_t obj_ptr, const std::string& property_name) {
         const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
