@@ -130,18 +130,13 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 
 INPUT                  = include/qtpyt \
-                         src \
                          docs/type_conversion.md \
                          docs/mainpage.md \
-                         USE_MDFILE_AS_MAINPAGE = mainpage.md
+                         docs/qt_interop.md
+USE_MDFILE_AS_MAINPAGE = docs/mainpage.md
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
-FILE_PATTERNS          = *.c \
-                         *.cc \
-                         *.cxx \
-                         *.cpp \
-                         *.c++ \
-                         *.h \
+FILE_PATTERNS          = *.h \
                          *.hh \
                          *.hxx \
                          *.hpp \
