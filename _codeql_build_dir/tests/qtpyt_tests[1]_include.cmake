@@ -1,5 +1,0 @@
-if(EXISTS "/home/runner/work/qtpyt/qtpyt/_codeql_build_dir/tests/qtpyt_tests[1]_tests.cmake")
-  include("/home/runner/work/qtpyt/qtpyt/_codeql_build_dir/tests/qtpyt_tests[1]_tests.cmake")
-else()
-  add_test(qtpyt_tests_NOT_BUILT qtpyt_tests_NOT_BUILT)
-endif()

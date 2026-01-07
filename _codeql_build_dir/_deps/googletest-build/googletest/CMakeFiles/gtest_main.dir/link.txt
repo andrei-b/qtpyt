@@ -1,1 +1,0 @@
-/home/runner/work/qtpyt/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++ -fPIC -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/gtest_main.dir/link.d -shared -Wl,-soname,libgtest_main.so.1.14.0 -o ../../../lib/libgtest_main.so.1.14.0 CMakeFiles/gtest_main.dir/src/gtest_main.cc.o  -Wl,-rpath,/home/runner/work/qtpyt/qtpyt/_codeql_build_dir/lib: ../../../lib/libgtest.so.1.14.0
