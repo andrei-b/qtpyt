@@ -44,6 +44,8 @@
 build/
 cmake-build-*/
 
+_codeql_build_dir/
+build/
 # IDE specific
 .vscode/
 .idea/
