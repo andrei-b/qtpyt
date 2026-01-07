@@ -484,7 +484,7 @@ TEST_F(AsycSlotsTest1, CallAsyncSlotWithAsync) {
     EXPECT_EQ(p, 30);
 }
 
-TEST_F(AsycSlotsTest1, InvokeAsyncRoutine) {
+TEST_F(AsycSlotsTest1, InvokeMTRoutine) {
     TestObj obj;
     auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def invoke_async():\n"
@@ -511,5 +511,37 @@ TEST_F(AsycSlotsTest1, InvokeAsyncRoutine) {
     QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
     EXPECT_EQ(result, 1);
 }
+
+TEST_F(AsycSlotsTest1, InvokeAsyncRoutine) {
+    TestObj obj;
+    auto m = qtpyt::QPyModule("import qt_interop\n"
+                                      "def invoke_async():\n"
+                                      "    qt_interop.invoke_async(obj, 'setSize', (10, 20))\n"
+                                      "    return 1\n",
+                                      qtpyt::QPySourceType::SourceString);
+    m.addVariable<QObject*>("obj", &obj);
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
+    int result = 0;
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&obj, &result](const QVariant& res) {
+        result = res.toInt();
+    });
+    m.callAsync<>(notifier, "invoke_async", QMetaType::Int);
+    int count = 0;
+    while (result == 0) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        QThread::msleep(1);
+        if (count++ > 200) {
+            break;
+        }
+    }
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+    EXPECT_EQ(result, 1);
+    QString str = obj.getLastCalled();
+    EXPECT_EQ(str, "qsize");
+    QSize s = obj.sizeByQSize;
+    EXPECT_EQ(s, QSize(10, 20));
+
+}
+
 
 #include "test_asyncslots.moc"

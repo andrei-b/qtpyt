@@ -85,6 +85,9 @@ public:
 
     int intProperty() const { return m_intProperty; }
     void setIntProperty(int v) { m_intProperty = v; }
+    QString getLastCalled() {
+        return lastCalled;
+    }
     int m_intProperty = 0;
     QString lastCalled;
     QSize sizeByInts;
