@@ -46,6 +46,10 @@ cmake-build-*/
 
 _codeql_build_dir/
 build/
+docs/html
+html/*
+docs/latex
+latex/*
 # IDE specific
 .vscode/
 .idea/
