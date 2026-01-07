@@ -1,1 +1,0 @@
-/home/runner/work/qtpyt/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++ -fPIC -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/gmock.dir/link.d -shared -Wl,-soname,libgmock.so.1.14.0 -o ../../../lib/libgmock.so.1.14.0 "CMakeFiles/gmock.dir/src/gmock-all.cc.o"  -Wl,-rpath,/home/runner/work/qtpyt/qtpyt/_codeql_build_dir/lib: ../../../lib/libgtest.so.1.14.0

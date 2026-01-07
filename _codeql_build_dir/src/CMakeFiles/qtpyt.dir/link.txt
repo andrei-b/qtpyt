@@ -1,1 +1,0 @@
-/home/runner/work/qtpyt/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++ -fPIC -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/qtpyt.dir/link.d -shared -Wl,-soname,libqtpyt.so.1 -o libqtpyt.so.1.0.0 CMakeFiles/qtpyt.dir/PyRunner.cpp.o
