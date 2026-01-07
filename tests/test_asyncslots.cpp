@@ -10,6 +10,25 @@
 #include <qtpyt/qpyfuture.h>
 #include "TestObject_2.h"
 
+class AsycSlotsTest1: public ::testing::Test {
+protected:
+    static QCoreApplication* app;
+
+    static void SetUpTestSuite() {
+        if (!QCoreApplication::instance()) {
+            static int argc = 1;
+            static char* argv[] = {(char*)"test"};
+            app = new QCoreApplication(argc, argv);
+        }
+    }
+
+    static void TearDownTestSuite() {
+        delete app;
+        app = nullptr;
+    }
+};
+
+QCoreApplication* AsycSlotsTest1::app = nullptr;
 
 class QPyFutureNotifier1 : public QObject, public qtpyt::IQPyFutureNotifier {
     Q_OBJECT
@@ -53,8 +72,8 @@ TEST_F(AsycSlotsTest, CallAsyncSlot) {
     TestObj obj;
     auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_async(p):\n"
-                                      "    qt_interop.set_property(obj, 'intProperty', p[0] + p[1])\n"
                                       "    print(f'Async slot called with point: {p}, set intProperty to {p[0] + p[1]}')\n"
+                                      "    qt_interop.set_property(obj, 'intProperty', p[0] + p[1])\n"
                                       "    return p[0] + p[1]", qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &obj);
     QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
@@ -437,4 +456,60 @@ TEST_F(AsycSlotsTest, CallAsyncSlotQVariantMapArg) {
     }
     EXPECT_EQ(object.success(), true);
 }
+
+TEST_F(AsycSlotsTest1, CallAsyncSlotWithAsync) {
+    TestObj obj;
+    auto m = qtpyt::QPyModule("import qt_interop\n"
+                                      "def slot_async(p):\n"
+                                      "    print(f'Async slot called with point: {p}, set intProperty to {p[0] + p[1]}')\n"
+                                      "    qt_interop.set_property_async(obj, 'intProperty', p[0] + p[1])\n"
+                                      "    return p[0] + p[1]", qtpyt::QPySourceType::SourceString);
+    m.addVariable<QObject*>("obj", &obj);
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
+    int result = 0;
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&obj, &result](const QVariant& res) {
+        result = res.toInt();
+    });
+    auto slot = m.makeSlot("slot_async", QMetaType::Int, notifier);
+    slot.connectAsyncToSignal(&obj, &TestObj::passPoint);
+    obj.setIntProperty(0);
+    obj.emitPassPoint(QPoint(10, 20));
+    // Wait for async slot to complete
+    while (result == 0) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        QThread::msleep(1);
+    }
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+    int p = obj.intProperty();
+    EXPECT_EQ(p, 30);
+}
+
+TEST_F(AsycSlotsTest1, InvokeAsyncRoutine) {
+    TestObj obj;
+    auto m = qtpyt::QPyModule("import qt_interop\n"
+                                      "def invoke_async():\n"
+                                      "    d = qt_interop.invoke_mt(obj, 'retMap')\n"
+                                      "    if d[1] == 'Apple':\n"
+                                      "        return 1\n"
+                                      "    return 0",
+                                      qtpyt::QPySourceType::SourceString);
+    m.addVariable<QObject*>("obj", &obj);
+    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
+    int result = 0;
+    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&obj, &result](const QVariant& res) {
+        result = res.toInt();
+    });
+    m.callAsync<>(notifier, "invoke_async", QMetaType::Int);
+    int count = 0;
+    while (result == 0) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        QThread::msleep(1);
+        if (count++ > 200) {
+            break;
+        }
+    }
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+    EXPECT_EQ(result, 1);
+}
+
 #include "test_asyncslots.moc"
