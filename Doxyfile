@@ -5,9 +5,9 @@
 #---------------------------------------------------------------------------
 
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "qtpyt"
-PROJECT_NUMBER         = "1.0.0"
-PROJECT_BRIEF          = "Embeds multi-threaded Python into the C++ Qt Application"
+PROJECT_NAME           = "QtPyT"
+PROJECT_NUMBER         = "0.0.1"
+PROJECT_BRIEF          = "Interoperation between multi-threaded Python and C++/Qt"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = docs
 CREATE_SUBDIRS         = NO
@@ -130,19 +130,19 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 
 INPUT                  = include/qtpyt \
-                         src
+                         docs/type_conversion.md \
+                         docs/mainpage.md \
+                         docs/qt_interop.md
+USE_MDFILE_AS_MAINPAGE = docs/mainpage.md
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
-FILE_PATTERNS          = *.c \
-                         *.cc \
-                         *.cxx \
-                         *.cpp \
-                         *.c++ \
-                         *.h \
+FILE_PATTERNS          = *.h \
                          *.hh \
                          *.hxx \
                          *.hpp \
-                         *.h++
+                         *.h++ \
+                         *.md \
+                         *.dox
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO

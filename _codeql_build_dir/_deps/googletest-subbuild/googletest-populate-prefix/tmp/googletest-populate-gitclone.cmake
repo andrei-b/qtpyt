@@ -52,13 +52,13 @@ endif()
 
 execute_process(
   COMMAND "/usr/bin/git"
-          checkout "v1.14.0" --
+          checkout "v1.15.0" --
   WORKING_DIRECTORY "/home/runner/work/qtpyt/qtpyt/_codeql_build_dir/_deps/googletest-src"
   RESULT_VARIABLE error_code
   ${maybe_show_command}
 )
 if(error_code)
-  message(FATAL_ERROR "Failed to checkout tag: 'v1.14.0'")
+  message(FATAL_ERROR "Failed to checkout tag: 'v1.15.0'")
 endif()
 
 set(init_submodules TRUE)
