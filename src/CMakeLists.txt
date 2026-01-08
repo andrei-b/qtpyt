@@ -34,6 +34,10 @@ set(LIBRARY_SOURCES
         internal/q_py_future_impl.h
         internal/pycall.cpp
         qpyscript.cpp
+        internal/qpymoduleimpl.cpp
+        internal/normalize.cpp
+        qpymemoryview.cpp
+        internal/qpymemoryviewinternal.cpp
 )
 
 # Define library headers
@@ -51,18 +55,17 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpyscript.h
         pymodule.cpp
         pymodule.h
-        internal/normalize.cpp
         internal/normalize.h
         internal/pyobjectw.h
-        internal/qpymoduleimpl.cpp
+
         internal/qpymoduleimpl.h
         globalinit.cpp
         ../include/qtpyt/globalinit.h
         internal/sharedarrayinternal.h
-        ../demos/timer_app/mainwindow.cpp
         internal/stringpool.h
-        internal/qpymemoryviewinternal.cpp
         internal/qpymemoryviewinternal.h
+        ../include/qtpyt/qpymemoryview.h
+        ../include/qtpyt/qpyarray.h
 )
 
 # Create the shared library
