@@ -66,6 +66,8 @@ set(LIBRARY_HEADERS
         internal/qpymemoryviewinternal.h
         ../include/qtpyt/qpymemoryview.h
         ../include/qtpyt/qpyarray.h
+        qpyconvertiblepointer.cpp
+        ../include/qtpyt/qpyconvertiblepointer.h
 )
 
 # Create the shared library

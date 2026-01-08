@@ -63,6 +63,7 @@ target_sources(qtpyt_tests PRIVATE
         ../src/globalinit.cpp
         ../src/pymodule.h
         ../src/conversions.h
+        ../src/qpyconvertiblepointer.cpp
 
 )
 
