@@ -101,6 +101,12 @@ Method Invocation</h2>
 <li><code>*args</code>: Variable arguments to pass to the method</li>
 <li>Returns: The method's return value</li>
 </ul>
+<p><b>invoke_async(obj_ptr, method, *args)</b> Invokes a Qt method that returns void asynchronously. The call returns immediately, the method is executed later in the Qt event loop.</p><ul>
+<li><code>obj_ptr</code> (int): Pointer to the QObject as integer</li>
+<li><code>method</code> (str): Name of the method to invoke</li>
+<li><code>*args</code>: Variable arguments to pass to the method</li>
+<li>Returns: true if the call was placed successfully</li>
+</ul>
 <p><b>invoke_ret_void(obj_ptr, method, *args)</b></p>
 <p>Invokes a Qt method that returns void.</p><ul>
 <li><code>obj_ptr</code> (int): Pointer to the QObject as integer</li>
