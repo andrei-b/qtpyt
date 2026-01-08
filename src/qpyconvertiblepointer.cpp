@@ -50,3 +50,5 @@ namespace qtpyt {
         });
     }
 } // qtpyt
+
+Q_DECLARE_METATYPE(qtpyt::QPyConvertiblePointer)

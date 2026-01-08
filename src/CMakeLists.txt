@@ -68,6 +68,8 @@ set(LIBRARY_HEADERS
         ../include/qtpyt/qpyarray.h
         qpyconvertiblepointer.cpp
         ../include/qtpyt/qpyconvertiblepointer.h
+        ../include/qtpyt/qpyvectorwrapper.h
+        ../include/qtpyt/qpyresultvectorwrapper.h
 )
 
 # Create the shared library

@@ -82,3 +82,5 @@ namespace qtpyt {
         std::memcpy(const_cast<void*>(dst), cdata_u8() + offset, len);
     }
 } // namespace qtpyt
+
+Q_DECLARE_METATYPE(qtpyt::QPyMemoryView)
