@@ -113,6 +113,8 @@ public:
     }
 
     /// \brief Creates a `QPySlot` that allows to connect the Python function to Qt's signals.
+    /// Use the returned `QPySlot` to connect to signals if you need all the features of `QPySlot`
+    /// (notifiers, processing return values) Otherwise use the simpler `connect(Async)ToSignal()` methods.
     /// \param slotName Name of the slot/function to bind.
     /// \param returnType Expected return type; defaults to `void`.
     /// \param notifier Optional notifier used to observe completion/progress.
@@ -120,6 +122,77 @@ public:
     QPySlot makeSlot(const QString &slotName,
                      const QPyRegisteredType &returnType = QMetaType::Void,
                      const QSharedPointer<IQPyFutureNotifier> &notifier = nullptr);
+
+    /// \brief Connects a Qt signal to a Python function in this module (synchronous call).
+    /// This is a convenience wrapper around `QPySlot::connectToSignal()`.
+    /// \param sender The QObject emitting the signal.
+    /// \param signal The signal signature (e.g., "signalName(int)").
+    /// \param slot The name of the Python function to invoke when the signal is emitted.
+    /// \param type The Qt connection type (default: Qt::AutoConnection).
+    /// \return A QMetaObject::Connection representing the connection; invalid if connection fails.
+    /// \note The Python function is called synchronously in the sender's thread context.
+    QMetaObject::Connection connectToSignal(QObject* sender,
+                                        const char* signal,
+                                        const char* slot,
+                                        Qt::ConnectionType type = Qt::AutoConnection) const;
+
+    /// \brief Connects a Qt signal to a Python function in this module (asynchronous call).
+    /// This is a convenience wrapper around `QPySlot::connectAsyncToSignal()` with notifier set to nullptr,
+    /// and the slot return value discarded.
+    /// \param sender The QObject emitting the signal.
+    /// \param signal The signal signature (e.g., "signalName(int)").
+    /// \param slot The name of the Python function to invoke when the signal is emitted.
+    /// \param type The Qt connection type (default: Qt::AutoConnection).
+    /// \return A QMetaObject::Connection representing the connection; invalid if connection fails.
+    /// \note The Python function is scheduled asynchronously via qtpyt thread facilities.
+    QMetaObject::Connection connectAsyncToSignal(QObject* sender,
+                                        const char* signal,
+                                        const char* slot,
+                                        Qt::ConnectionType type = Qt::AutoConnection) const;
+
+    /// \brief Connects a Qt signal to a Python function in this module (synchronous call, template version).
+    /// \tparam SignalFunc The signal function pointer type.
+    /// \param sender The QObject emitting the signal.
+    /// \param signal The signal member function pointer.
+    /// \param slot The name of the Python function to invoke when the signal is emitted.
+    /// \param type The Qt connection type (default: Qt::AutoConnection).
+    /// \return A QMetaObject::Connection representing the connection; invalid if connection fails.
+    /// \note The Python function is called synchronously in the sender's thread context.
+    /// \warning Logs a warning if the signal cannot be matched to a method signature.
+    template <typename SignalFunc>
+    QMetaObject::Connection connectToSignal(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
+        SignalFunc signal, const char* slot, Qt::ConnectionType type = Qt::AutoConnection) const {
+        int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
+        if (signalIndex < 0) {
+            qWarning("connectToSignal: cannot match the signal");
+            return {};
+        }
+        const char* signalSignature = sender->metaObject()->method(signalIndex).methodSignature().constData();
+        return connectToSignal(const_cast<QObject*>(static_cast<const QObject*>(sender)), signalSignature, slot, type);
+    }
+
+    /// \brief Connects a Qt signal to a Python function in this module (asynchronous call, template version).
+    /// This is a convenience wrapper around `QPySlot::connectAsyncToSignal()` with notifier set to nullptr,
+    /// and the slot return value discarded.
+    /// \tparam SignalFunc The signal function pointer type.
+    /// \param sender The QObject emitting the signal.
+    /// \param signal The signal member function pointer.
+    /// \param slot The name of the Python function to invoke when the signal is emitted.
+    /// \param type The Qt connection type (default: Qt::AutoConnection).
+    /// \return A QMetaObject::Connection representing the connection; invalid if connection fails.
+    /// \note The Python function is scheduled asynchronously via qtpyt thread facilities.
+    /// \warning Logs a warning if the signal cannot be matched to a method signature.
+    template <typename SignalFunc>
+    QMetaObject::Connection connectAsyncToSignal(const typename QtPrivate::FunctionPointer<SignalFunc>::Object* sender,
+        SignalFunc signal, const char* slot, Qt::ConnectionType type = Qt::AutoConnection) const {
+        int signalIndex =  getMethodIndex<SignalFunc>(sender, signal).value_or(-1);
+        if (signalIndex < 0) {
+            qWarning("connectToSignal: cannot match the signal");
+            return {};
+        }
+        const char* signalSignature = sender->metaObject()->method(signalIndex).methodSignature().constData();
+        return connectAsyncToSignal(const_cast<QObject*>(static_cast<const QObject*>(sender)), signalSignature, slot, type);
+    }
 
 protected:
     /// \brief Returns the thread id associated with this module instance.
