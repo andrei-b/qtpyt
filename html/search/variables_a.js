@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['repr_0',['repr',['../structQPyAnnotation.html#af9c9f478856051732c22ddf45509b7c5',1,'QPyAnnotation']]],
-  ['returntype_1',['returnType',['../structqtpyt_1_1PyCallableInfo.html#a908dde47be620ad936699ac74545c31a',1,'qtpyt::PyCallableInfo']]]
+  ['valuetype_0',['valueType',['../structqtpyt_1_1QPythonArgument.html#add6d4ab2533e935ed5f69a8d322a7a71',1,'qtpyt::QPythonArgument']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['stop_5f_0',['stop_',['../classqtpyt_1_1QPyThreadPool.html#af6c41555ef2b91a5a70dfed470f0c8d1',1,'qtpyt::QPyThreadPool']]]
+  ['workers_5f_0',['workers_',['../classqtpyt_1_1QPyThreadPool.html#a20f46cfeb7cda4b7b1138c3ac4fda566',1,'qtpyt::QPyThreadPool']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['name_0',['name',['../structqtpyt_1_1QPythonArgument.html#ac5827078f9ec81e68fe5b20d42fbbc2c',1,'qtpyt::QPythonArgument']]]
+  ['stop_5f_0',['stop_',['../classqtpyt_1_1QPyThreadPool.html#af6c41555ef2b91a5a70dfed470f0c8d1',1,'qtpyt::QPyThreadPool']]]
 ];
