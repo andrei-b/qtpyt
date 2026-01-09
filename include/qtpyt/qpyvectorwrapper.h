@@ -60,8 +60,12 @@ namespace qtpyt {
             );
         }
 
-        QVariant operator()() const {
+        operator QVariant() const {
             return QVariant::fromValue(m_ptr);
+        }
+
+        operator QPyConvertiblePointer() const {
+            return m_ptr;
         }
 
         QPyConvertiblePointer pointer() {

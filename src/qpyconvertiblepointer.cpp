@@ -25,7 +25,7 @@ namespace qtpyt {
             py::memoryview mv = py::memoryview::from_buffer(
                 cp.getPointer(),
                 static_cast<py::ssize_t>(cp.itemSize()),
-                std::string(1, cp.format()).c_str(),
+                StringPool::instance().intern(std::string(1, cp.format()))->c_str(),
                 { static_cast<py::ssize_t>(cp.itemCount()) },         // shape
                 { static_cast<py::ssize_t>(cp.itemSize()) },
                 cp.isReadOnly()
