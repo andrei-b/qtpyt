@@ -68,7 +68,7 @@ set(LIBRARY_HEADERS
         ../include/qtpyt/qpyarray.h
         qpysequencereference.cpp
         ../include/qtpyt/qpysequencereference.h
-        ../include/qtpyt/qpyresultvectorwrapper.h
+        ../include/qtpyt/qpysequencewrapper.h
 )
 
 # Create the shared library

@@ -8,6 +8,7 @@
 
 #include "qtpyt/qpysharedarray.h"
 #include "qtpyt/qpysequencereference.h"
+#include "qtpyt/qpysequencewrapper.h"
 
 
 class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
@@ -387,5 +388,50 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
     EXPECT_FALSE(error);
 }
 
+TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
+    bool finish =false;
+    bool error = false;
+    std::function<void()> n_finish = [&finish]() {
+        finish = true;
+    };
+    std::function<void()> n_error = [&error]() {
+        error = true;
+    };
+
+    class AsyncNotifier : public QPyFutureNotifier {
+    public:
+        AsyncNotifier(std::function<void()> onFinish,
+                      std::function<void()> onError)
+            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
+        void notifyStarted()  override {
+        }
+        void notifyFinished(const QVariant& value = QVariant()) override{
+            onFinish_();
+        }
+        void notifyResultAvailable(const QVariant& value) override {
+        }
+        void notifyErrorOccurred(const QString& errorMessage) override {
+            onError_();
+        }
+    private:
+        std::function<void()> onFinish_;
+        std::function<void()> onError_;
+    };
+
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, int>(
+        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"make_array");
+
+    auto f =  make_array(1024);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    auto seq = f->resultAs<qtpyt::QPySequenceReference>(0);
+    auto arr = qtpyt::QPySequenceWrapper<int>(seq);
+    ASSERT_EQ(arr.size(), 1024);
+    for (int i = 0; i < arr.size(); ++i) {
+        EXPECT_EQ(arr[i], i);
+    }
+}
 
 #include "test_qpymodule.moc"

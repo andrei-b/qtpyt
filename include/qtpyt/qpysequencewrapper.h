@@ -3,10 +3,10 @@
 
 namespace qtpyt {
     template<typename T>
-    class QPyResultVectorWrapper {
+    class QPySequenceWrapper {
     public:
 
-        explicit QPyResultVectorWrapper(const QPySequenceReference& vec)
+        explicit QPySequenceWrapper(const QPySequenceReference& vec)
             : m_vector(vec) {
             if (sizeof(T) != m_vector.itemSize()) {
                 throw std::invalid_argument("QPyResultVectorWrapper: Size of T does not match item size of QPyConvertiblePointer");
