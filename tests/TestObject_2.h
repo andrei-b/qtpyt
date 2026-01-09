@@ -1,12 +1,10 @@
 #pragma once
-#include "../include/qtpyt/qpysharedarray.h"
-
+#include <qtpyt/qpysequencereference.h>
 #include <QObject>
 #include <QString>
 #include <QPoint>
 #include <QVector3D>
 #include <QVariant>
-#include <QList>
 #include <QMap>
 
 
@@ -31,12 +29,13 @@ public:
     void emitVector3D(const QVector3D& v) { emit passVector3D(v); }
     void emitVariant(const QVariant& v) { emit passVariant(v); }
     void emitVariantList(const QVariantList& xs) { emit passVariantList(xs); }
-    void emitIntList(const QList<int>& xs) { emit passIntList(xs); }
     void emitStringIntMap(const QMap<QString, int>& m) { emit passStringIntMap(m); }
     void emitStringAndInt(const QString& s, int i) { emit passStringAndInt(s, i); }
-    void emitSharedArray(const qtpyt::QPySharedArray<double>& arr) { emit passSharedArray(arr); }
     void emitQPair(const QPair<QString, int>& p) { emit passQPair(p); }
     void emitQVariantMap(const QVariantMap& m) { emit passQVariantMap(m); }
+    void emitSequenceReference(const qtpyt::QPySequenceReference& seqRef) {
+        emit passSequenceReference(seqRef);
+    }
 
     signals:
     void successPropertyChanged(bool value);
@@ -47,12 +46,11 @@ public:
     void passVector3D(const QVector3D& value);
     void passVariant(const QVariant& value);
     void passVariantList(const QVariantList& values);
-    void passIntList(const QList<int>& values);
     void passStringIntMap(const QMap<QString, int>& value);
     void passStringAndInt(const QString& s, int i);
-    void passSharedArray(const qtpyt::QPySharedArray<double>& array);
     void passQPair(const QPair<QString, int>& p);
     void passQVariantMap(const QVariantMap& map);
+    void passSequenceReference(const qtpyt::QPySequenceReference& seqRef);
 
 private:
     bool m_success{false};

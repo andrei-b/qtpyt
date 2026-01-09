@@ -6,7 +6,6 @@
 #include <utility>
 #include <utility>
 
-#include "qtpyt/qpysharedarray.h"
 #include "qtpyt/qpysequencereference.h"
 #include "qtpyt/qpysequencewrapper.h"
 
@@ -120,22 +119,6 @@ TEST(QPyModule, TestMakeAsyncFunction) {
     EXPECT_EQ(f.value().resultAs<QVector3D>(0), QVector3D(6.0, 10.0, 13.0));
 }
 
-TEST(QPyModule, TestAsincFunctionWithQPySharedArray) {
-    auto m = qtpyt::QPyModule("def scale_array(arr, factor):\n"
-                           "    for i in range(len(arr)):\n"
-                           "        arr[i] = arr[i] * factor\n", qtpyt::QPySourceType::SourceString);
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySharedArray<double>, double>(nullptr,"scale_array");
-    qtpyt::QPySharedArray<double> arr(3);
-    arr[0] = 1.0;
-    arr[1] = 2.0;
-    arr[2] = 3.0;
-    auto f = scale_array(arr, 2.5);
-    f->waitForFinished();
-    EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
-    EXPECT_DOUBLE_EQ(arr[0], 2.5);
-    EXPECT_DOUBLE_EQ(arr[1], 5.0);
-    EXPECT_DOUBLE_EQ(arr[2], 7.5);
-}
 
 TEST(QPyModule, TestQPyFutureNotifier) {
     auto m = qtpyt::QPyModule("import time\n"
@@ -156,23 +139,6 @@ TEST(QPyModule, TestQPyFutureNotifier) {
     EXPECT_EQ(oresult, 42);
     EXPECT_EQ(f->resultAs<int>(0), 42);
     EXPECT_TRUE(notified);
-}
-
-TEST(QPyModule, TestAsyncReturningPySharedArray) {
-    auto m = qtpyt::QPyModule("def create_array(n):\n"
-                           "    arr = [i * 10 for i in range(n)]\n"
-                           "    return arr\n", qtpyt::QPySourceType::SourceString);
-    auto create_array = m.makeAsyncFunction<qtpyt::QPySharedArray<int>, int>(nullptr,"create_array");
-    auto f = create_array(5);
-    f->waitForFinished();
-    EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
-    auto arr = f.value().resultAs<qtpyt::QPySharedArray<int>>(0);
-    ASSERT_EQ(arr.size(), 5);
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], 10);
-    EXPECT_EQ(arr[2], 20);
-    EXPECT_EQ(arr[3], 30);
-    EXPECT_EQ(arr[4], 40);
 }
 
 TEST(QPyModule, TestAddFunction) {
@@ -213,63 +179,6 @@ TEST (QPyModule, TestAddFunctionWithArgs) {
     m.addFunction<double, double, double>("test_func", std::move(test_func));
     double res = m.call<double>("call_test_func", 3.0, 4.0);
     EXPECT_EQ(res, 12.0);
-}
-
-
-
-TEST(QPyModule, TestAsyncFunctionWithQPySharedArray2) {
-    bool finish =false;
-    bool error = false;
-    std::function<void()> n_finish = [&finish]() {
-        finish = true;
-    };
-    std::function<void()> n_error = [&error]() {
-        error = true;
-    };
-
-    class AsyncNotifier : public QPyFutureNotifier {
-    public:
-        AsyncNotifier(std::function<void()> onFinish,
-                      std::function<void()> onError)
-            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
-        void notifyStarted()  override {
-        }
-        void notifyFinished(const QVariant& value = QVariant()) override{
-            onFinish_();
-        }
-        void notifyResultAvailable(const QVariant& value) override {
-        }
-        void notifyErrorOccurred(const QString& errorMessage) override {
-            onError_();
-        }
-    private:
-        std::function<void()> onFinish_;
-        std::function<void()> onError_;
-    };
-
-    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
-                           qtpyt::QPySourceType::File);
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySharedArray<double>, double>(
-        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
-{
-    qtpyt::QPySharedArray<double> arr(4096);
-    for (int i = 0; i < 4096; ++i) {
-        arr[i] = static_cast<double>(i);
-    }
-    scale_array(arr, 2.5);
-}
-    int count = 0;
-    while (!finish && !error) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
-        QThread::msleep(1);
-        count++;
-        if (count > 12060000) {
-            qWarning() << "TestAsyncFunctionWithQPySharedArray2: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
-            break;
-        }
-    }
-    EXPECT_TRUE(finish);
-    EXPECT_FALSE(error);
 }
 
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapper) {
@@ -320,7 +229,7 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapper) {
         QThread::msleep(1);
         count++;
         if (count > 120600) {
-            qWarning() << "TestAsyncFunctionWithQPySharedArray2: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
+            qWarning() << "TestAsyncFunctionWithVectorWrapper: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
             break;
         }
     }
@@ -377,7 +286,7 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
         QThread::msleep(1);
         count++;
         if (count > 120600) {
-            qWarning() << "TestAsyncFunctionWithQPySharedArray2: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
+            qWarning() << "TestAsyncFunctionWithVectorWrapperShares: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
             break;
         }
     }
@@ -386,6 +295,22 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
     }
     EXPECT_TRUE(finish);
     EXPECT_FALSE(error);
+}
+
+TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly) {
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, int>(
+        nullptr,"scale_array");
+        auto arr = QSharedPointer<QVector<long long>>::create(4096);
+        auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, true);
+        for (int i = 0; i < arr->length(); ++i) {
+            (*arr)[i] = static_cast<float>(i);
+        }
+        auto f = scale_array(wrapped, 25);
+        f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
+    EXPECT_TRUE(f->errorMessage().startsWith("QPyFutureImpl::run: Python error: TypeError: cannot modify read-only memory"));
 }
 
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {

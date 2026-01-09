@@ -1,5 +1,7 @@
 #pragma once
+#include <cstdint>
 #include <functional>
+#include <QSharedPointer>
 
 namespace qtpyt {
 
@@ -44,7 +46,7 @@ namespace qtpyt {
 
     template<typename T>
     auto __format_char = []( ) {
-        if constexpr (std::is_same<T, std::int8_t>::value) {
+        if constexpr (std::is_same<T, int8_t>::value) {
             return 'b';
         } else if constexpr (std::is_same<T, std::uint8_t>::value) {
             return 'B';
@@ -58,7 +60,9 @@ namespace qtpyt {
             return 'I';
         } else if constexpr (std::is_same<T, std::int64_t>::value) {
             return 'q';
-        } else if constexpr (std::is_same<T, std::uint64_t>::value) {
+        } else if constexpr (std::is_same<T, long long>::value) {
+            return 'q';
+        } else if constexpr ((std::is_same<T, std::uint64_t>::value) || (std::is_same<T, unsigned long long>::value)) {
             return 'Q';
         } else if constexpr (std::is_same<T, float>::value) {
             return 'f';

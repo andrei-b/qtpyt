@@ -37,9 +37,17 @@ namespace qtpyt {
         addFromPyObjectToQVariantFunc(typeName, [](const py::object& obj) -> QVariant {
             py::gil_scoped_acquire gil;
             auto info = py::buffer(py::reinterpret_borrow<py::buffer>(obj)).request();
+            auto shared_obj = std::shared_ptr<py::object>(
+     new py::object(obj),
+     [](py::object* ptr) {
+         pybind11::gil_scoped_acquire gil;
+         delete ptr;  // py::object destructor runs with GIL held
+     }
+ );
             const QPySequenceReference cp(
-                [obj, pointer = info.ptr]() {
-                    auto t_obj = py::reinterpret_borrow<py::object>(obj);
+                [shared_obj, pointer = info.ptr]() {
+                    pybind11::gil_scoped_acquire gil;
+                    shared_obj.get()->inc_ref();
                     return pointer;
                 },
                 StringPool::instance().intern(std::string(1, info.format[0]))->c_str()[0],

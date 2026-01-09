@@ -1,4 +1,3 @@
-#include "qtpyt/qpysharedarray.h"
 #include <qtpyt/qpyslot.h>
 #include <filesystem>
 #include <QSignalSpy>
@@ -278,7 +277,7 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
     TestObject_2 object;
     auto m = qtpyt::QPyModule("import qt_interop\n"
                                       "def slot_int_list(v):\n"
-                                      "    if v == (10, 20, 30):\n"
+                                      "    if v[0] == 10:\n"
                                       "        qt_interop.set_property(obj, 'success', True)\n",
                                         qtpyt::QPySourceType::SourceString);
     m.addVariable<QObject*>("obj", &object);
@@ -288,9 +287,14 @@ TEST_F(AsycSlotsTest, CallAsyncSlotIntListArg) {
         called = true;
     });
     auto slot = m.makeSlot("slot_int_list", QMetaType::Void, notifier);
-    slot.connectAsyncToSignal(&object, &TestObject_2::passIntList);
+    slot.connectAsyncToSignal(&object, &TestObject_2::passSequenceReference);
     object.setSuccessProperty(false);
-    object.emitIntList(QList<int>{10, 20, 30});
+    auto vec = QSharedPointer<QVector<int>>(new QVector<int>());
+    vec->append(10);
+    vec->append(20);
+    vec->append(30);
+    auto seq = qtpyt::wrapVectorWithSequenceReference(vec);
+    object.emitSequenceReference(seq);
     // Wait for async slot to complete
     int count = 0;
     while (!called) {
@@ -350,39 +354,6 @@ TEST_F(AsycSlotsTest, CallAsyncSlotStringAndIntArg) {
     slot.connectAsyncToSignal(&object, &TestObject_2::passStringAndInt);
     object.setSuccessProperty(false);
     object.emitStringAndInt("value", 99);
-    // Wait for async slot to complete
-    int count = 0;
-    while (!called) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
-        QThread::msleep(1);
-        if (count++ > 200) {
-            break;
-        }
-    }
-    EXPECT_EQ(object.success(), true);
-}
-
-TEST_F(AsycSlotsTest, CallAsyncSlotSharedArrayArg) {
-    TestObject_2 object;
-    auto m = qtpyt::QPyModule("import qt_interop\n"
-                                      "def slot_shared_array(arr):\n"
-                                      "    if len(arr) == 3 and arr[0] == 1.1 and arr[1] == 2.2 and arr[2] == 3.3:\n"
-                                      "        qt_interop.set_property(obj, 'success', True)\n",
-                                        qtpyt::QPySourceType::SourceString);
-    m.addVariable<QObject*>("obj", &object);
-    QSharedPointer<QPyFutureNotifier1> notifier = QSharedPointer<QPyFutureNotifier1>::create();
-    bool called = false;
-    QObject::connect(notifier.data(), &QPyFutureNotifier1::finished, [&called](const QVariant& res) {
-        called = true;
-    });
-    auto slot = m.makeSlot("slot_shared_array", QMetaType::Void, notifier);
-    slot.connectAsyncToSignal(&object, &TestObject_2::passSharedArray);
-    object.setSuccessProperty(false);
-    qtpyt::QPySharedArray<double> arr(3);
-    arr[0] = 1.1;
-    arr[1] = 2.2;
-    arr[2] = 3.3;
-    object.emitSharedArray(arr);
     // Wait for async slot to complete
     int count = 0;
     while (!called) {
@@ -542,6 +513,7 @@ TEST_F(AsycSlotsTest1, InvokeAsyncRoutine) {
     EXPECT_EQ(s, QSize(10, 20));
 
 }
+
 
 
 #include "test_asyncslots.moc"

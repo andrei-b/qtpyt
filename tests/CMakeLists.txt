@@ -46,7 +46,6 @@ target_sources(qtpyt_tests PRIVATE
         ../src/pyextra/py_datetime.cpp
         ../src/internal/annotations.cpp
         ../src/qpymodulebase.cpp
-        ../src/qpysharedarray.cpp
         ../src/internal/q_py_execute_event.cpp
         ../src/qpymodule.cpp
         ../src/q_py_thread.cpp

@@ -1,5 +1,4 @@
 #pragma once
-#include <qtpyt/qpysharedarray.h>
 #include <QObject>
 #include <QPoint>
 #include <QSize>
@@ -49,10 +48,6 @@ public:
         emit passPoint(p);
     }
 
-    void emitArray(const qtpyt::QPySharedArray<float> &arr) {
-        emit passArray(arr);
-    }
-
     Q_INVOKABLE void setPoints(const QPoint &p1, const QPoint &p2) {
         emit methodCalled("setPoints called");
         qDebug() << "setPoints called" << p1 << p2;
@@ -99,8 +94,6 @@ signals:
     void passBA(const QByteArray &data);
 
     void passPoint(const QPoint &p);
-
-    void passArray(const qtpyt::QPySharedArray<float> &arr);
 
     void methodCalled(const QString& msg);
 };

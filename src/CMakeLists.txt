@@ -20,7 +20,6 @@ set(LIBRARY_SOURCES
         internal/annotations.cpp
         internal/annotations.h
         conversions.cpp
-        qpysharedarray.cpp
         internal/q_py_execute_event.cpp
         internal/q_py_execute_event.h
         qpymodule.cpp
@@ -45,7 +44,6 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpymodulebase.h
     ../include/qtpyt/qpymodule.h
     ../include/qtpyt/q_py_thread.h
-        ../include/qtpyt/qpysharedarray.h
         ../include/qtpyt/qpythreadpool.h
     ../include/qtpyt/qpyfuture.h
         conversions.h
@@ -61,7 +59,6 @@ set(LIBRARY_HEADERS
         internal/qpymoduleimpl.h
         globalinit.cpp
         ../include/qtpyt/globalinit.h
-        internal/sharedarrayinternal.h
         internal/stringpool.h
         internal/qpymemoryviewinternal.h
         ../include/qtpyt/qpymemoryview.h

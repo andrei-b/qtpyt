@@ -1,6 +1,5 @@
 
 #include "conversions.h"
-#include <qtpyt/qpysharedarray.h>
 #include <QByteArray>
 #include <QColor>
 #include <QDateTime>
