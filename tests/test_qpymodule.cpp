@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <gtest/gtest.h>
 #include "qtpyt/qpymodule.h"
 
@@ -6,6 +7,8 @@
 #include <utility>
 
 #include "qtpyt/qpysharedarray.h"
+#include "qtpyt/qpysequencereference.h"
+#include "qtpyt/qpysequencewrapper.h"
 
 
 class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
@@ -35,6 +38,11 @@ class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
     void errorOccurred(const QString& errorMessage);
 };
 
+static std::filesystem::path testdata_path(std::string_view rel) {
+    // If WORKING_DIRECTORY is set to the binary dir, this works:
+    return std::filesystem::path("pyfiles") / rel;
+}
+
 TEST(QPyModule, CallAsyncRunsAndReturns) {
     auto m = qtpyt::QPyModule("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);
@@ -45,15 +53,8 @@ TEST(QPyModule, CallAsyncRunsAndReturns) {
 }
 
 TEST(QPyModule, SyncRunsAfterAsync) {
-    auto m = qtpyt::QPyModule(
-              "import time\n"
-        "def func_1(x, y):\n"
-              "    time.sleep(1)\n"
-              "    return x + y\n"
-              "\n"
-              "\n"
-              "def func_2():"
-              "    return 1", qtpyt::QPySourceType::SourceString);
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+        qtpyt::QPySourceType::File);
     auto f = m.callAsync<double, double>(nullptr,"func_1", "double", 2.5, 3.5).value();
     auto func_2 = m.makeFunction<int()>("func_2");
     const auto res2 = func_2();
@@ -246,18 +247,13 @@ TEST(QPyModule, TestAsyncFunctionWithQPySharedArray2) {
         std::function<void()> onError_;
     };
 
-    auto m = qtpyt::QPyModule("def scale_array(arr, factor):\n"
-                           "    for i in range(len(arr)):\n"
-                           "        arr[i] = arr[i] * factor\n"
-                           "    for i in range(len(arr)):\n"
-                           "        if arr[i] != i * factor:\n"
-                           "            raise RuntimeError(\"Memory check error\")\n",
-                           qtpyt::QPySourceType::SourceString);
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
     auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySharedArray<double>, double>(
         QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
 {
-    qtpyt::QPySharedArray<double> arr(4096*4096);
-    for (int i = 0; i < 4096*4096; ++i) {
+    qtpyt::QPySharedArray<double> arr(4096);
+    for (int i = 0; i < 4096; ++i) {
         arr[i] = static_cast<double>(i);
     }
     scale_array(arr, 2.5);
@@ -276,5 +272,166 @@ TEST(QPyModule, TestAsyncFunctionWithQPySharedArray2) {
     EXPECT_FALSE(error);
 }
 
+TEST(QPyModule, TestAsyncFunctionWithVectorWrapper) {
+    bool finish =false;
+    bool error = false;
+    std::function<void()> n_finish = [&finish]() {
+        finish = true;
+    };
+    std::function<void()> n_error = [&error]() {
+        error = true;
+    };
+
+    class AsyncNotifier : public QPyFutureNotifier {
+    public:
+        AsyncNotifier(std::function<void()> onFinish,
+                      std::function<void()> onError)
+            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
+        void notifyStarted()  override {
+        }
+        void notifyFinished(const QVariant& value = QVariant()) override{
+            onFinish_();
+        }
+        void notifyResultAvailable(const QVariant& value) override {
+        }
+        void notifyErrorOccurred(const QString& errorMessage) override {
+            onError_();
+        }
+    private:
+        std::function<void()> onFinish_;
+        std::function<void()> onError_;
+    };
+
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>(
+        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
+    {
+        auto arr = QSharedPointer<QVector<double>>::create(4096);
+        for (int i = 0; i < arr->length(); ++i) {
+            (*arr)[i] = static_cast<double>(i);
+        }
+        auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, false);
+        scale_array(wrapped, 2.5);
+    }
+    int count = 0;
+    while (!finish && !error) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        QThread::msleep(1);
+        count++;
+        if (count > 120600) {
+            qWarning() << "TestAsyncFunctionWithQPySharedArray2: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
+            break;
+        }
+    }
+    EXPECT_TRUE(finish);
+    EXPECT_FALSE(error);
+}
+
+TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
+    bool finish =false;
+    bool error = false;
+    std::function<void()> n_finish = [&finish]() {
+        finish = true;
+    };
+    std::function<void()> n_error = [&error]() {
+        error = true;
+    };
+
+    class AsyncNotifier : public QPyFutureNotifier {
+    public:
+        AsyncNotifier(std::function<void()> onFinish,
+                      std::function<void()> onError)
+            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
+        void notifyStarted()  override {
+        }
+        void notifyFinished(const QVariant& value = QVariant()) override{
+            onFinish_();
+        }
+        void notifyResultAvailable(const QVariant& value) override {
+        }
+        void notifyErrorOccurred(const QString& errorMessage) override {
+            onError_();
+        }
+    private:
+        std::function<void()> onFinish_;
+        std::function<void()> onError_;
+    };
+
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>(
+        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
+
+        auto arr = QSharedPointer<QVector<float>>::create(4096);
+        auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, false);
+        for (int i = 0; i < arr->length(); ++i) {
+            (*arr)[i] = static_cast<float>(i);
+        }
+        scale_array(wrapped, 2.5);
+   // (*arr)[0] = 100000.0f; // to check that the array is really shared=
+
+    int count = 0;
+    while (!finish && !error) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        QThread::msleep(1);
+        count++;
+        if (count > 120600) {
+            qWarning() << "TestAsyncFunctionWithQPySharedArray2: timeout waiting for finish\nIt may be not a bug, just your CPU being too slow";
+            break;
+        }
+    }
+    for (int i = 0; i < arr->length(); ++i) {
+        EXPECT_DOUBLE_EQ((*arr)[i], static_cast<double>(i) * 2.5);
+    }
+    EXPECT_TRUE(finish);
+    EXPECT_FALSE(error);
+}
+
+TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
+    bool finish =false;
+    bool error = false;
+    std::function<void()> n_finish = [&finish]() {
+        finish = true;
+    };
+    std::function<void()> n_error = [&error]() {
+        error = true;
+    };
+
+    class AsyncNotifier : public QPyFutureNotifier {
+    public:
+        AsyncNotifier(std::function<void()> onFinish,
+                      std::function<void()> onError)
+            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
+        void notifyStarted()  override {
+        }
+        void notifyFinished(const QVariant& value = QVariant()) override{
+            onFinish_();
+        }
+        void notifyResultAvailable(const QVariant& value) override {
+        }
+        void notifyErrorOccurred(const QString& errorMessage) override {
+            onError_();
+        }
+    private:
+        std::function<void()> onFinish_;
+        std::function<void()> onError_;
+    };
+
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, int>(
+        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"make_array");
+
+    auto f =  make_array(1024);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    auto seq = f->resultAs<qtpyt::QPySequenceReference>(0);
+    auto arr = qtpyt::QPySequenceWrapper<int>(seq);
+    ASSERT_EQ(arr.size(), 1024);
+    for (int i = 0; i < arr.size(); ++i) {
+        EXPECT_EQ(arr[i], i);
+    }
+}
 
 #include "test_qpymodule.moc"
