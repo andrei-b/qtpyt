@@ -68,7 +68,6 @@ set(LIBRARY_HEADERS
         ../include/qtpyt/qpyarray.h
         qpysequencereference.cpp
         ../include/qtpyt/qpysequencereference.h
-        ../include/qtpyt/qpyvectorwrapper.h
         ../include/qtpyt/qpyresultvectorwrapper.h
 )
 
