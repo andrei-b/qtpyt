@@ -1,12 +1,12 @@
 #include "conversions.h"
-#include "../include/qtpyt/qpyconvertiblepointer.h"
+#include "../include/qtpyt/qpysequencereference.h"
 #include "internal/stringpool.h"
 
 namespace qtpyt {
-    void registerConvertiblePointerType() {
-        int id = qRegisterMetaType<QPyConvertiblePointer>("QPyConvertiblePointer");
+    void registerSequenceReferenceType() {
+        int id = qRegisterMetaType<QPySequenceReference>("QPyConvertiblePointer");
         addMetatypeVoidPtrToPyObjectConverterFunc(static_cast<QMetaType::Type>(id), [](const void* v) {
-            auto* ptr = static_cast<QPyConvertiblePointer*>(const_cast<void*>(v));
+            auto* ptr = static_cast<QPySequenceReference*>(const_cast<void*>(v));
             py::gil_scoped_acquire gil;
             py::memoryview mv = py::memoryview::from_buffer(
                 ptr->getPointer(),
@@ -20,7 +20,7 @@ namespace qtpyt {
         });
 
         addFromQVariantFunc(id, [](const QVariant& v) {
-            auto cp = v.value<QPyConvertiblePointer>();
+            auto cp = v.value<QPySequenceReference>();
             py::gil_scoped_acquire gil;
             py::memoryview mv = py::memoryview::from_buffer(
                 cp.getPointer(),
@@ -37,7 +37,7 @@ namespace qtpyt {
         addFromPyObjectToQVariantFunc(typeName, [](const py::object& obj) -> QVariant {
             py::gil_scoped_acquire gil;
             auto info = py::buffer(py::reinterpret_borrow<py::buffer>(obj)).request();
-            const QPyConvertiblePointer cp(
+            const QPySequenceReference cp(
                 [obj, pointer = info.ptr]() {
                     auto t_obj = py::reinterpret_borrow<py::object>(obj);
                     return pointer;
@@ -51,4 +51,4 @@ namespace qtpyt {
     }
 } // qtpyt
 
-Q_DECLARE_METATYPE(qtpyt::QPyConvertiblePointer)
+Q_DECLARE_METATYPE(qtpyt::QPySequenceReference)

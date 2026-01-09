@@ -1,12 +1,12 @@
 #pragma once
-#include "qpyconvertiblepointer.h"
+#include "qpysequencereference.h"
 
 namespace qtpyt {
     template<typename T>
     class QPyResultVectorWrapper {
     public:
 
-        explicit QPyResultVectorWrapper(const QPyConvertiblePointer& vec)
+        explicit QPyResultVectorWrapper(const QPySequenceReference& vec)
             : m_vector(vec) {
             if (sizeof(T) != m_vector.itemSize()) {
                 throw std::invalid_argument("QPyResultVectorWrapper: Size of T does not match item size of QPyConvertiblePointer");
@@ -43,6 +43,6 @@ namespace qtpyt {
         }
 
     private:
-        QPyConvertiblePointer m_vector;
+        QPySequenceReference m_vector;
     };
 } // namespace qtpyt

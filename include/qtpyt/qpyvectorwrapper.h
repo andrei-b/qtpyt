@@ -1,5 +1,5 @@
 #pragma once
-#include "qpyconvertiblepointer.h"
+#include "qpysequencereference.h"
 #include <QSharedPointer>
 #include <QVariant>
 
@@ -38,7 +38,7 @@ namespace qtpyt {
     class QPyVectorWrapper {
     public:
         explicit QPyVectorWrapper(const QSharedPointer<QVector<T>>& vecPtr, bool readOnly = false) {
-            m_ptr = QPyConvertiblePointer(
+            m_ptr = QPySequenceReference(
                 [vecPtr]() -> void* {
                     return vecPtr->data();
                 },
@@ -49,7 +49,7 @@ namespace qtpyt {
             );
         }
         explicit QPyVectorWrapper(const QSharedPointer<std::vector<T>>& vecPtr, bool readOnly = false) {
-            m_ptr = QPyConvertiblePointer(
+            m_ptr = QPySequenceReference(
                 [vecPtr]() -> void* {
                     return vecPtr->data();
                 },
@@ -64,15 +64,15 @@ namespace qtpyt {
             return QVariant::fromValue(m_ptr);
         }
 
-        operator QPyConvertiblePointer() const {
+        operator QPySequenceReference() const {
             return m_ptr;
         }
 
-        QPyConvertiblePointer pointer() {
+        QPySequenceReference pointer() {
             return m_ptr;
         }
         virtual ~QPyVectorWrapper() = default;
     private:
-        QPyConvertiblePointer m_ptr;
+        QPySequenceReference m_ptr;
     };
 } // qtoyt

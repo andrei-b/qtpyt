@@ -18,7 +18,7 @@
 #include <complex>
 #include "pymodule.h"
 #include "qtpyt/qpymemoryview.h"
-#include "qtpyt/qpyconvertiblepointer.h"
+#include "qtpyt/qpysequencereference.h"
 
 namespace qtpyt {
     bool g_PyInitialized = false;
@@ -63,7 +63,7 @@ namespace qtpyt {
                 registerContainerType<QList<QVector3D>>("QList<QVector3D>");
                 registerContainerType<QList<QVector4D>>("QList<QVector4D>");
                 registerMemoryViewType();
-                registerConvertiblePointerType();
+                registerSequenceReferenceType();
         }
     }
 

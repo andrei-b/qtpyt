@@ -358,7 +358,7 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
 
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPyConvertiblePointer, double>(
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>(
         QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
 
         auto arr = QSharedPointer<QVector<float>>::create(4096);

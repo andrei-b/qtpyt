@@ -3,16 +3,16 @@
 
 namespace qtpyt {
 
-    void registerConvertiblePointerType();
+    void registerSequenceReferenceType();
 
-    class QPyConvertiblePointer {
+    class QPySequenceReference {
     public:
-        QPyConvertiblePointer() = default;
-        explicit QPyConvertiblePointer(std::function<void*()>&& func, char fmt, std::size_t itemSize,
+        QPySequenceReference() = default;
+        explicit QPySequenceReference(std::function<void*()>&& func, char fmt, std::size_t itemSize,
             std::size_t itemCount, bool readOnly) : m_pointer(std::move(func)),
             m_fmt(fmt), m_itemSize(itemSize), m_itemCount(itemCount), m_readOnly(readOnly)
         {}
-        virtual ~QPyConvertiblePointer() = default;
+        virtual ~QPySequenceReference() = default;
         void setPointerFunction(std::function<void*()>&& func) {
             m_pointer = std::move(func);
         }
