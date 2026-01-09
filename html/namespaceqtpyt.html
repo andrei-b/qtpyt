@@ -75,7 +75,8 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">qtpyt Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -92,7 +93,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqtpyt_1_1PyCallableInfo.html">PyCallableInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Introspection results for a Python callable.  <a href="structqtpyt_1_1PyCallableInfo.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyArray.html">QPyArray</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyMemoryView.html">QPyMemoryView</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html">QPyModule</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Qt-friendly wrapper around a Python module with async invocation support.  <a href="classqtpyt_1_1QPyModule.html#details">More...</a><br /></td></tr>
@@ -101,6 +106,10 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Core functionality for building a Python module and invoking functions.  <a href="classqtpyt_1_1QPyModuleBase.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyScript.html">QPyScript</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPySequenceWrapper.html">QPySequenceWrapper</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPySharedArray.html">QPySharedArray</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">forward declaration for external usage in other headers  <a href="classqtpyt_1_1QPySharedArray.html#details">More...</a><br /></td></tr>
@@ -172,8 +181,33 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a092ad07c490911f4869752b2255ff4d4" id="r_a092ad07c490911f4869752b2255ff4d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a092ad07c490911f4869752b2255ff4d4">init</a> (bool printPyInfo=false)</td></tr>
 <tr class="separator:a092ad07c490911f4869752b2255ff4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a108753cd48cc3449298403464c5678b0" id="r_a108753cd48cc3449298403464c5678b0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a108753cd48cc3449298403464c5678b0"><td class="memTemplItemLeft" align="right" valign="top">constexpr char&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a108753cd48cc3449298403464c5678b0">format_char</a> ()</td></tr>
+<tr class="separator:a108753cd48cc3449298403464c5678b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3148f23a8387dc40e083f56f379f5103" id="r_a3148f23a8387dc40e083f56f379f5103"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a3148f23a8387dc40e083f56f379f5103">registerMemoryViewType</a> ()</td></tr>
+<tr class="separator:a3148f23a8387dc40e083f56f379f5103"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3c072d1bbfd3a77c24e0dfc3741b1d6" id="r_ad3c072d1bbfd3a77c24e0dfc3741b1d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#ad3c072d1bbfd3a77c24e0dfc3741b1d6">registerSequenceReferenceType</a> ()</td></tr>
+<tr class="separator:ad3c072d1bbfd3a77c24e0dfc3741b1d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ea4e4f642e2e263aedf8b0a4a339e8" id="r_ae6ea4e4f642e2e263aedf8b0a4a339e8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae6ea4e4f642e2e263aedf8b0a4a339e8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#ae6ea4e4f642e2e263aedf8b0a4a339e8">wrapVectorWithSequenceReference</a> (const QSharedPointer&lt; QVector&lt; T &gt; &gt; &amp;vecPtr, bool readOnly=false)</td></tr>
+<tr class="separator:ae6ea4e4f642e2e263aedf8b0a4a339e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ad72d6661f8c42133af76831a7c6c95" id="r_a6ad72d6661f8c42133af76831a7c6c95"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a6ad72d6661f8c42133af76831a7c6c95"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a6ad72d6661f8c42133af76831a7c6c95">wrapVectorWithSequenceReference</a> (QVector&lt; T &gt; *vecPtr, bool readOnly=false)</td></tr>
+<tr class="separator:a6ad72d6661f8c42133af76831a7c6c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac853bb1f87b6815fb4508c4b4c298757" id="r_ac853bb1f87b6815fb4508c4b4c298757"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac853bb1f87b6815fb4508c4b4c298757"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#ac853bb1f87b6815fb4508c4b4c298757">wrapVectorWithSequenceReference</a> (const QSharedPointer&lt; std::vector&lt; T &gt; &gt; &amp;vecPtr, bool readOnly=false)</td></tr>
+<tr class="separator:ac853bb1f87b6815fb4508c4b4c298757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab181e49b2ba43c0f660aa3c869a9c05c" id="r_ab181e49b2ba43c0f660aa3c869a9c05c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab181e49b2ba43c0f660aa3c869a9c05c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#ab181e49b2ba43c0f660aa3c869a9c05c">wrapVectorWithSequenceReference</a> (std::vector&lt; T &gt; *vecPtr, bool readOnly=false)</td></tr>
+<tr class="separator:ab181e49b2ba43c0f660aa3c869a9c05c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a722a46b69913a1713d836fc148d7b006" id="r_a722a46b69913a1713d836fc148d7b006"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a722a46b69913a1713d836fc148d7b006">impl</a> (int which, QtPrivate::QSlotObjectBase *this_, QObject *r, void **a, bool *ret)</td></tr>
 <tr class="separator:a722a46b69913a1713d836fc148d7b006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a49a53981ebd24234a04e5accd6869360" id="r_a49a53981ebd24234a04e5accd6869360"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a49a53981ebd24234a04e5accd6869360"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a49a53981ebd24234a04e5accd6869360">__format_char</a></td></tr>
+<tr class="separator:a49a53981ebd24234a04e5accd6869360"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a193891aa8da0b94ec366440b48ececd6" name="a193891aa8da0b94ec366440b48ececd6"></a>
@@ -356,6 +390,35 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a108753cd48cc3449298403464c5678b0" name="a108753cd48cc3449298403464c5678b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a108753cd48cc3449298403464c5678b0">&#9670;&#160;</a></span>format_char()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr char qtpyt::format_char </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpyarray_8h_source.html#l00007">7</a> of file <a class="el" href="qpyarray_8h_source.html">qpyarray.h</a>.</p>
+
+</div>
+</div>
 <a id="a722a46b69913a1713d836fc148d7b006" name="a722a46b69913a1713d836fc148d7b006"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a722a46b69913a1713d836fc148d7b006">&#9670;&#160;</a></span>impl()</h2>
 
@@ -417,6 +480,214 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3148f23a8387dc40e083f56f379f5103" name="a3148f23a8387dc40e083f56f379f5103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3148f23a8387dc40e083f56f379f5103">&#9670;&#160;</a></span>registerMemoryViewType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int qtpyt::registerMemoryViewType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad3c072d1bbfd3a77c24e0dfc3741b1d6" name="ad3c072d1bbfd3a77c24e0dfc3741b1d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3c072d1bbfd3a77c24e0dfc3741b1d6">&#9670;&#160;</a></span>registerSequenceReferenceType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void qtpyt::registerSequenceReferenceType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6ea4e4f642e2e263aedf8b0a4a339e8" name="ae6ea4e4f642e2e263aedf8b0a4a339e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ea4e4f642e2e263aedf8b0a4a339e8">&#9670;&#160;</a></span>wrapVectorWithSequenceReference() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a> qtpyt::wrapVectorWithSequenceReference </td>
+          <td>(</td>
+          <td class="paramtype">const QSharedPointer&lt; QVector&lt; T &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vecPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>readOnly</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpysequencereference_8h_source.html#l00075">75</a> of file <a class="el" href="qpysequencereference_8h_source.html">qpysequencereference.h</a>.</p>
+
+</div>
+</div>
+<a id="ac853bb1f87b6815fb4508c4b4c298757" name="ac853bb1f87b6815fb4508c4b4c298757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac853bb1f87b6815fb4508c4b4c298757">&#9670;&#160;</a></span>wrapVectorWithSequenceReference() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a> qtpyt::wrapVectorWithSequenceReference </td>
+          <td>(</td>
+          <td class="paramtype">const QSharedPointer&lt; std::vector&lt; T &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vecPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>readOnly</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpysequencereference_8h_source.html#l00103">103</a> of file <a class="el" href="qpysequencereference_8h_source.html">qpysequencereference.h</a>.</p>
+
+</div>
+</div>
+<a id="a6ad72d6661f8c42133af76831a7c6c95" name="a6ad72d6661f8c42133af76831a7c6c95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad72d6661f8c42133af76831a7c6c95">&#9670;&#160;</a></span>wrapVectorWithSequenceReference() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a> qtpyt::wrapVectorWithSequenceReference </td>
+          <td>(</td>
+          <td class="paramtype">QVector&lt; T &gt; *&#160;</td>
+          <td class="paramname"><em>vecPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>readOnly</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpysequencereference_8h_source.html#l00089">89</a> of file <a class="el" href="qpysequencereference_8h_source.html">qpysequencereference.h</a>.</p>
+
+</div>
+</div>
+<a id="ab181e49b2ba43c0f660aa3c869a9c05c" name="ab181e49b2ba43c0f660aa3c869a9c05c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab181e49b2ba43c0f660aa3c869a9c05c">&#9670;&#160;</a></span>wrapVectorWithSequenceReference() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqtpyt_1_1QPySequenceReference.html">QPySequenceReference</a> qtpyt::wrapVectorWithSequenceReference </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; T &gt; *&#160;</td>
+          <td class="paramname"><em>vecPtr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>readOnly</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpysequencereference_8h_source.html#l00117">117</a> of file <a class="el" href="qpysequencereference_8h_source.html">qpysequencereference.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a49a53981ebd24234a04e5accd6869360" name="a49a53981ebd24234a04e5accd6869360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a53981ebd24234a04e5accd6869360">&#9670;&#160;</a></span>__format_char</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto qtpyt::__format_char</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= []( ) {</div>
+<div class="line">        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::int8_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;b&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::uint8_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;B&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::int16_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;h&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::uint16_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;H&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::int32_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;i&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::uint32_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;I&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::int64_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;q&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, std::uint64_t&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;Q&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, float&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;f&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, double&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;d&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same&lt;T, bool&gt;::value) {</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="charliteral">&#39;?&#39;</span>;</div>
+<div class="line">        } <span class="keywordflow">else</span> {</div>
+<div class="line">            <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(T) == 0, <span class="stringliteral">&quot;Unsupported type for QPyArray&quot;</span>);</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="qpysequencereference_8h_source.html#l00046">46</a> of file <a class="el" href="qpysequencereference_8h_source.html">qpysequencereference.h</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['repr_0',['repr',['../structQPyAnnotation.html#af9c9f478856051732c22ddf45509b7c5',1,'QPyAnnotation']]],
-  ['returntype_1',['returnType',['../structqtpyt_1_1PyCallableInfo.html#a908dde47be620ad936699ac74545c31a',1,'qtpyt::PyCallableInfo']]]
+  ['owned_0',['owned',['../structqtpyt_1_1QPySharedArray_1_1Data.html#a4f9dad6e41550fa544ae282838a37dc9',1,'qtpyt::QPySharedArray::Data']]],
+  ['owner_1',['owner',['../structqtpyt_1_1QPySharedArray_1_1Data.html#ae7f68b4e6ab7a25733afc014a05ab73e',1,'qtpyt::QPySharedArray::Data']]]
 ];

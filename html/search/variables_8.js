@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['owned_0',['owned',['../structqtpyt_1_1QPySharedArray_1_1Data.html#a4f9dad6e41550fa544ae282838a37dc9',1,'qtpyt::QPySharedArray::Data']]],
-  ['owner_1',['owner',['../structqtpyt_1_1QPySharedArray_1_1Data.html#ae7f68b4e6ab7a25733afc014a05ab73e',1,'qtpyt::QPySharedArray::Data']]]
+  ['name_0',['name',['../structqtpyt_1_1QPythonArgument.html#ac5827078f9ec81e68fe5b20d42fbbc2c',1,'qtpyt::QPythonArgument']]]
 ];

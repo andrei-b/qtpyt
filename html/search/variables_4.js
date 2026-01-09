@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['has_5fannotation_0',['has_annotation',['../structQPyAnnotation.html#aca490dc650ab43c512f617d7abfc529a',1,'QPyAnnotation']]],
-  ['has_5fvarargs_1',['has_varargs',['../structqtpyt_1_1PyCallableInfo.html#ae1fb7c282e8805cb43daa74e083fc0b2',1,'qtpyt::PyCallableInfo']]],
-  ['has_5fvarkw_2',['has_varkw',['../structqtpyt_1_1PyCallableInfo.html#ad8b4db78186581c022225ac20db4d7da',1,'qtpyt::PyCallableInfo']]],
-  ['hasdefault_3',['hasDefault',['../structqtpyt_1_1QPythonArgument.html#a6fb0e4c55f04357bbc268f76b3eb0682',1,'qtpyt::QPythonArgument']]]
+  ['estate_0',['estate',['../structqtpyt_1_1detail_1_1OwnerState.html#a2a9721308d6434d5bd54d0c3e8f7e5ac',1,'qtpyt::detail::OwnerState']]],
+  ['extptr_1',['extPtr',['../structqtpyt_1_1QPySharedArray_1_1Data.html#a8a25d86895886afb315be6a4d85a0acc',1,'qtpyt::QPySharedArray::Data']]]
 ];
