@@ -4,7 +4,7 @@
 
 namespace qtpyt {
     void registerSequenceReferenceType() {
-        int id = qRegisterMetaType<QPySequenceReference>("QPyConvertiblePointer");
+        int id = qRegisterMetaType<QPySequenceReference>("QPySequenceReference");
         addMetatypeVoidPtrToPyObjectConverterFunc(static_cast<QMetaType::Type>(id), [](const void* v) {
             auto* ptr = static_cast<QPySequenceReference*>(const_cast<void*>(v));
             py::gil_scoped_acquire gil;

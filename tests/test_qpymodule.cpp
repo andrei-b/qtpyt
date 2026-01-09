@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "qtpyt/qpysharedarray.h"
-#include "qtpyt/qpyvectorwrapper.h"
+#include "qtpyt/qpysequencereference.h"
 
 
 class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
@@ -303,14 +303,15 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapper) {
 
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPyVectorWrapper<double>, double>(
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>(
         QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
     {
         auto arr = QSharedPointer<QVector<double>>::create(4096);
         for (int i = 0; i < arr->length(); ++i) {
             (*arr)[i] = static_cast<double>(i);
         }
-        scale_array(qtpyt::QPyVectorWrapper(arr, false), 2.5);
+        auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, false);
+        scale_array(wrapped, 2.5);
     }
     int count = 0;
     while (!finish && !error) {
@@ -362,11 +363,11 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
         QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
 
         auto arr = QSharedPointer<QVector<float>>::create(4096);
-        auto wrap = qtpyt::QPyVectorWrapper<float>(arr, false);
+        auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, false);
         for (int i = 0; i < arr->length(); ++i) {
             (*arr)[i] = static_cast<float>(i);
         }
-        scale_array(wrap, 2.5);
+        scale_array(wrapped, 2.5);
    // (*arr)[0] = 100000.0f; // to check that the array is really shared=
 
     int count = 0;
