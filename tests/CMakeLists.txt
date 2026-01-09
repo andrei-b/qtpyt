@@ -58,9 +58,12 @@ target_sources(qtpyt_tests PRIVATE
         ../src/internal/pycall.cpp
         ../src/qpyscript.cpp
         ../src/pymodule.cpp
+        ../src/qpymemoryview.cpp
+        ../src/internal/qpymemoryviewinternal.cpp
         ../src/globalinit.cpp
         ../src/pymodule.h
         ../src/conversions.h
+        ../src/qpysequencereference.cpp
 
 )
 

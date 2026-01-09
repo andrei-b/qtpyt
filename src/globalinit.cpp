@@ -4,6 +4,7 @@
 #include <pybind11/complex.h>
 #include "conversions.h"
 #include "internal/sharedarrayinternal.h"
+#include <qtpyt/qpymemoryview.h>
 #include <qlogging.h>
 #include <QDebug>
 #include <QString>
@@ -16,6 +17,8 @@
 #include <QMatrix4x4>
 #include <complex>
 #include "pymodule.h"
+#include "qtpyt/qpymemoryview.h"
+#include "qtpyt/qpysequencereference.h"
 
 namespace qtpyt {
     bool g_PyInitialized = false;
@@ -59,7 +62,8 @@ namespace qtpyt {
                 registerContainerType<QList<QPointF>>("QList<QPointF>");
                 registerContainerType<QList<QVector3D>>("QList<QVector3D>");
                 registerContainerType<QList<QVector4D>>("QList<QVector4D>");
-
+                registerMemoryViewType();
+                registerSequenceReferenceType();
         }
     }
 
