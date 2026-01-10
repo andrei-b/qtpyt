@@ -314,39 +314,10 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly) {
 }
 
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
-    bool finish =false;
-    bool error = false;
-    std::function<void()> n_finish = [&finish]() {
-        finish = true;
-    };
-    std::function<void()> n_error = [&error]() {
-        error = true;
-    };
-
-    class AsyncNotifier : public QPyFutureNotifier {
-    public:
-        AsyncNotifier(std::function<void()> onFinish,
-                      std::function<void()> onError)
-            : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
-        void notifyStarted()  override {
-        }
-        void notifyFinished(const QVariant& value = QVariant()) override{
-            onFinish_();
-        }
-        void notifyResultAvailable(const QVariant& value) override {
-        }
-        void notifyErrorOccurred(const QString& errorMessage) override {
-            onError_();
-        }
-    private:
-        std::function<void()> onFinish_;
-        std::function<void()> onError_;
-    };
-
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
     auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, int>(
-        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"make_array");
+        nullptr,"make_array");
 
     auto f =  make_array(1024);
     f->waitForFinished();
@@ -356,6 +327,47 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
     ASSERT_EQ(arr.size(), 1024);
     for (int i = 0; i < arr.size(); ++i) {
         EXPECT_EQ(arr[i], i);
+    }
+}
+
+TEST(QPyModule, TestPassingVectorWrapperReturned) {
+   auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, short int>(
+        nullptr,"make_array");
+
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, int>(
+        nullptr,"scale_array");
+    auto f =  make_array(1024);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    auto seq = f->resultAs<qtpyt::QPySequenceReference>(0);
+    f = scale_array(seq, 3);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    auto arr = qtpyt::QPySequenceWrapper<int>(seq);
+    ASSERT_EQ(arr.size(), 1024);
+    for (int i = 0; i < arr.size(); ++i) {
+        EXPECT_EQ(arr[i], i*3);
+    }
+}
+
+TEST(QPyModule, TestQByteArrayShared) {
+    auto m = qtpyt::QPyModule("def test(b):\n"
+                                                   "    for i in range(len(b)):\n"
+                                                   "        b[i] = (i * 2) % 256\n"
+                                                   "    return None\n",
+                                                   qtpyt::QPySourceType::SourceString);
+    auto test = m.makeAsyncFunction<void, QByteArray>(
+        nullptr,"test");
+
+    QByteArray ba;
+    ba.fill('\0', 64);
+    auto f =  test(ba);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    for (int i = 0; i < ba.size(); ++i) {
+        EXPECT_EQ(ba[i], i*2 % 256);
     }
 }
 

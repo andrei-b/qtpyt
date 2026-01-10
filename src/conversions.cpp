@@ -54,7 +54,7 @@ namespace qtpyt {
 
         // readonly=1, flags=contiguous
         if (PyBuffer_FillInfo(&view, exporter, (void*)keeper->constData(), (Py_ssize_t)keeper->size(),
-                              /*readonly=*/1, PyBUF_CONTIG_RO) != 0) {
+                              /*readonly=*/0, PyBUF_CONTIG_RO) != 0) {
             Py_DECREF(exporter);
             throw py::error_already_set();
                               }
