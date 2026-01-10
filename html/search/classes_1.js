@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['iqpyfuturenotifier_0',['IQPyFutureNotifier',['../classqtpyt_1_1IQPyFutureNotifier.html',1,'qtpyt']]]
+  ['datablock_0',['DataBlock',['../structqtpyt_1_1QPySharedByteArray_1_1DataBlock.html',1,'qtpyt::QPySharedByteArray']]]
 ];

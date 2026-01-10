@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pycallableinfo_0',['PyCallableInfo',['../structqtpyt_1_1PyCallableInfo.html',1,'qtpyt']]]
+  ['iqpyfuturenotifier_0',['IQPyFutureNotifier',['../classqtpyt_1_1IQPyFutureNotifier.html',1,'qtpyt']]]
 ];

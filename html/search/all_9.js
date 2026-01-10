@@ -9,8 +9,9 @@ var searchData=
   ['invocation_6',['Method Invocation',['../qt_interop.html#invoke_functions',1,'']]],
   ['iqpyfuturenotifier_7',['IQPyFutureNotifier',['../classqtpyt_1_1IQPyFutureNotifier.html',1,'qtpyt']]],
   ['is_5fany_8',['is_any',['../structQPyAnnotation.html#a75f313a91e60c554d6e26a32f5a92138',1,'QPyAnnotation']]],
-  ['isreadonly_9',['isReadOnly',['../classqtpyt_1_1QPySequenceReference.html#a757f38ec9f02cd5e5b68acf0dd2011f2',1,'qtpyt::QPySequenceReference']]],
-  ['isvalid_10',['isValid',['../classqtpyt_1_1QPyModuleBase.html#a713d9ed07c3ef41d78f3d1d063c330d3',1,'qtpyt::QPyModuleBase']]],
-  ['itemcount_11',['itemCount',['../classqtpyt_1_1QPySequenceReference.html#a9847c58ba348905e734c07735f58df70',1,'qtpyt::QPySequenceReference']]],
-  ['itemsize_12',['itemsize',['../classqtpyt_1_1QPyMemoryView.html#a306f0c7f48c1b9d6f0ca10ff3aa90624',1,'qtpyt::QPyMemoryView::itemsize()'],['../classqtpyt_1_1QPySequenceReference.html#a94f93df996f2e6ad5c3c2d209b4f62ea',1,'qtpyt::QPySequenceReference::itemSize()']]]
+  ['isempty_9',['isEmpty',['../classqtpyt_1_1QPySharedByteArray.html#a4fd08dee014aafab08943b6691cfa6d3',1,'qtpyt::QPySharedByteArray']]],
+  ['isreadonly_10',['isreadonly',['../classqtpyt_1_1QPySequenceReference.html#a757f38ec9f02cd5e5b68acf0dd2011f2',1,'qtpyt::QPySequenceReference::isReadOnly()'],['../classqtpyt_1_1QPySharedByteArray.html#a77059bb48fddefa506a46ed8c9a53f38',1,'qtpyt::QPySharedByteArray::isReadOnly()']]],
+  ['isvalid_11',['isValid',['../classqtpyt_1_1QPyModuleBase.html#a713d9ed07c3ef41d78f3d1d063c330d3',1,'qtpyt::QPyModuleBase']]],
+  ['itemcount_12',['itemCount',['../classqtpyt_1_1QPySequenceReference.html#a9847c58ba348905e734c07735f58df70',1,'qtpyt::QPySequenceReference']]],
+  ['itemsize_13',['itemsize',['../classqtpyt_1_1QPySequenceReference.html#a94f93df996f2e6ad5c3c2d209b4f62ea',1,'qtpyt::QPySequenceReference::itemSize()'],['../classqtpyt_1_1QPyMemoryView.html#a306f0c7f48c1b9d6f0ca10ff3aa90624',1,'qtpyt::QPyMemoryView::itemsize()']]]
 ];
