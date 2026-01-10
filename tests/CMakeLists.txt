@@ -105,10 +105,20 @@ add_test(NAME conversions COMMAND test_conversions)
 # Discover tests
 gtest_discover_tests(qtpyt_tests)
 
+file(GLOB_RECURSE PYFILES_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/pyfiles/*")
+
+foreach(pyfile ${PYFILES_SOURCES})
+        configure_file(${pyfile}
+                $<TARGET_FILE_DIR:qtpyt_tests>/pyfiles/${pyfile}
+                COPYONLY)
+endforeach()
+
 add_custom_command(TARGET qtpyt_tests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/pyfiles
         $<TARGET_FILE_DIR:qtpyt_tests>/pyfiles
+        DEPENDS ${PYFILES_SOURCES}
+        COMMENT "Copying pyfiles directory"
 )
 
 add_test(NAME qpyscript_tests COMMAND qtpyt_tests)

@@ -6,6 +6,7 @@
 #include <utility>
 #include <utility>
 
+#include "qtpyt/qpysharedbytearray.h"
 #include "qtpyt/qpysequencereference.h"
 #include "qtpyt/qpysequencewrapper.h"
 
@@ -106,7 +107,7 @@ TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
     auto f = m.callAsync<>(nullptr, "test_func", "double");
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
-    EXPECT_EQ(f->errorMessage(), "QPyFutureImpl::run: Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
+    EXPECT_EQ(f->errorMessage().toStdString(),  "QPyFuture: Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
 }
 
 TEST(QPyModule, TestMakeAsyncFunction) {
@@ -313,6 +314,23 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly) {
     EXPECT_TRUE(f->errorMessage().startsWith("QPyFutureImpl::run: Python error: TypeError: cannot modify read-only memory"));
 }
 
+TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly2) {
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+                           qtpyt::QPySourceType::File);
+    auto scale_array = m.makeAsyncFunction<int, qtpyt::QPySequenceReference>(
+        nullptr,"summ_array");
+    auto arr = QSharedPointer<QVector<long long>>::create(4096);
+    auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, true);
+    for (int i = 0; i < arr->length(); ++i) {
+        (*arr)[i] = static_cast<float>(i);
+    }
+    auto f = scale_array(wrapped);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    auto res = f->resultAs<int>(0);
+    EXPECT_EQ(res, 4095 * 4096 / 2);
+}
+
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
@@ -352,23 +370,73 @@ TEST(QPyModule, TestPassingVectorWrapperReturned) {
     }
 }
 
-TEST(QPyModule, TestQByteArrayShared) {
+TEST(QPyModule, TestQPySharedByteArrayShared) {
     auto m = qtpyt::QPyModule("def test(b):\n"
                                                    "    for i in range(len(b)):\n"
                                                    "        b[i] = (i * 2) % 256\n"
                                                    "    return None\n",
                                                    qtpyt::QPySourceType::SourceString);
-    auto test = m.makeAsyncFunction<void, QByteArray>(
+    auto test = m.makeAsyncFunction<void, qtpyt::QPySharedByteArray>(
         nullptr,"test");
 
-    QByteArray ba;
-    ba.fill('\0', 64);
-    auto f =  test(ba);
+    qtpyt::QPySharedByteArray sba;
+    sba.resize(64);
+    for (int i = 0; i < sba.size(); ++i) {
+        sba[i] = 0;
+    }
+    auto f =  test(sba);
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
-    for (int i = 0; i < ba.size(); ++i) {
-        EXPECT_EQ(ba[i], i*2 % 256);
+    for (int i = 0; i < sba.size(); ++i) {
+        EXPECT_EQ(sba[i], i*2 % 256);
     }
 }
+
+TEST(QPyModule, TestQPySharedByteArrayReadOnly) {
+    auto m = qtpyt::QPyModule("def test(b):\n"
+                                                   "    print(b)\n"
+                                                   "    print(type(b))\n"
+                                                   "    print(len(b))\n"
+                                                   "    for i in range(len(b)):\n"
+                                                   "        b[i] = (i * 2) % 256\n"
+                                                   "    return None\n",
+                                                   qtpyt::QPySourceType::SourceString);
+    auto test = m.makeAsyncFunction<void, qtpyt::QPySharedByteArray>(
+        nullptr,"test");
+
+    qtpyt::QPySharedByteArray sba;
+    sba.resize(64);
+    for (int i = 0; i < sba.size(); ++i) {
+        sba[i] = 'a';
+    }
+    sba.setReadOnly(true);
+    auto f =  test(sba);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
+    EXPECT_TRUE(f->errorMessage().startsWith("QPyFutureImpl::run: Python error: TypeError: cannot modify read-only memory"));
+    for (int i = 0; i < sba.size(); ++i) {
+        EXPECT_EQ(sba[i], 'a');
+    }
+}
+
+TEST(QPyModule, TestQByteArrayReadOnly2) {
+    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
+            qtpyt::QPySourceType::File);
+    auto test = m.makeAsyncFunction<int, qtpyt::QPySharedByteArray>(
+        nullptr,"summ_array");
+
+    qtpyt::QPySharedByteArray sba;
+    sba.resize(64);
+    for (int i = 0; i < sba.size(); ++i) {
+        sba[i] = 'a';
+    }
+    sba.setReadOnly(true);
+    auto f =  test(sba);
+    f->waitForFinished();
+    EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
+    auto res = f->resultAs<int>(0);
+    EXPECT_EQ(res, 'a'*sba.size());
+}
+
 
 #include "test_qpymodule.moc"

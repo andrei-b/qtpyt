@@ -25,3 +25,9 @@ def make_array(size):
     for i in range(size):
         arr[i] = i
     return arr
+
+def summ_array(arr):
+    total = 0
+    for value in arr:
+        total += value
+    return total

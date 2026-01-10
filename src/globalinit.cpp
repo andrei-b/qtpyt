@@ -50,6 +50,7 @@ namespace qtpyt {
                 registerContainerType<QList<QVector4D>>("QList<QVector4D>");
                 registerMemoryViewType();
                 registerSequenceReferenceType();
+                registerSharedByteArray();
         }
     }
 

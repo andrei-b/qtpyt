@@ -7,11 +7,13 @@
 #include <QVariant>
 #include <QMap>
 
+#include "qtpyt/qpysharedbytearray.h"
+
 
 class TestObject_2 : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool success READ success WRITE setSuccessProperty NOTIFY successPropertyChanged)
-
+    Q_PROPERTY(int intResult READ intResult WRITE setIntResultProperty NOTIFY intResultPropertyChanged)
 public:
     explicit TestObject_2(QObject* parent = nullptr) : QObject(parent) {
     }
@@ -21,6 +23,12 @@ public:
         if (m_success == b) return;
         m_success = b;
         emit successPropertyChanged(m_success);
+    }
+    int intResult() const { return m_intResult; }
+    void setIntResultProperty(int v) {
+        if (m_intResult == v) return;
+        m_intResult = v;
+        emit intResultPropertyChanged(m_intResult);
     }
 
     void emitInt(int v) { emit passInt(v); }
@@ -36,9 +44,16 @@ public:
     void emitSequenceReference(const qtpyt::QPySequenceReference& seqRef) {
         emit passSequenceReference(seqRef);
     }
+    void emitByteArray(const QByteArray &ba) {
+        emit passByteArray(ba);
+    }
+    void emitSharedByteArray(const qtpyt::QPySharedByteArray &sba) {
+        emit passSharedByteArray(sba);
+    }
 
     signals:
     void successPropertyChanged(bool value);
+    void intResultPropertyChanged(int value);
 
     void passInt(int value);
     void passString(const QString& value);
@@ -51,7 +66,10 @@ public:
     void passQPair(const QPair<QString, int>& p);
     void passQVariantMap(const QVariantMap& map);
     void passSequenceReference(const qtpyt::QPySequenceReference& seqRef);
+    void passByteArray(const QByteArray &ba);
+    void passSharedByteArray(const qtpyt::QPySharedByteArray &sba);
 
 private:
     bool m_success{false};
+    int m_intResult{0};
 };
