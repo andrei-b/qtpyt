@@ -39,11 +39,13 @@ def configure(api):
     qt_interop.invoke_async(api, "set_opacity", 0.46)
 
     # nice dark theme example
-    qt_interop.ivoke_async(api, "set_stylesheet","""
+    qt_interop.invoke_async(api, "set_stylesheet","""
         QMainWindow { background: #121212; }
         QTextEdit { background: #1b1b1b; color: #eaeaea; border: 1px solid #2a2a2a; }
         QPushButton { padding: 8px 12px; }
     """)
+    print("Done")
+
 
 )PY";
 }
