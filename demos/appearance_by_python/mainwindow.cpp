@@ -19,7 +19,7 @@ static QString defaultScript() {
     //  - installs stdout redirection to qt_log
     //  - defines configure(api) and calls it
     return R"PY(
-import sys, time
+import sys, time, qt_interop
 
 class _Stdout:
     def __init__(self, cb):
@@ -34,19 +34,17 @@ def configure(api):
     sys.stdout = _Stdout(qt_log)
     sys.stderr = _Stdout(qt_log)
     print("Configuring window from Python…")
-    api.set_title("Configured by Python 🐍")
-    api.resize(980, 620)
-    api.set_opacity(0.96)
+    qt_interop.invoke_async(api, "set_title", "Configured by Python 🐍")
+    qt_interop.invoke_async(api, "resize", 980, 620)
+    qt_interop.invoke_async(api, "set_opacity", 0.46)
 
     # nice dark theme example
-    api.set_stylesheet("""
+    qt_interop.ivoke_async(api, "set_stylesheet","""
         QMainWindow { background: #121212; }
         QTextEdit { background: #1b1b1b; color: #eaeaea; border: 1px solid #2a2a2a; }
         QPushButton { padding: 8px 12px; }
     """)
 
-    api.set_font("DejaVu Sans", 11, False)
-    api.set_bg("#121212")
 )PY";
 }
 
