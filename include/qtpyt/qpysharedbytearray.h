@@ -13,6 +13,35 @@ namespace qtpyt {
             }
             return ba;
         }
+        QString toQString() {
+            if (this->isEmpty()) {
+                return QString();
+            }
+            return QString::fromUtf8(this->data(), static_cast<int>(this->size()));
+        }
+        static QPySharedByteArray fromRawData(const char* data, std::size_t len) {
+            QPySharedByteArray ba;
+            ba.resize(len);
+            if (len > 0) {
+                std::memcpy(ba.data(), data, len);
+            }
+            return ba;
+        }
+        static QPySharedByteArray fromStdString(const std::string& s) {
+            return fromRawData(s.data(), s.size());
+        }
+        static QPySharedByteArray fromStringView(const std::string_view& sv) {
+            return fromRawData(sv.data(), sv.size());
+        }
+        static QPySharedByteArray fromQStringView(const QStringView& sv) {
+            QPySharedByteArray ba;
+            const QByteArray byteArray = sv.toUtf8();
+            ba.resize(static_cast<std::size_t>(byteArray.size()));
+            if (ba.size() > 0) {
+                std::memcpy(ba.data(), byteArray.constData(), ba.size());
+            }
+            return ba;
+        }
         void append(const char* data, std::size_t len) {
             const std::size_t oldSize = this->size();
             this->resize(oldSize + len);
