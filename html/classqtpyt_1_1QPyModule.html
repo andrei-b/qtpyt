@@ -78,7 +78,6 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classqtpyt_1_1QPyModule-members.html">List of all members</a>  </div>
@@ -213,12 +212,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a24d96e2c8bad973683dd53c50bc96b62 inherit pro_methods_classqtpyt_1_1QPyModuleBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides access to the internal module implementation.  <br /></td></tr>
 <tr class="separator:a24d96e2c8bad973683dd53c50bc96b62 inherit pro_methods_classqtpyt_1_1QPyModuleBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
-Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a0229d2618cc5cc487bd5db4233244c99" id="r_a0229d2618cc5cc487bd5db4233244c99"><td class="memTemplParams" colspan="2">template&lt;typename SignalFunc &gt; </td></tr>
-<tr class="memitem:a0229d2618cc5cc487bd5db4233244c99"><td class="memTemplItemLeft" align="right" valign="top">static std::optional&lt; int &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a0229d2618cc5cc487bd5db4233244c99">getMethodIndex</a> (const QObject *sender, SignalFunc signal)</td></tr>
-<tr class="separator:a0229d2618cc5cc487bd5db4233244c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a167df9968b441d358ccfe3bc96a4a40d" id="r_a167df9968b441d358ccfe3bc96a4a40d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a167df9968b441d358ccfe3bc96a4a40d">addWantsToCancel</a> ()</td></tr>
@@ -249,7 +242,7 @@ Private Attributes</h2></td></tr>
 <p>Lifetime:<br  />
 The object is intended to be managed by <code>QSharedPointer</code> and supports <code>sharedFromThis()</code> via <code>QEnableSharedFromThis</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00042">42</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00041">41</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a54deb39a3bc7842b1b1edef9e219783f" name="a54deb39a3bc7842b1b1edef9e219783f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a54deb39a3bc7842b1b1edef9e219783f">&#9670;&#160;</a></span>QPyModule()</h2>
@@ -419,7 +412,7 @@ template&lt;typename... Args&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a></code> on successful scheduling; <code>std::nullopt</code> on failure. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00068">68</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00067">67</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -543,7 +536,7 @@ template&lt;typename SignalFunc &gt; </div>
 <dl class="section note"><dt>Note</dt><dd>The Python function is scheduled asynchronously via qtpyt thread facilities. </dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Logs a warning if the signal cannot be matched to a method signature. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00187">187</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00186">186</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -668,7 +661,7 @@ template&lt;typename SignalFunc &gt; </div>
 <dl class="section note"><dt>Note</dt><dd>The Python function is called synchronously in the sender's thread context. </dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Logs a warning if the signal cannot be matched to a method signature. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00164">164</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00163">163</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -722,46 +715,6 @@ template&lt;typename SignalFunc &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A QMetaObject::Connection representing the connection; invalid if connection fails. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The Python function is called synchronously in the sender's thread context. </dd></dl>
-
-</div>
-</div>
-<a id="a0229d2618cc5cc487bd5db4233244c99" name="a0229d2618cc5cc487bd5db4233244c99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0229d2618cc5cc487bd5db4233244c99">&#9670;&#160;</a></span>getMethodIndex()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename SignalFunc &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::optional&lt; int &gt; qtpyt::QPyModule::getMethodIndex </td>
-          <td>(</td>
-          <td class="paramtype">const QObject *&#160;</td>
-          <td class="paramname"><em>sender</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">SignalFunc&#160;</td>
-          <td class="paramname"><em>signal</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00207">207</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -852,7 +805,7 @@ template&lt;typename R , typename... Args&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00100">100</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00099">99</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -979,7 +932,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True if cancellation has been triggered. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00252">252</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00217">217</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1005,7 +958,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>Human-readable cancel reason, if cancellation is requested. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00249">249</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00214">214</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1031,7 +984,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True when execution is complete. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00255">255</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00220">220</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1057,7 +1010,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>Thread id captured for thread-affinity/validation logic. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00261">261</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00226">226</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1083,7 +1036,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True when cancellation has been requested but not yet applied. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00258">258</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00223">223</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>

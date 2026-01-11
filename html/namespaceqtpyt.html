@@ -174,6 +174,11 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a092ad07c490911f4869752b2255ff4d4" id="r_a092ad07c490911f4869752b2255ff4d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a092ad07c490911f4869752b2255ff4d4">init</a> (bool printPyInfo=false)</td></tr>
 <tr class="separator:a092ad07c490911f4869752b2255ff4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7766e565c3b1295882ca76212fab1f" id="r_afc7766e565c3b1295882ca76212fab1f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#afc7766e565c3b1295882ca76212fab1f">getSignalCount</a> (const QMetaObject *m)</td></tr>
+<tr class="separator:afc7766e565c3b1295882ca76212fab1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74368c002f7f4f2f3708ad14bc21504e" id="r_a74368c002f7f4f2f3708ad14bc21504e"><td class="memTemplParams" colspan="2">template&lt;typename SignalFunc &gt; </td></tr>
+<tr class="memitem:a74368c002f7f4f2f3708ad14bc21504e"><td class="memTemplItemLeft" align="right" valign="top">static std::optional&lt; int &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a74368c002f7f4f2f3708ad14bc21504e">getMethodIndex</a> (const QObject *sender, SignalFunc signal)</td></tr>
+<tr class="separator:a74368c002f7f4f2f3708ad14bc21504e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a108753cd48cc3449298403464c5678b0" id="r_a108753cd48cc3449298403464c5678b0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a108753cd48cc3449298403464c5678b0"><td class="memTemplItemLeft" align="right" valign="top">constexpr char&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqtpyt.html#a108753cd48cc3449298403464c5678b0">format_char</a> ()</td></tr>
 <tr class="separator:a108753cd48cc3449298403464c5678b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -409,6 +414,64 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="qpyarray_8h_source.html#l00007">7</a> of file <a class="el" href="qpyarray_8h_source.html">qpyarray.h</a>.</p>
+
+</div>
+</div>
+<a id="a74368c002f7f4f2f3708ad14bc21504e" name="a74368c002f7f4f2f3708ad14bc21504e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74368c002f7f4f2f3708ad14bc21504e">&#9670;&#160;</a></span>getMethodIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SignalFunc &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::optional&lt; int &gt; qtpyt::getMethodIndex </td>
+          <td>(</td>
+          <td class="paramtype">const QObject *&#160;</td>
+          <td class="paramname"><em>sender</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SignalFunc&#160;</td>
+          <td class="paramname"><em>signal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="methodindex_8h_source.html#l00010">10</a> of file <a class="el" href="methodindex_8h_source.html">methodindex.h</a>.</p>
+
+</div>
+</div>
+<a id="afc7766e565c3b1295882ca76212fab1f" name="afc7766e565c3b1295882ca76212fab1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7766e565c3b1295882ca76212fab1f">&#9670;&#160;</a></span>getSignalCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int qtpyt::getSignalCount </td>
+          <td>(</td>
+          <td class="paramtype">const QMetaObject *&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
