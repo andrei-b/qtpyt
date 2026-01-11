@@ -1,5 +1,9 @@
+![Python 3.14t](https://img.shields.io/badge/Python-3.14t-blue?logo=python&logoColor=white)
+![Qt 6](https://img.shields.io/badge/Qt-6-green?logo=qt&logoColor=white)
+
+
 # QtPyT
-Embeds multi-threaded Python into the C++ Qt Application
+Use multithreaded Python in your C++ Qt Application as plugin or scripting language.
 
 ## Overview
 

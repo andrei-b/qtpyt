@@ -33,6 +33,15 @@ Invokes a Qt method with arguments passed as a list of variants.
  - `*args`: Variable arguments to pass to the method
  - Returns: The method's return value
 
+**invoke_async(obj_ptr, method, \*args)**
+Invokes a Qt method that returns void asynchronously.
+The call returns immediately, the method is executed later in the Qt event loop.
+- `obj_ptr` (int): Pointer to the QObject as integer
+- `method` (str): Name of the method to invoke
+- `*args`: Variable arguments to pass to the method
+- Returns: true if the call was placed successfully
+
+
 **invoke_ret_void(obj_ptr, method, \*args)**
 
 Invokes a Qt method that returns void.

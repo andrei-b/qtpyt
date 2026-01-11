@@ -3,19 +3,20 @@
 //
 
 #include "qpymemoryviewinternal.h"
+#include "stringpool.h"
 
-qtpyt::QPyMemoryViewInternal::QPyMemoryViewInternal(char *ptr, char fmt, std::size_t count, bool readOnly): fmt_(fmt),
-    itemsize_(itemsize_from_format(fmt)),
-    count_(count),
-    nbytes_(itemsize_ * count_) {
-    backing_ = py::bytearray(ptr, nbytes_);
-    py::buffer_info info = py::buffer(backing_).request();
-    view_ = py::memoryview::from_buffer(
-        info.ptr,
-        itemsize_from_format(fmt_),
-        std::string(1, fmt_).c_str(),
-        { static_cast<py::ssize_t>(count_) },         // shape
-        { static_cast<py::ssize_t>(itemsize_) },
+qtpyt::QPyMemoryViewInternal::QPyMemoryViewInternal(char *ptr, char fmt, std::size_t count, bool readOnly): m_fmt(fmt),
+    m_itemsize(itemsize_from_format(fmt)),
+    m_count(count),
+    m_nbytes(m_itemsize * m_count) ,
+    m_ptr(static_cast<void*>(ptr)){
+    auto fmtprt = StringPool::instance().intern(std::string(1, m_fmt))->c_str();
+    m_view = py::memoryview::from_buffer(
+        m_ptr,
+        itemsize_from_format(m_fmt),
+        fmtprt,
+        { static_cast<py::ssize_t>(m_count) },         // shape
+        { static_cast<py::ssize_t>(m_itemsize) },
         readOnly
     );
 
@@ -30,52 +31,45 @@ qtpyt::QPyMemoryViewInternal::QPyMemoryViewInternal(const py::memoryview &mv) {
     if (info.ndim != 1)
         throw std::invalid_argument("Only 1D memoryviews are supported");
 
-    fmt_ = info.format[0]; // assume single char format
-    itemsize_ = static_cast<std::size_t>(info.itemsize);
-    count_ = static_cast<std::size_t>(info.shape[0]);
-    nbytes_ = itemsize_ * count_;
-
-    backing_ = py::bytearray(static_cast<char*>(info.ptr), nbytes_);
-    view_ = mv;
-
-
+    m_fmt = info.format[0]; // assume single char format
+    m_itemsize = static_cast<std::size_t>(info.itemsize);
+    m_count = static_cast<std::size_t>(info.shape[0]);
+    m_nbytes = m_itemsize * m_count;
+    m_view = mv;
+    m_ptr = info.ptr;
 }
 
 py::object qtpyt::QPyMemoryViewInternal::memoryview() const {
-    return view_;
+    return m_view;
 }
 
-py::bytearray qtpyt::QPyMemoryViewInternal::backing() const { return backing_; }
+std::size_t qtpyt::QPyMemoryViewInternal::nbytes() const noexcept { return m_nbytes; }
 
-std::size_t qtpyt::QPyMemoryViewInternal::nbytes() const noexcept { return nbytes_; }
+std::size_t qtpyt::QPyMemoryViewInternal::size() const noexcept { return m_count; }
 
-std::size_t qtpyt::QPyMemoryViewInternal::size() const noexcept { return count_; }
-
-std::size_t qtpyt::QPyMemoryViewInternal::itemsize() const noexcept { return itemsize_; }
+std::size_t qtpyt::QPyMemoryViewInternal::itemsize() const noexcept { return m_itemsize; }
 
 std::uint8_t * qtpyt::QPyMemoryViewInternal::data_u8() {
-    const py::buffer_info info = py::buffer(backing_).request();
-    return static_cast<std::uint8_t*>(info.ptr);
+   return static_cast<std::uint8_t*>(m_ptr);
 }
 
 const std::uint8_t * qtpyt::QPyMemoryViewInternal::cdata_u8() const {
-    const py::buffer_info info = py::buffer(backing_).request();
-    return static_cast<const std::uint8_t*>(info.ptr);
+    return static_cast<const std::uint8_t*>(m_ptr);
 }
 
 void qtpyt::QPyMemoryViewInternal::fill_byte(std::uint8_t v) {
-    std::memset(data_u8(), v, nbytes_);
+    std::memset(data_u8(), v, m_nbytes);
 }
 
 void qtpyt::QPyMemoryViewInternal::write_bytes(std::size_t offset, py::bytes src) {
     std::string s = src; // copies bytes into std::string
-    if (offset > nbytes_ || s.size() > (nbytes_ - offset))
+    if (offset > m_nbytes || s.size() > (m_nbytes - offset))
         throw std::out_of_range("write_bytes out of range");
     std::memcpy(data_u8() + offset, s.data(), s.size());
 }
 
 py::bytes qtpyt::QPyMemoryViewInternal::read_bytes(std::size_t offset, std::size_t len) const {
-    if (offset > nbytes_ || len > (nbytes_ - offset))
+    if (offset > m_nbytes || len > (m_nbytes - offset))
         throw std::out_of_range("read_bytes out of range");
     return py::bytes(reinterpret_cast<const char*>(cdata_u8() + offset),
                      static_cast<py::ssize_t>(len));

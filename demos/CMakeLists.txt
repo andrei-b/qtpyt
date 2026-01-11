@@ -18,3 +18,4 @@ qt_policy(SET QTP0001 NEW)
 qt_standard_project_setup()
 
 add_subdirectory(timer_app)
+add_subdirectory(appearance_by_python)

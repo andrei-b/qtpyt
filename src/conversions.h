@@ -292,4 +292,6 @@ namespace qtpyt {
         return newId;
     }
 
+    void registerSharedByteArray();
+
 } // namespace qtpyt

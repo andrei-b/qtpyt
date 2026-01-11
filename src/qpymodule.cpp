@@ -80,6 +80,16 @@ namespace qtpyt {
         return QPySlot(*this, notifier, slotName, returnType);
     }
 
+    QMetaObject::Connection QPyModule::connectToSignal(QObject *sender, const char *signal, const char *slot,
+        Qt::ConnectionType type) const {
+        return QPySlot::connectPythonFunction(sender, signal, *this, QString(slot), QMetaType::fromType<void>(), type);
+    }
+
+    QMetaObject::Connection QPyModule::connectAsyncToSignal(QObject *sender, const char *signal, const char *slot,
+        Qt::ConnectionType type) const {
+        return QPySlot::connectPythonFunctionAsync(sender, signal, *this, nullptr, QString(slot), QMetaType::fromType<void>());
+    }
+
     auto QPyModule::getThreadId() const {
         return m_threadId;
     }

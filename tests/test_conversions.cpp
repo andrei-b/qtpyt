@@ -7,13 +7,13 @@
 #include <QByteArray>
 #include <QColor>
 #include <QDateTime>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QPointF>
 #include <QUrl>
 #include <QUuid>
 #include <QVector3D>
-
 #include "../src/conversions.h"
-#include  <qtpyt/qpysharedarray.h>
 
 namespace py = pybind11;
 
@@ -197,59 +197,6 @@ TEST(Conversions, QListQPStringRoundTrip) {
     }
 }
 
-TEST(Conversions, QSharedArrayRoundTrip) {
-    QVector<float> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
-    qtpyt::QPySharedArray<float> sharedArray(6);
-    for (int i = 0; i < data.size(); ++i) {
-        sharedArray[i] = data[i];
-    }
-    QVariant in = QVariant::fromValue(sharedArray);
-    py::object obj = qtpyt::qvariantToPyObject(in);
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<float>"));
-    ASSERT_TRUE(outOpt.has_value());
-    auto out = outOpt->value<qtpyt::QPySharedArray<float>>();
-    ASSERT_EQ(out.size(), sharedArray.size());
-    for (int i = 0; i < sharedArray.size(); ++i) {
-        EXPECT_EQ(out[i], sharedArray[i]);
-    }
-}
-
-TEST(Conversions, QSharedArrayRoundTrip2) {
-    QVector<double> data = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
-    qtpyt::QPySharedArray<double> sharedArray(6);
-    for (int i = 0; i < data.size(); ++i) {
-        sharedArray[i] = data[i];
-    }
-    QVariant in = QVariant::fromValue(sharedArray);
-    py::object obj = qtpyt::qvariantToPyObject(in);
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<double>"));
-    ASSERT_TRUE(outOpt.has_value());
-    auto out = outOpt->value<qtpyt::QPySharedArray<double>>();
-    ASSERT_EQ(out.size(), sharedArray.size());
-    for (int i = 0; i < sharedArray.size(); ++i) {
-        EXPECT_EQ(out[i], sharedArray[i]);
-    }
-}
-
-
-TEST(Conversions, QSharedArrayRoundTrip3) {
-    QVector<int64_t> data = {500000000, 4, 3, 2, 1};
-    qtpyt::QPySharedArray<long long> sharedArray(6);
-    for (int i = 0; i < data.size(); ++i) {
-        sharedArray[i] = data[i];
-    }
-    QVariant in = QVariant::fromValue(sharedArray);
-    py::object obj = qtpyt::qvariantToPyObject(in);
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<long long>"));
-    ASSERT_TRUE(outOpt.has_value());
-    auto out = outOpt->value<qtpyt::QPySharedArray<long long>>();
-    ASSERT_EQ(out.size(), sharedArray.size());
-    for (int i = 0; i < sharedArray.size(); ++i) {
-        EXPECT_EQ(out[i], sharedArray[i]);
-    }
-}
-
-
 TEST(Conversions, QUuidRoundTrip) {
     QUuid id = QUuid::createUuid();
     QVariant in = QVariant::fromValue(id);
@@ -370,57 +317,39 @@ TEST(Conversions, QMapIntQVector4DRoundTrip) {
     }
 }
 
-TEST(Conversions, QSharedArrayUShortRoundTrip) {
+TEST(Conversions, QJsonObjectRoundTrip) {
+    QJsonObject jsonObj;
+    jsonObj.insert("name", "Test Object");
+    jsonObj.insert("value", 42);
+    jsonObj.insert("active", true);
 
-    qtpyt::QPySharedArray<unsigned short> sharedArray(6);
-    sharedArray[0] = static_cast<unsigned short>(0);
-    sharedArray[1] = static_cast<unsigned short>(1);
-    sharedArray[2] = static_cast<unsigned short>(42);
-    sharedArray[3] = static_cast<unsigned short>(65535);
-    sharedArray[4] = static_cast<unsigned short>(1234);
-    sharedArray[5] = static_cast<unsigned short>(50000);
-
-    QVariant in = QVariant::fromValue(sharedArray);
+    QVariant in = QVariant::fromValue(jsonObj);
     py::object obj = qtpyt::qvariantToPyObject(in);
 
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPySharedArray<unsigned short>"));
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QJsonObject"));
     ASSERT_TRUE(outOpt.has_value());
 
-    auto out = outOpt->value<qtpyt::QPySharedArray<unsigned short>>();
-    ASSERT_EQ(out.size(), sharedArray.size());
-    for (int i = 0; i < sharedArray.size(); ++i) {
-        EXPECT_EQ(out[i], sharedArray[i]);
-    }
+    QJsonObject out = outOpt->value<QJsonObject>();
+    EXPECT_EQ(out.value("name").toString(), jsonObj.value("name").toString());
+    EXPECT_EQ(out.value("value").toInt(), jsonObj.value("value").toInt());
+    EXPECT_EQ(out.value("active").toBool(), jsonObj.value("active").toBool());
 }
 
-TEST(Conversions, QVectorBoolRoundTrip) {
-    qtpyt::registerContainerType<QVector<bool>>("QVector<bool>");
+TEST(Conversions, QJsonArrayRoundTrip) {
+    QJsonArray jsonArray;
+    jsonArray.append("first");
+    jsonArray.append(2);
+    jsonArray.append(true);
 
-    QVector<bool> vec = {true, false, true, true, false};
-    QVariant in = QVariant::fromValue(vec);
+    QVariant in = QVariant::fromValue(jsonArray);
     py::object obj = qtpyt::qvariantToPyObject(in);
 
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector<bool>"));
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QJsonArray"));
     ASSERT_TRUE(outOpt.has_value());
 
-    QVector<bool> out = outOpt->value<QVector<bool>>();
-    ASSERT_EQ(out.size(), vec.size());
-    for (int i = 0; i < vec.size(); ++i) {
-        EXPECT_EQ(out[i], vec[i]);
-    }
-}
-
-TEST(Conversions, QPairRoundTrip) {
-    qtpyt::registerQPairType<QString, int>("QPair<QString, int>");
-
-    QPair<QString, int> pair(QStringLiteral("example"), 12345);
-    QVariant in = QVariant::fromValue(pair);
-    py::object obj = qtpyt::qvariantToPyObject(in);
-
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPair<QString, int>"));
-    ASSERT_TRUE(outOpt.has_value());
-
-    QPair<QString, int> out = outOpt->value<QPair<QString, int>>();
-    EXPECT_EQ(out.first, pair.first);
-    EXPECT_EQ(out.second, pair.second);
+    QJsonArray out = outOpt->value<QJsonArray>();
+    ASSERT_EQ(out.size(), jsonArray.size());
+    EXPECT_EQ(out.at(0).toString(), jsonArray.at(0).toString());
+    EXPECT_EQ(out.at(1).toInt(), jsonArray.at(1).toInt());
+    EXPECT_EQ(out.at(2).toBool(), jsonArray.at(2).toBool());
 }

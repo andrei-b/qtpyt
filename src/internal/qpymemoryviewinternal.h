@@ -23,12 +23,16 @@ namespace qtpyt {
 
     class QPyMemoryViewInternal {
     public:
+        QPyMemoryViewInternal() = default;
         QPyMemoryViewInternal(char * ptr, char fmt, std::size_t count, bool readOnly);
-        explicit QPyMemoryViewInternal(const py::memoryview& mv);
+        QPyMemoryViewInternal(const py::memoryview &mv);
+        QPyMemoryViewInternal(const QPyMemoryViewInternal& other)= delete;
+        QPyMemoryViewInternal& operator=(const QPyMemoryViewInternal& other)= delete;
+        QPyMemoryViewInternal(QPyMemoryViewInternal&& other) noexcept = default;
+        QPyMemoryViewInternal& operator=(QPyMemoryViewInternal&& other) = default;
+        ~QPyMemoryViewInternal() = default;
 
         py::object memoryview() const;
-
-        py::bytearray backing() const;
 
         std::size_t nbytes() const noexcept;
 
@@ -36,7 +40,7 @@ namespace qtpyt {
 
         std::size_t itemsize() const noexcept;
 
-        char format() const noexcept { return fmt_; }
+        char format() const noexcept { return m_fmt; }
 
 
         std::uint8_t* data_u8();
@@ -51,12 +55,13 @@ namespace qtpyt {
         py::bytes read_bytes(std::size_t offset, std::size_t len) const;
 
     private:
-        char fmt_;
-        std::size_t itemsize_;
-        std::size_t count_;
-        std::size_t nbytes_;
-        py::bytearray backing_;
-        py::object view_;
+        char m_fmt;
+        std::size_t m_itemsize;
+        std::size_t m_count;
+        std::size_t m_nbytes;
+        void* m_ptr;
+        py::object m_view;
     };
 
-}
+
+}// namespace qtpyt

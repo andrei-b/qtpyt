@@ -73,6 +73,19 @@ namespace qtpyt {
         return retValue;
     }
 
+    bool invoke_from_args_async(const uintptr_t obj_ptr, const std::string &method, const py::args &args) {
+        QObject* obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));
+        if (!obj) {
+            py::print("QEmbedMetaObjectPy.invoke_returning_from_args_async: null object pointer");
+            return false;
+        }
+        QMetaObject::invokeMethod(obj, [obj_ptr, method, args]() {
+            py::object retValue = py::none();
+            invoke_from_args(obj_ptr, method, retValue, args);
+        }, Qt::AutoConnection);
+        return true;
+    }
+
     bool invoke_from_variant_list(uintptr_t obj_ptr, const std::string& method,
                                   py::object& return_value, const py::iterable& args) {
         const auto obj = reinterpret_cast<QObject*>(static_cast<uintptr_t>(obj_ptr));

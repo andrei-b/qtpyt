@@ -54,7 +54,10 @@ void QPyFutureImpl::run() {
 
             auto result = m_module.call(m_functionName, QMetaType::fromName(m_returnType), m_arguments);
             if (!result.first.has_value()) {
-                throw std::runtime_error("QPyFutureImpl::run: " + result.second.toStdString());
+                if (result.second.isEmpty()) {
+                    throw std::runtime_error("QPyFuture: You are probably waiting for the result from a function that does not return anything");
+                }
+                throw std::runtime_error("QPyFuture: " + result.second.toStdString());
             }
             pushResult(result.first.value());
             m_state =  qtpyt::QPyFutureState::Finished;

@@ -1,5 +1,4 @@
 #include "../include/qtpyt/qpyslot.h"
-#include "qtpyt/qpysharedarray.h"
 #include <filesystem>
 #include <QSignalSpy>
 #include <gtest/gtest.h>

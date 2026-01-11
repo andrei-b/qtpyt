@@ -50,6 +50,8 @@ namespace qtpyt {
 
             m.def("invoke_mt", &invoke_returning_from_args_mt, py::arg("obj_ptr"), py::arg("method"));
 
+            m.def("invoke_async", &invoke_from_args_async, py::arg("obj_ptr"), py::arg("method"));
+
         }
 
     } // namespace

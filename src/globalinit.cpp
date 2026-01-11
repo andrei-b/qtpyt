@@ -3,7 +3,7 @@
 #include "pybind11/embed.h"
 #include <pybind11/complex.h>
 #include "conversions.h"
-#include "internal/sharedarrayinternal.h"
+#include <qtpyt/qpymemoryview.h>
 #include <qlogging.h>
 #include <QDebug>
 #include <QString>
@@ -16,6 +16,8 @@
 #include <QMatrix4x4>
 #include <complex>
 #include "pymodule.h"
+#include "qtpyt/qpymemoryview.h"
+#include "qtpyt/qpysequencereference.h"
 
 namespace qtpyt {
     bool g_PyInitialized = false;
@@ -34,19 +36,6 @@ namespace qtpyt {
                 qInfo() << "Platform:" << QString::fromStdString(platform.cast<std::string>());
             }
                 makeEmbeddedModule();
-                registerSharedArray<int>("QPySharedArray<int>");
-                registerSharedArray<double>("QPySharedArray<double>");
-                registerSharedArray<float>("QPySharedArray<float>");
-                registerSharedArray<unsigned long>("QPySharedArray<unsigned long>");
-                registerSharedArray<long>("QPySharedArray<long>");
-                registerSharedArray<char>("QPySharedArray<char>");
-                registerSharedArray<unsigned char>("QPySharedArray<unsigned char>");
-                registerSharedArray<short>("QPySharedArray<short>");
-                registerSharedArray<unsigned short>("QPySharedArray<unsigned short>");
-                registerSharedArray<unsigned int>("QPySharedArray<unsigned int>");
-                registerSharedArray<long long>("QPySharedArray<long long>");
-                registerSharedArray<unsigned long long>("QPySharedArray<unsigned long long>");
-                registerSharedArray<bool>("QPySharedArray<bool>");
                 registerContainerType<QList<double>>("QList<double>");
                 registerContainerType<QList<int>>("QList<int>");
                 registerContainerType<QList<QString>>("QList<QString>");
@@ -59,7 +48,9 @@ namespace qtpyt {
                 registerContainerType<QList<QPointF>>("QList<QPointF>");
                 registerContainerType<QList<QVector3D>>("QList<QVector3D>");
                 registerContainerType<QList<QVector4D>>("QList<QVector4D>");
-
+                registerMemoryViewType();
+                registerSequenceReferenceType();
+                registerSharedByteArray();
         }
     }
 
