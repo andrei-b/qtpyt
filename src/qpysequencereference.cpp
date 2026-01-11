@@ -19,20 +19,38 @@ namespace qtpyt {
             return mv;
         });
 
-        addFromQVariantFunc(id, [](const QVariant& v) {
-            auto cp = v.value<QPySequenceReference>();
-            py::gil_scoped_acquire gil;
-            py::memoryview mv = py::memoryview::from_buffer(
-                cp.getPointer(),
-                static_cast<py::ssize_t>(cp.itemSize()),
-                StringPool::instance().intern(std::string(1, cp.format()))->c_str(),
-                { static_cast<py::ssize_t>(cp.itemCount()) },         // shape
-                { static_cast<py::ssize_t>(cp.itemSize()) },
-                cp.isReadOnly()
-            );
-            return mv;
-        });
+addFromQVariantFunc(id, [](const QVariant& v) {
+    auto cp = v.value<QPySequenceReference>();
+    py::gil_scoped_acquire gil;
 
+    // Create a capsule that keeps cp alive
+    auto* cp_ptr = new QPySequenceReference(cp);
+    auto capsule = py::capsule(cp_ptr, [](void* ptr) {
+        delete static_cast<QPySequenceReference*>(ptr);
+    });
+
+    // Create buffer info
+    Py_buffer view;
+    view.buf = cp.getPointer();
+    view.obj = capsule.ptr();
+    view.len = static_cast<Py_ssize_t>(cp.itemCount() * cp.itemSize());
+    view.itemsize = static_cast<Py_ssize_t>(cp.itemSize());
+    view.readonly = cp.isReadOnly() ? 1 : 0;
+    view.ndim = 1;
+    view.format = const_cast<char*>(StringPool::instance().intern(std::string(1, cp.format()))->c_str());
+    view.shape = new Py_ssize_t[1]{static_cast<Py_ssize_t>(cp.itemCount())};
+    view.strides = new Py_ssize_t[1]{static_cast<Py_ssize_t>(cp.itemSize())};
+    view.suboffsets = nullptr;
+    view.internal = nullptr;
+
+    PyObject* mv_obj = PyMemoryView_FromBuffer(&view);
+
+    delete[] view.shape;
+    delete[] view.strides;
+
+    return py::reinterpret_steal<py::memoryview>(mv_obj);
+});
+                
         QString typeName = QMetaType::typeName(id);
         addFromPyObjectToQVariantFunc(typeName, [](const py::object& obj) -> QVariant {
             py::gil_scoped_acquire gil;
