@@ -63,6 +63,7 @@ target_sources(qtpyt_tests PRIVATE
         ../src/pymodule.h
         ../src/conversions.h
         ../src/qpysequencereference.cpp
+        ../src/methodindex.cpp
 
 )
 
