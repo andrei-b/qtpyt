@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['_7eiqpyfuturenotifier_0',['~IQPyFutureNotifier',['../classqtpyt_1_1IQPyFutureNotifier.html#ac610aeb344bf187948fde06779c4cac4',1,'qtpyt::IQPyFutureNotifier']]],
-  ['_7eqpymodule_1',['~QPyModule',['../classqtpyt_1_1QPyModule.html#a4bb9f8f5df5e78748666961d62ad6429',1,'qtpyt::QPyModule']]],
-  ['_7eqpymodulebase_2',['~QPyModuleBase',['../classqtpyt_1_1QPyModuleBase.html#aad59b0e5595fc559454f844b5efe0718',1,'qtpyt::QPyModuleBase']]],
-  ['_7eqpysequencereference_3',['~QPySequenceReference',['../classqtpyt_1_1QPySequenceReference.html#aa03b7e56f383d5384118d7e8a5c50b3b',1,'qtpyt::QPySequenceReference']]],
-  ['_7eqpythread_4',['~QPyThread',['../classqtpyt_1_1QPyThread.html#a76b0151980197d57496cd65c447333e3',1,'qtpyt::QPyThread']]],
-  ['_7eqpythreadpool_5',['~QPyThreadPool',['../classqtpyt_1_1QPyThreadPool.html#a6c9fb31889788a569d37429d6496fc8d',1,'qtpyt::QPyThreadPool']]]
+  ['waitforfinished_0',['waitForFinished',['../classqtpyt_1_1QPyFuture.html#ad8d7b3ed3df39af4ecb62c7f5246e08e',1,'qtpyt::QPyFuture']]],
+  ['wrapvectorwithsequencereference_1',['wrapvectorwithsequencereference',['../namespaceqtpyt.html#ae6ea4e4f642e2e263aedf8b0a4a339e8',1,'qtpyt::wrapVectorWithSequenceReference(const QSharedPointer&lt; QVector&lt; T &gt; &gt; &amp;vecPtr, bool readOnly=false)'],['../namespaceqtpyt.html#a6ad72d6661f8c42133af76831a7c6c95',1,'qtpyt::wrapVectorWithSequenceReference(QVector&lt; T &gt; *vecPtr, bool readOnly=false)'],['../namespaceqtpyt.html#ac853bb1f87b6815fb4508c4b4c298757',1,'qtpyt::wrapVectorWithSequenceReference(const QSharedPointer&lt; std::vector&lt; T &gt; &gt; &amp;vecPtr, bool readOnly=false)'],['../namespaceqtpyt.html#ab181e49b2ba43c0f660aa3c869a9c05c',1,'qtpyt::wrapVectorWithSequenceReference(std::vector&lt; T &gt; *vecPtr, bool readOnly=false)']]],
+  ['writedata_2',['writeData',['../classqtpyt_1_1QPyMemoryView.html#a66f4915d196a60ec1c4f3aa94c58100f',1,'qtpyt::QPyMemoryView']]]
 ];
