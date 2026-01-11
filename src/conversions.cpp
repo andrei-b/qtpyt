@@ -230,6 +230,24 @@ namespace qtpyt {
         throw std::runtime_error("argument cannot be converted to QMatrix4x4");
     }
 
+    auto dictFromJsonObject(const QVariant &v) {
+        const auto obj = v.toJsonObject();
+        py::dict dict;
+        for (auto it = obj.constBegin(); it != obj.constEnd(); ++it) {
+            dict[py::str(it.key().toStdString())] = qvariantToPyObject(it.value().toVariant());
+        }
+        return dict;
+    }
+
+    auto sequenceFromQJsonArray(const QVariant &v) {
+        const auto arr = v.toJsonArray();
+        py::list list;
+        for (const auto &item: arr) {
+            list.append(qvariantToPyObject(item.toVariant()));
+        }
+        return list;
+    }
+
     static std::unordered_map<int, PyObjectFromQVariantFunc> specializedQVariantToPyObjectConverters = {
         {QMetaType::Int, [](const QVariant &v) { return py::int_(v.toInt()); }},
         {QMetaType::Double, [](const QVariant &v) { return py::float_(v.toDouble()); }},
@@ -283,7 +301,9 @@ namespace qtpyt {
         {QMetaType::QVector4D, tupleFromQVector4D},
         {QMetaType::QQuaternion, tupleFromQuaternion},
         {QMetaType::QMatrix4x4, tupleFromMatrix4x4},
-        {QMetaType::QUuid, [](const QVariant &v) { return py::str(v.toUuid().toString().toStdString()); }}
+        {QMetaType::QUuid, [](const QVariant &v) { return py::str(v.toUuid().toString().toStdString()); }},
+        {QMetaType::QJsonObject, dictFromJsonObject},
+        {QMetaType::QJsonArray, sequenceFromQJsonArray},
     };
 
     void addFromQVariantFunc(int typeId, PyObjectFromQVariantFunc &&func) {

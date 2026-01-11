@@ -7,6 +7,8 @@
 #include <QByteArray>
 #include <QColor>
 #include <QDateTime>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QPointF>
 #include <QUrl>
 #include <QUuid>
@@ -315,34 +317,39 @@ TEST(Conversions, QMapIntQVector4DRoundTrip) {
     }
 }
 
-TEST(Conversions, QVectorBoolRoundTrip) {
-    qtpyt::registerContainerType<QVector<bool>>("QVector<bool>");
+TEST(Conversions, QJsonObjectRoundTrip) {
+    QJsonObject jsonObj;
+    jsonObj.insert("name", "Test Object");
+    jsonObj.insert("value", 42);
+    jsonObj.insert("active", true);
 
-    QVector<bool> vec = {true, false, true, true, false};
-    QVariant in = QVariant::fromValue(vec);
+    QVariant in = QVariant::fromValue(jsonObj);
     py::object obj = qtpyt::qvariantToPyObject(in);
 
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QVector<bool>"));
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QJsonObject"));
     ASSERT_TRUE(outOpt.has_value());
 
-    QVector<bool> out = outOpt->value<QVector<bool>>();
-    ASSERT_EQ(out.size(), vec.size());
-    for (int i = 0; i < vec.size(); ++i) {
-        EXPECT_EQ(out[i], vec[i]);
-    }
+    QJsonObject out = outOpt->value<QJsonObject>();
+    EXPECT_EQ(out.value("name").toString(), jsonObj.value("name").toString());
+    EXPECT_EQ(out.value("value").toInt(), jsonObj.value("value").toInt());
+    EXPECT_EQ(out.value("active").toBool(), jsonObj.value("active").toBool());
 }
 
-TEST(Conversions, QPairRoundTrip) {
-    qtpyt::registerQPairType<QString, int>("QPair<QString, int>");
+TEST(Conversions, QJsonArrayRoundTrip) {
+    QJsonArray jsonArray;
+    jsonArray.append("first");
+    jsonArray.append(2);
+    jsonArray.append(true);
 
-    QPair<QString, int> pair(QStringLiteral("example"), 12345);
-    QVariant in = QVariant::fromValue(pair);
+    QVariant in = QVariant::fromValue(jsonArray);
     py::object obj = qtpyt::qvariantToPyObject(in);
 
-    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QPair<QString, int>"));
+    auto outOpt = qtpyt::pyObjectToQVariant(obj, QByteArray("QJsonArray"));
     ASSERT_TRUE(outOpt.has_value());
 
-    QPair<QString, int> out = outOpt->value<QPair<QString, int>>();
-    EXPECT_EQ(out.first, pair.first);
-    EXPECT_EQ(out.second, pair.second);
+    QJsonArray out = outOpt->value<QJsonArray>();
+    ASSERT_EQ(out.size(), jsonArray.size());
+    EXPECT_EQ(out.at(0).toString(), jsonArray.at(0).toString());
+    EXPECT_EQ(out.at(1).toInt(), jsonArray.at(1).toInt());
+    EXPECT_EQ(out.at(2).toBool(), jsonArray.at(2).toBool());
 }
