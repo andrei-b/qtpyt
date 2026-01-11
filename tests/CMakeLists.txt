@@ -113,14 +113,15 @@ foreach(pyfile ${PYFILES_SOURCES})
                 COPYONLY)
 endforeach()
 
-add_custom_command(TARGET qtpyt_tests POST_BUILD
+add_custom_target(copy_pyfiles ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/pyfiles
-        $<TARGET_FILE_DIR:qtpyt_tests>/pyfiles
-        DEPENDS ${PYFILES_SOURCES}
-        COMMENT "Copying pyfiles directory"
+        ${CMAKE_CURRENT_BINARY_DIR}/pyfiles
+        DEPENDS ${PYTHON_FILES}
+        COMMENT "Copying Python test files"
 )
 
+add_dependencies(qtpyt_tests copy_pyfiles)
 add_test(NAME qpyscript_tests COMMAND qtpyt_tests)
 set_tests_properties(qpyscript_tests PROPERTIES
         WORKING_DIRECTORY $<TARGET_FILE_DIR:qtpyt_tests>
