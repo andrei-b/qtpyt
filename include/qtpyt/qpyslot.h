@@ -26,7 +26,7 @@ namespace qtpyt {
                                                                   const QSharedPointer<IQPyFutureNotifier> &notifier,
                                                                   const QString &slot, const QPyRegisteredType &returnType = QMetaType::Void);
         static QMetaObject::Connection connectPythonFunctionAsync(QObject *sender, const char *signal,
-                                                                  QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier,
+                                                                  QPyModule module,
                                                                   const char *slot,
                                                                   const QPyRegisteredType &returnType, QPyThread *thread);
         template <typename SignalFunc>
@@ -86,7 +86,7 @@ namespace qtpyt {
         }
 
         static QMetaObject::Connection connectPythonFunction(QObject *sender, int signalIndex, QPyModuleBase module,
-                                                             QSharedPointer<IQPyFutureNotifier> notifier, const QString &slot, const QPyRegisteredType &returnType, Qt::
+                                                             const QString &slot, const QPyRegisteredType &returnType, Qt::
                                                              ConnectionType type =
                                                                      Qt::AutoConnection);
 
@@ -99,7 +99,7 @@ namespace qtpyt {
             const int signalIndex = QObjectPrivate::get(sender)->signalIndex(signal);
             QObjectPrivate::connect(sender, signalIndex, slotObject, type);
         }
-        QPySlot(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, const QString& slotName,
+        QPySlot(QPyModule module, const QString& slotName,
             const QPyRegisteredType& returnType);
 
         QMetaObject::Connection connectAsyncToSignal(QObject *sender, const char *signal, Qt::ConnectionType type = Qt::AutoConnection) const;
@@ -145,7 +145,7 @@ namespace qtpyt {
 
             for (const QMetaObject* m = originalMeta; m && localIndex < 0; m = m->superClass()) {
                 m->static_metacall(QMetaObject::IndexOfMethod, 0, args);
-                if (localIndex >= 0 && localIndex < QMetaObjectPrivate::get(m)->signalCount) {
+                if (localIndex >= 0 && localIndex < getSignalCount(m)) {
                     foundMeta = m;
                     break;
                 }
@@ -177,46 +177,11 @@ namespace qtpyt {
             return senderSignalIndex;
         }
 
-        template <typename SignalFunc>
-    static std::optional<int> getMethodIndex(const QObject* sender, SignalFunc signal) {
-            if (!signal) {
-                qWarning("QObject::connect: invalid nullptr parameter");
-                return std::nullopt;
-            }
 
-            int localIndex = -1;
-            SignalFunc signalVar = signal;
-            void* args[] = { &localIndex, reinterpret_cast<void*>(&signalVar) };
-
-            const QMetaObject* originalMeta = sender->metaObject();
-            const QMetaObject* foundMeta = nullptr;
-
-            for (const QMetaObject* m = originalMeta; m && localIndex < 0; m = m->superClass()) {
-                m->static_metacall(QMetaObject::IndexOfMethod, 0, args);
-                if (localIndex >= 0 && localIndex < QMetaObjectPrivate::get(m)->signalCount) {
-                    foundMeta = m;
-                    break;
-                }
-            }
-
-            if (!foundMeta) {
-                qWarning("QObject::connect: signal not found in %s", originalMeta->className());
-                return std::nullopt;
-            }
-
-            int absoluteMethodIndex = foundMeta->methodOffset() + localIndex;
-            if (absoluteMethodIndex < 0 || absoluteMethodIndex >= originalMeta->methodCount()) {
-                qWarning("QObject::connect: computed method index out of range for %s", foundMeta->className());
-                return std::nullopt;
-            }
-
-            return absoluteMethodIndex;
-        }
         static std::optional<QMetaMethod> findMatchingSignal(QObject* sender, const char* signal,
         const PyCallableInfo& pyCallableInfo);
 
         QPyModule m_module;
-        QSharedPointer<IQPyFutureNotifier> m_notifier;
         QString m_slotName;
         QPyRegisteredType m_returnType;
     };

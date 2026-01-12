@@ -1,5 +1,4 @@
 #include "qtpyt/qpyscript.h"
-#include "qtpyt/qpysharedarray.h"
 #include <filesystem>
 #include <QPointF>
 #include <QSizeF>

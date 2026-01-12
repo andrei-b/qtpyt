@@ -46,7 +46,6 @@ target_sources(qtpyt_tests PRIVATE
         ../src/pyextra/py_datetime.cpp
         ../src/internal/annotations.cpp
         ../src/qpymodulebase.cpp
-        ../src/qpysharedarray.cpp
         ../src/internal/q_py_execute_event.cpp
         ../src/qpymodule.cpp
         ../src/q_py_thread.cpp
@@ -58,9 +57,13 @@ target_sources(qtpyt_tests PRIVATE
         ../src/internal/pycall.cpp
         ../src/qpyscript.cpp
         ../src/pymodule.cpp
+        ../src/qpymemoryview.cpp
+        ../src/internal/qpymemoryviewinternal.cpp
         ../src/globalinit.cpp
         ../src/pymodule.h
         ../src/conversions.h
+        ../src/qpysequencereference.cpp
+        ../src/methodindex.cpp
 
 )
 
@@ -103,12 +106,23 @@ add_test(NAME conversions COMMAND test_conversions)
 # Discover tests
 gtest_discover_tests(qtpyt_tests)
 
-add_custom_command(TARGET qtpyt_tests POST_BUILD
+file(GLOB_RECURSE PYFILES_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/pyfiles/*")
+
+foreach(pyfile ${PYFILES_SOURCES})
+        configure_file(${pyfile}
+                $<TARGET_FILE_DIR:qtpyt_tests>/pyfiles/${pyfile}
+                COPYONLY)
+endforeach()
+
+add_custom_target(copy_pyfiles ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/pyfiles
-        $<TARGET_FILE_DIR:qtpyt_tests>/pyfiles
+        ${CMAKE_CURRENT_BINARY_DIR}/pyfiles
+        DEPENDS ${PYTHON_FILES}
+        COMMENT "Copying Python test files"
 )
 
+add_dependencies(qtpyt_tests copy_pyfiles)
 add_test(NAME qpyscript_tests COMMAND qtpyt_tests)
 set_tests_properties(qpyscript_tests PROPERTIES
         WORKING_DIRECTORY $<TARGET_FILE_DIR:qtpyt_tests>

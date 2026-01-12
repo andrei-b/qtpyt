@@ -20,7 +20,6 @@ set(LIBRARY_SOURCES
         internal/annotations.cpp
         internal/annotations.h
         conversions.cpp
-        qpysharedarray.cpp
         internal/q_py_execute_event.cpp
         internal/q_py_execute_event.h
         qpymodule.cpp
@@ -34,6 +33,10 @@ set(LIBRARY_SOURCES
         internal/q_py_future_impl.h
         internal/pycall.cpp
         qpyscript.cpp
+        internal/qpymoduleimpl.cpp
+        internal/normalize.cpp
+        qpymemoryview.cpp
+        internal/qpymemoryviewinternal.cpp
 )
 
 # Define library headers
@@ -41,7 +44,6 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpymodulebase.h
     ../include/qtpyt/qpymodule.h
     ../include/qtpyt/q_py_thread.h
-        ../include/qtpyt/qpysharedarray.h
         ../include/qtpyt/qpythreadpool.h
     ../include/qtpyt/qpyfuture.h
         conversions.h
@@ -51,18 +53,22 @@ set(LIBRARY_HEADERS
     ../include/qtpyt/qpyscript.h
         pymodule.cpp
         pymodule.h
-        internal/normalize.cpp
         internal/normalize.h
         internal/pyobjectw.h
-        internal/qpymoduleimpl.cpp
+
         internal/qpymoduleimpl.h
         globalinit.cpp
         ../include/qtpyt/globalinit.h
-        internal/sharedarrayinternal.h
-        ../demos/timer_app/mainwindow.cpp
         internal/stringpool.h
-        internal/qpymemoryviewinternal.cpp
         internal/qpymemoryviewinternal.h
+        ../include/qtpyt/qpymemoryview.h
+        ../include/qtpyt/qpyarray.h
+        qpysequencereference.cpp
+        ../include/qtpyt/qpysequencereference.h
+        ../include/qtpyt/qpysequencewrapper.h
+        ../include/qtpyt/qpysharedbytearray.h
+        ../include/qtpyt/methodindex.h
+        methodindex.cpp
 )
 
 # Create the shared library

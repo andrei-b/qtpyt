@@ -52,7 +52,7 @@ namespace qtpyt {
     QPyModule::~QPyModule() {}
 
 
-    std::optional<QPyFuture> QPyModule::callAsyncVariant(const QSharedPointer<IQPyFutureNotifier> &notifier, const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) const {
+    std::optional<QPyFuture> QPyModule::callAsyncVariant(const QString& functionName, const QPyRegisteredType& returnType, QVariantList&& args) const {
         if (functionName.isEmpty()) {
             return std::nullopt;
         }
@@ -65,7 +65,7 @@ namespace qtpyt {
             type = QMetaType(std::get<QMetaType::Type>(returnType)).name();
         }
 
-        QPyFuture me(*this, notifier, functionName, type, std::move(args));
+        QPyFuture me(*this, functionName, type, std::move(args));
         QPyThreadPool::instance().submit(me);
         return me;
     }
@@ -75,9 +75,18 @@ namespace qtpyt {
             thread->postExecute(self);
     }*/
 
-    QPySlot QPyModule::makeSlot(const QString &slotName, const QPyRegisteredType &returnType,
-        const QSharedPointer<IQPyFutureNotifier> &notifier) {
-        return QPySlot(*this, notifier, slotName, returnType);
+    QPySlot QPyModule::makeSlot(const QString &slotName, const QPyRegisteredType &returnType) {
+        return QPySlot(*this, slotName, returnType);
+    }
+
+    QMetaObject::Connection QPyModule::connectToSignal(QObject *sender, const char *signal, const char *slot,
+        Qt::ConnectionType type) const {
+        return QPySlot::connectPythonFunction(sender, signal, *this, QString(slot), QMetaType::fromType<void>(), type);
+    }
+
+    QMetaObject::Connection QPyModule::connectAsyncToSignal(QObject *sender, const char *signal, const char *slot,
+        Qt::ConnectionType type) const {
+        return QPySlot::connectPythonFunctionAsync(sender, signal, *this, nullptr, QString(slot), QMetaType::fromType<void>());
     }
 
     auto QPyModule::getThreadId() const {

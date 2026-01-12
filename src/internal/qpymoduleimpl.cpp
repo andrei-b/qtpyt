@@ -35,7 +35,6 @@ namespace qtpyt {
     }
 
     QPyModuleImpl::~QPyModuleImpl() {
-
         auto safe_release = [](pybind11::object &o) {
             if (!o || o.is_none()) return;
 

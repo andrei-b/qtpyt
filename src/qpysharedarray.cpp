@@ -1,4 +1,0 @@
-
-
-#include <qtpyt/qpysharedarray.h>
-

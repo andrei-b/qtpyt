@@ -2,6 +2,9 @@
 #include <pybind11/pybind11.h>
 #include <qtpyt/qpymodulebase.h>
 #include <QVariant>
+#include <utility>
+
+#include "qtpyt/qpyfuture.h"
 
 namespace qtpyt {
     class QPyModuleImpl {

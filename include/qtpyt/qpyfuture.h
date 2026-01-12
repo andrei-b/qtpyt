@@ -14,18 +14,18 @@ namespace qtpyt {
 
     class IQPyFutureNotifier  {
       public:
-        virtual void notifyStarted() = 0;
-        virtual void notifyFinished(const QVariant& value) = 0;
-        virtual void notifyResultAvailable(const QVariant& value)  = 0;
-        virtual void notifyErrorOccurred(const QString& errorMessage) = 0;
+        virtual void notifyStarted(const QString& functionName) = 0;
+        virtual void notifyFinished(const QString& functionName, const QVariant& value) = 0;
+        virtual void notifyResultAvailable(const QString& functionName, const QVariant& value)  = 0;
+        virtual void notifyErrorOccurred(const QString& functionName, const QString& errorMessage) = 0;
         virtual  ~IQPyFutureNotifier() = default;
     };
 
     class QPyFuture {
     public:
-        QPyFuture(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, const QString& functionName,  const QByteArray& returnType,
+        QPyFuture(QPyModule module, const QString& functionName,  const QByteArray& returnType,
             QVariantList&& arguments);
-        QPyFuture(QPyModule module, QSharedPointer<IQPyFutureNotifier> notifier, QString  functionName,  const QByteArray& returnType,
+        QPyFuture(QPyModule module, QString  functionName,  const QByteArray& returnType,
                                  const QVector<int>& types, void** a);
         QPyFuture(const QPyFuture& other);
         QPyFuture& operator=(const QPyFuture& other);

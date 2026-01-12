@@ -7,16 +7,16 @@ QPyFutureImpl::~QPyFutureImpl() {
 
 }
 
-QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::IQPyFutureNotifier>&& notifier, QString functionName, QByteArray  returnType, QVariantList&& arguments)
-    : m_returnType(std::move(returnType)), m_module{module}, m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
+QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QString functionName, QByteArray  returnType, QVariantList&& arguments)
+    : m_returnType(std::move(returnType)), m_module{module}, m_functionName(std::move(functionName)) {
     for (auto& arg : arguments) {
         m_arguments.append(std::move(arg));
     }
 }
 
-QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::IQPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType,
+QPyFutureImpl::QPyFutureImpl(const qtpyt::QPyModule& module, QString  functionName, QByteArray  returnType,
                              const QVector<int>& types, void** a) : m_returnType(std::move(returnType)), m_module{module},
-                             m_functionName(std::move(functionName)), m_notifier(std::move(notifier)) {
+                             m_functionName(std::move(functionName))  {
 
     for (int i = 0; i < types.size(); ++i) {
         const int typeId = types.at(i);
@@ -35,8 +35,8 @@ void QPyFutureImpl::run() {
         pybind11::gil_scoped_acquire gil;
         {
             m_state =  qtpyt::QPyFutureState::Running;
-            if (m_notifier != nullptr) {
-                m_notifier->notifyStarted();
+            if (m_module.getNotifier() != nullptr) {
+                m_module.getNotifier()->notifyStarted(m_functionName);
             }
             // specify the return type explicitly and pass an explicit empty kwargs dict
             if (m_returnType == "void" || m_returnType == "NoneType") {
@@ -45,8 +45,8 @@ void QPyFutureImpl::run() {
                      throw std::runtime_error("QPyFutureImpl::run: " + res.second.toStdString());
                }
                m_state =  qtpyt::QPyFutureState::Finished;
-               if (m_notifier != nullptr) {
-                   m_notifier->notifyFinished({});
+               if (m_module.getNotifier() != nullptr) {
+                   m_module.getNotifier()->notifyFinished(m_functionName, {});
                }
                return;
             }
@@ -54,12 +54,15 @@ void QPyFutureImpl::run() {
 
             auto result = m_module.call(m_functionName, QMetaType::fromName(m_returnType), m_arguments);
             if (!result.first.has_value()) {
-                throw std::runtime_error("QPyFutureImpl::run: " + result.second.toStdString());
+                if (result.second.isEmpty()) {
+                    throw std::runtime_error("QPyFuture: You are probably waiting for the result from a function that does not return anything");
+                }
+                throw std::runtime_error("QPyFuture: " + result.second.toStdString());
             }
             pushResult(result.first.value());
             m_state =  qtpyt::QPyFutureState::Finished;
-            if (m_notifier != nullptr) {
-                m_notifier->notifyFinished(result.first.value());
+            if (m_module.getNotifier() != nullptr) {
+                m_module.getNotifier()->notifyFinished(m_functionName, result.first.value());
             }
         }
 
@@ -69,8 +72,8 @@ void QPyFutureImpl::run() {
                 std::lock_guard lock(m_mutex);
                 m_errorMessage = QString::fromStdString(e.what());
         }
-        if (m_notifier != nullptr) {
-            m_notifier->notifyErrorOccurred(QString::fromStdString(e.what()));
+        if (m_module.getNotifier() != nullptr) {
+            m_module.getNotifier()->notifyErrorOccurred(m_functionName, QString::fromStdString(e.what()));
         }
         qWarning() << "Python error in QPyFutureImpl::run:" << e.what();
         // Handle Python exception (log it, store it, etc.)
@@ -82,8 +85,8 @@ void QPyFutureImpl::run() {
                 std::lock_guard lock(m_mutex);
                 m_errorMessage = QString::fromStdString(e.what());
         }
-        if (m_notifier != nullptr) {
-            m_notifier->notifyErrorOccurred(QString::fromStdString(e.what()));
+        if (m_module.getNotifier() != nullptr) {
+            m_module.getNotifier()->notifyErrorOccurred(m_functionName, QString::fromStdString(e.what()));
         }
         qWarning() << e.what();
         // Handle exception (log it, store it, etc.)

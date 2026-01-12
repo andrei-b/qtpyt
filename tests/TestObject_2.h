@@ -1,19 +1,19 @@
 #pragma once
-#include "../include/qtpyt/qpysharedarray.h"
-
+#include <qtpyt/qpysequencereference.h>
 #include <QObject>
 #include <QString>
 #include <QPoint>
 #include <QVector3D>
 #include <QVariant>
-#include <QList>
 #include <QMap>
+
+#include "qtpyt/qpysharedbytearray.h"
 
 
 class TestObject_2 : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool success READ success WRITE setSuccessProperty NOTIFY successPropertyChanged)
-
+    Q_PROPERTY(int intResult READ intResult WRITE setIntResultProperty NOTIFY intResultPropertyChanged)
 public:
     explicit TestObject_2(QObject* parent = nullptr) : QObject(parent) {
     }
@@ -24,6 +24,12 @@ public:
         m_success = b;
         emit successPropertyChanged(m_success);
     }
+    int intResult() const { return m_intResult; }
+    void setIntResultProperty(int v) {
+        if (m_intResult == v) return;
+        m_intResult = v;
+        emit intResultPropertyChanged(m_intResult);
+    }
 
     void emitInt(int v) { emit passInt(v); }
     void emitString(const QString& s) { emit passString(s); }
@@ -31,15 +37,23 @@ public:
     void emitVector3D(const QVector3D& v) { emit passVector3D(v); }
     void emitVariant(const QVariant& v) { emit passVariant(v); }
     void emitVariantList(const QVariantList& xs) { emit passVariantList(xs); }
-    void emitIntList(const QList<int>& xs) { emit passIntList(xs); }
     void emitStringIntMap(const QMap<QString, int>& m) { emit passStringIntMap(m); }
     void emitStringAndInt(const QString& s, int i) { emit passStringAndInt(s, i); }
-    void emitSharedArray(const qtpyt::QPySharedArray<double>& arr) { emit passSharedArray(arr); }
     void emitQPair(const QPair<QString, int>& p) { emit passQPair(p); }
     void emitQVariantMap(const QVariantMap& m) { emit passQVariantMap(m); }
+    void emitSequenceReference(const qtpyt::QPySequenceReference& seqRef) {
+        emit passSequenceReference(seqRef);
+    }
+    void emitByteArray(const QByteArray &ba) {
+        emit passByteArray(ba);
+    }
+    void emitSharedByteArray(const qtpyt::QPySharedByteArray &sba) {
+        emit passSharedByteArray(sba);
+    }
 
     signals:
     void successPropertyChanged(bool value);
+    void intResultPropertyChanged(int value);
 
     void passInt(int value);
     void passString(const QString& value);
@@ -47,13 +61,15 @@ public:
     void passVector3D(const QVector3D& value);
     void passVariant(const QVariant& value);
     void passVariantList(const QVariantList& values);
-    void passIntList(const QList<int>& values);
     void passStringIntMap(const QMap<QString, int>& value);
     void passStringAndInt(const QString& s, int i);
-    void passSharedArray(const qtpyt::QPySharedArray<double>& array);
     void passQPair(const QPair<QString, int>& p);
     void passQVariantMap(const QVariantMap& map);
+    void passSequenceReference(const qtpyt::QPySequenceReference& seqRef);
+    void passByteArray(const QByteArray &ba);
+    void passSharedByteArray(const qtpyt::QPySharedByteArray &sba);
 
 private:
     bool m_success{false};
+    int m_intResult{0};
 };
