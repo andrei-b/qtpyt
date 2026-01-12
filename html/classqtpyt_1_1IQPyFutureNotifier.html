@@ -82,17 +82,26 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="qpyfuture_8h_source.html">qpyfuture.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for qtpyt::IQPyFutureNotifier:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classqtpyt_1_1IQPyFutureNotifier.png" usemap="#qtpyt::IQPyFutureNotifier_map" alt=""/>
+  <map id="qtpyt::IQPyFutureNotifier_map" name="qtpyt::IQPyFutureNotifier_map">
+<area href="classqtpyt_1_1QPyModule_1_1Notifier.html" alt="qtpyt::QPyModule::Notifier" shape="rect" coords="0,56,158,80"/>
+  </map>
+</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7fb5fbb3c727d701e8b4adecf0cf4477" id="r_a7fb5fbb3c727d701e8b4adecf0cf4477"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#a7fb5fbb3c727d701e8b4adecf0cf4477">notifyStarted</a> ()=0</td></tr>
-<tr class="separator:a7fb5fbb3c727d701e8b4adecf0cf4477"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70b8105c93d944cc4f287dce11663755" id="r_a70b8105c93d944cc4f287dce11663755"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#a70b8105c93d944cc4f287dce11663755">notifyFinished</a> (const QVariant &amp;value)=0</td></tr>
-<tr class="separator:a70b8105c93d944cc4f287dce11663755"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9153ca217ea49b664968e4d0e71a29b1" id="r_a9153ca217ea49b664968e4d0e71a29b1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#a9153ca217ea49b664968e4d0e71a29b1">notifyResultAvailable</a> (const QVariant &amp;value)=0</td></tr>
-<tr class="separator:a9153ca217ea49b664968e4d0e71a29b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af136984cbd01d581f95183717c36b445" id="r_af136984cbd01d581f95183717c36b445"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#af136984cbd01d581f95183717c36b445">notifyErrorOccurred</a> (const QString &amp;errorMessage)=0</td></tr>
-<tr class="separator:af136984cbd01d581f95183717c36b445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698fefdba50c92bb9edf85d033e86b13" id="r_a698fefdba50c92bb9edf85d033e86b13"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#a698fefdba50c92bb9edf85d033e86b13">notifyStarted</a> (const QString &amp;functionName)=0</td></tr>
+<tr class="separator:a698fefdba50c92bb9edf85d033e86b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aafbac19af174eec6a837a10bb00b7a" id="r_a4aafbac19af174eec6a837a10bb00b7a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#a4aafbac19af174eec6a837a10bb00b7a">notifyFinished</a> (const QString &amp;functionName, const QVariant &amp;value)=0</td></tr>
+<tr class="separator:a4aafbac19af174eec6a837a10bb00b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ce73c7128d97b87fcd2d0ec57d4ff9" id="r_ac2ce73c7128d97b87fcd2d0ec57d4ff9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#ac2ce73c7128d97b87fcd2d0ec57d4ff9">notifyResultAvailable</a> (const QString &amp;functionName, const QVariant &amp;value)=0</td></tr>
+<tr class="separator:ac2ce73c7128d97b87fcd2d0ec57d4ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a886924ed48a6cacc0b54654a1070e918" id="r_a886924ed48a6cacc0b54654a1070e918"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#a886924ed48a6cacc0b54654a1070e918">notifyErrorOccurred</a> (const QString &amp;functionName, const QString &amp;errorMessage)=0</td></tr>
+<tr class="separator:a886924ed48a6cacc0b54654a1070e918"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac610aeb344bf187948fde06779c4cac4" id="r_ac610aeb344bf187948fde06779c4cac4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html#ac610aeb344bf187948fde06779c4cac4">~IQPyFutureNotifier</a> ()=default</td></tr>
 <tr class="separator:ac610aeb344bf187948fde06779c4cac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -126,8 +135,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af136984cbd01d581f95183717c36b445" name="af136984cbd01d581f95183717c36b445"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af136984cbd01d581f95183717c36b445">&#9670;&#160;</a></span>notifyErrorOccurred()</h2>
+<a id="a886924ed48a6cacc0b54654a1070e918" name="a886924ed48a6cacc0b54654a1070e918"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a886924ed48a6cacc0b54654a1070e918">&#9670;&#160;</a></span>notifyErrorOccurred()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,8 +148,18 @@ Public Member Functions</h2></td></tr>
           <td class="memname">virtual void qtpyt::IQPyFutureNotifier::notifyErrorOccurred </td>
           <td>(</td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>errorMessage</em></td><td>)</td>
+          <td class="paramname"><em>functionName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>errorMessage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -150,10 +169,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Implemented in <a class="el" href="classqtpyt_1_1QPyModule_1_1Notifier.html#ae602fa106b265673b01012b427909bb0">qtpyt::QPyModule::Notifier</a>.</p>
+
 </div>
 </div>
-<a id="a70b8105c93d944cc4f287dce11663755" name="a70b8105c93d944cc4f287dce11663755"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a70b8105c93d944cc4f287dce11663755">&#9670;&#160;</a></span>notifyFinished()</h2>
+<a id="a4aafbac19af174eec6a837a10bb00b7a" name="a4aafbac19af174eec6a837a10bb00b7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aafbac19af174eec6a837a10bb00b7a">&#9670;&#160;</a></span>notifyFinished()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -164,9 +185,19 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void qtpyt::IQPyFutureNotifier::notifyFinished </td>
           <td>(</td>
-          <td class="paramtype">const QVariant &amp;&#160;</td>
-          <td class="paramname"><em>value</em></td><td>)</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>functionName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const QVariant &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -176,10 +207,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Implemented in <a class="el" href="classqtpyt_1_1QPyModule_1_1Notifier.html#a68f0288e73d7d362de22a6265e86fe8d">qtpyt::QPyModule::Notifier</a>.</p>
+
 </div>
 </div>
-<a id="a9153ca217ea49b664968e4d0e71a29b1" name="a9153ca217ea49b664968e4d0e71a29b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9153ca217ea49b664968e4d0e71a29b1">&#9670;&#160;</a></span>notifyResultAvailable()</h2>
+<a id="ac2ce73c7128d97b87fcd2d0ec57d4ff9" name="ac2ce73c7128d97b87fcd2d0ec57d4ff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ce73c7128d97b87fcd2d0ec57d4ff9">&#9670;&#160;</a></span>notifyResultAvailable()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -190,9 +223,19 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void qtpyt::IQPyFutureNotifier::notifyResultAvailable </td>
           <td>(</td>
-          <td class="paramtype">const QVariant &amp;&#160;</td>
-          <td class="paramname"><em>value</em></td><td>)</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>functionName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const QVariant &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -202,10 +245,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Implemented in <a class="el" href="classqtpyt_1_1QPyModule_1_1Notifier.html#a73c43a3229d9d4b29eaa767adcec8aec">qtpyt::QPyModule::Notifier</a>.</p>
+
 </div>
 </div>
-<a id="a7fb5fbb3c727d701e8b4adecf0cf4477" name="a7fb5fbb3c727d701e8b4adecf0cf4477"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7fb5fbb3c727d701e8b4adecf0cf4477">&#9670;&#160;</a></span>notifyStarted()</h2>
+<a id="a698fefdba50c92bb9edf85d033e86b13" name="a698fefdba50c92bb9edf85d033e86b13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698fefdba50c92bb9edf85d033e86b13">&#9670;&#160;</a></span>notifyStarted()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -216,7 +261,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void qtpyt::IQPyFutureNotifier::notifyStarted </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>functionName</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -226,6 +272,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classqtpyt_1_1QPyModule_1_1Notifier.html#ae8a4f2c2405fb53730a44068233c83b0">qtpyt::QPyModule::Notifier</a>.</p>
 
 </div>
 </div>

@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -99,6 +100,11 @@ Inheritance diagram for qtpyt::QPyModule:</div>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule_1_1Notifier.html">Notifier</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a54deb39a3bc7842b1b1edef9e219783f" id="r_a54deb39a3bc7842b1b1edef9e219783f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a54deb39a3bc7842b1b1edef9e219783f">QPyModule</a> (const QString &amp;source, <a class="el" href="namespaceqtpyt.html#a5a3d6fa6207b1dc24548032b5e1b7a61">QPySourceType</a> sourceType)</td></tr>
@@ -107,20 +113,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4bb9f8f5df5e78748666961d62ad6429" id="r_a4bb9f8f5df5e78748666961d62ad6429"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a4bb9f8f5df5e78748666961d62ad6429">~QPyModule</a> () override</td></tr>
 <tr class="memdesc:a4bb9f8f5df5e78748666961d62ad6429"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="separator:a4bb9f8f5df5e78748666961d62ad6429"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a383bbee6215680d62ace29792a668e05" id="r_a383bbee6215680d62ace29792a668e05"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a383bbee6215680d62ace29792a668e05"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a383bbee6215680d62ace29792a668e05">callAsync</a> (const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;notifier, const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;returnType, Args... args) const</td></tr>
-<tr class="memdesc:a383bbee6215680d62ace29792a668e05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously calls a Python function by name, with variadic arguments.  <br /></td></tr>
-<tr class="separator:a383bbee6215680d62ace29792a668e05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6906e8f25cef0242e563bc434d885676" id="r_a6906e8f25cef0242e563bc434d885676"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a6906e8f25cef0242e563bc434d885676">callAsyncVariant</a> (const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;notifier, const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;returnType, QVariantList &amp;&amp;args) const</td></tr>
-<tr class="memdesc:a6906e8f25cef0242e563bc434d885676"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously calls a Python function by name with explicit arguments.  <br /></td></tr>
-<tr class="separator:a6906e8f25cef0242e563bc434d885676"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1e18065c9aa8d0f08e76b4c9c926171" id="r_af1e18065c9aa8d0f08e76b4c9c926171"><td class="memTemplParams" colspan="2">template&lt;typename R , typename... Args&gt; </td></tr>
-<tr class="memitem:af1e18065c9aa8d0f08e76b4c9c926171"><td class="memTemplItemLeft" align="right" valign="top">std::function&lt; std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;(Args...)&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#af1e18065c9aa8d0f08e76b4c9c926171">makeAsyncFunction</a> (const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;notifier, const QString &amp;name)</td></tr>
-<tr class="memdesc:af1e18065c9aa8d0f08e76b4c9c926171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a typed async function wrapper bound to this module.  <br /></td></tr>
-<tr class="separator:af1e18065c9aa8d0f08e76b4c9c926171"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a910663989d6631b8eef82e300a946b35" id="r_a910663989d6631b8eef82e300a946b35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a910663989d6631b8eef82e300a946b35">makeSlot</a> (const QString &amp;slotName, const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;returnType=QMetaType::Void, const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;notifier=nullptr)</td></tr>
-<tr class="memdesc:a910663989d6631b8eef82e300a946b35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> that allows to connect the Python function to Qt's signals. Use the returned <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> to connect to signals if you need all the features of <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> (notifiers, processing return values) Otherwise use the simpler <code>connect(Async)ToSignal()</code> methods.  <br /></td></tr>
-<tr class="separator:a910663989d6631b8eef82e300a946b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a071ce9bcfb7d561a6b5904280d57d92f" id="r_a071ce9bcfb7d561a6b5904280d57d92f"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:a071ce9bcfb7d561a6b5904280d57d92f"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a071ce9bcfb7d561a6b5904280d57d92f">callAsync</a> (const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;returnType, Args... args) const</td></tr>
+<tr class="memdesc:a071ce9bcfb7d561a6b5904280d57d92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously calls a Python function by name, with variadic arguments.  <br /></td></tr>
+<tr class="separator:a071ce9bcfb7d561a6b5904280d57d92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a513c4ad30b9564c039bf08231dc848a2" id="r_a513c4ad30b9564c039bf08231dc848a2"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a513c4ad30b9564c039bf08231dc848a2">callAsyncVariant</a> (const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;returnType, QVariantList &amp;&amp;args) const</td></tr>
+<tr class="memdesc:a513c4ad30b9564c039bf08231dc848a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously calls a Python function by name with explicit arguments.  <br /></td></tr>
+<tr class="separator:a513c4ad30b9564c039bf08231dc848a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4a7ef567c1626118da197441ea61abd" id="r_af4a7ef567c1626118da197441ea61abd"><td class="memTemplParams" colspan="2">template&lt;typename R , typename... Args&gt; </td></tr>
+<tr class="memitem:af4a7ef567c1626118da197441ea61abd"><td class="memTemplItemLeft" align="right" valign="top">std::function&lt; std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;(Args...)&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#af4a7ef567c1626118da197441ea61abd">makeAsyncFunction</a> (const QString &amp;name)</td></tr>
+<tr class="memdesc:af4a7ef567c1626118da197441ea61abd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a typed async function wrapper bound to this module.  <br /></td></tr>
+<tr class="separator:af4a7ef567c1626118da197441ea61abd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58825cbd6d5e911c90c9d48e5f0d3714" id="r_a58825cbd6d5e911c90c9d48e5f0d3714"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a58825cbd6d5e911c90c9d48e5f0d3714">makeSlot</a> (const QString &amp;slotName, const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;returnType=QMetaType::Void)</td></tr>
+<tr class="memdesc:a58825cbd6d5e911c90c9d48e5f0d3714"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> that allows to connect the Python function to Qt's signals. Use the returned <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> to connect to signals if you need all the features of <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> (notifiers, processing return values) Otherwise use the simpler <code>connect(Async)ToSignal()</code> methods.  <br /></td></tr>
+<tr class="separator:a58825cbd6d5e911c90c9d48e5f0d3714"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcc8ead96ceb5a3e6528eaae295e5e37" id="r_abcc8ead96ceb5a3e6528eaae295e5e37"><td class="memItemLeft" align="right" valign="top">QMetaObject::Connection&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#abcc8ead96ceb5a3e6528eaae295e5e37">connectToSignal</a> (QObject *sender, const char *signal, const char *slot, Qt::ConnectionType type=Qt::AutoConnection) const</td></tr>
 <tr class="memdesc:abcc8ead96ceb5a3e6528eaae295e5e37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects a Qt signal to a Python function in this module (synchronous call). This is a convenience wrapper around <code><a class="el" href="classqtpyt_1_1QPySlot.html#ac6e93bb8f1516734251c0b52ea0d6374">QPySlot::connectToSignal()</a></code>.  <br /></td></tr>
 <tr class="separator:abcc8ead96ceb5a3e6528eaae295e5e37"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,6 +141,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a80765dd18d754ff17e8bda91c6503b3c"><td class="memTemplItemLeft" align="right" valign="top">QMetaObject::Connection&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a80765dd18d754ff17e8bda91c6503b3c">connectAsyncToSignal</a> (const typename QtPrivate::FunctionPointer&lt; SignalFunc &gt;<a class="el" href="namespaceqtpyt.html#a7206b5915793c0a496dbaf14347d264ca497031794414a552435f90151ac3b54b">::Object</a> *sender, SignalFunc signal, const char *slot, Qt::ConnectionType type=Qt::AutoConnection) const</td></tr>
 <tr class="memdesc:a80765dd18d754ff17e8bda91c6503b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects a Qt signal to a Python function in this module (asynchronous call, template version). This is a convenience wrapper around <code><a class="el" href="classqtpyt_1_1QPySlot.html#abec01043d6543c9efccb1d03f46f04a4">QPySlot::connectAsyncToSignal()</a></code> with notifier set to nullptr, and the slot return value discarded.  <br /></td></tr>
 <tr class="separator:a80765dd18d754ff17e8bda91c6503b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f06b5ee41f5692bb432004034d2f1c9" id="r_a9f06b5ee41f5692bb432004034d2f1c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a9f06b5ee41f5692bb432004034d2f1c9">setFutureNotifier</a> (QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; notifier)</td></tr>
+<tr class="separator:a9f06b5ee41f5692bb432004034d2f1c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a579bd82e802415d7fda5ee4bd7aa1041" id="r_a579bd82e802415d7fda5ee4bd7aa1041"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a579bd82e802415d7fda5ee4bd7aa1041">setFutureNotifier</a> (std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>)&gt; onStarted, std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const QVariant &amp;value)&gt; onFinished, std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const QVariant &amp;value)&gt; onResultAvailable, std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const QString &amp;errorMessage)&gt; onError)</td></tr>
+<tr class="separator:a579bd82e802415d7fda5ee4bd7aa1041"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff8f717908520682bae340f92d6b3daf" id="r_aff8f717908520682bae340f92d6b3daf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#aff8f717908520682bae340f92d6b3daf">clearFutureNotifier</a> ()</td></tr>
+<tr class="separator:aff8f717908520682bae340f92d6b3daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classqtpyt_1_1QPyModuleBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classqtpyt_1_1QPyModuleBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classqtpyt_1_1QPyModuleBase.html">qtpyt::QPyModuleBase</a></td></tr>
 <tr class="memitem:a8a7245210247c552aff66f607046021c inherit pub_methods_classqtpyt_1_1QPyModuleBase" id="r_a8a7245210247c552aff66f607046021c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModuleBase.html#a8a7245210247c552aff66f607046021c">QPyModuleBase</a> (const QString &amp;source, <a class="el" href="namespaceqtpyt.html#a5a3d6fa6207b1dc24548032b5e1b7a61">QPySourceType</a> sourceType)</td></tr>
 <tr class="memdesc:a8a7245210247c552aff66f607046021c inherit pub_methods_classqtpyt_1_1QPyModuleBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a module wrapper from Python source.  <br /></td></tr>
@@ -235,6 +247,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:af0c889c5845a092103cf4dd0cd5d5537" id="r_af0c889c5845a092103cf4dd0cd5d5537"><td class="memItemLeft" align="right" valign="top">qulonglong&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#af0c889c5845a092103cf4dd0cd5d5537">m_threadId</a> {0}</td></tr>
 <tr class="memdesc:af0c889c5845a092103cf4dd0cd5d5537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread id captured for thread-affinity/validation logic.  <br /></td></tr>
 <tr class="separator:af0c889c5845a092103cf4dd0cd5d5537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1274721928ca6206c2c86398270f6650" id="r_a1274721928ca6206c2c86398270f6650"><td class="memItemLeft" align="right" valign="top">QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a1274721928ca6206c2c86398270f6650">m_notifier</a> {nullptr}</td></tr>
+<tr class="separator:a1274721928ca6206c2c86398270f6650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A Qt-friendly wrapper around a Python module with async invocation support. </p>
@@ -346,8 +360,8 @@ The object is intended to be managed by <code>QSharedPointer</code> and supports
 
 </div>
 </div>
-<a id="a383bbee6215680d62ace29792a668e05" name="a383bbee6215680d62ace29792a668e05"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a383bbee6215680d62ace29792a668e05">&#9670;&#160;</a></span>callAsync()</h2>
+<a id="a071ce9bcfb7d561a6b5904280d57d92f" name="a071ce9bcfb7d561a6b5904280d57d92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a071ce9bcfb7d561a6b5904280d57d92f">&#9670;&#160;</a></span>callAsync()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -360,12 +374,6 @@ template&lt;typename... Args&gt; </div>
         <tr>
           <td class="memname">std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt; qtpyt::QPyModule::callAsync </td>
           <td>(</td>
-          <td class="paramtype">const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>notifier</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const QString &amp;&#160;</td>
           <td class="paramname"><em>functionName</em>, </td>
         </tr>
@@ -403,7 +411,6 @@ template&lt;typename... Args&gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">notifier</td><td>Optional notifier used to observe completion/progress. </td></tr>
     <tr><td class="paramname">functionName</td><td>Name of the Python callable to invoke. </td></tr>
     <tr><td class="paramname">returnType</td><td>Expected return type information for marshalling. </td></tr>
     <tr><td class="paramname">args</td><td>Arguments forwarded and converted into a <code>QVariantList</code>. </td></tr>
@@ -412,12 +419,12 @@ template&lt;typename... Args&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a></code> on successful scheduling; <code>std::nullopt</code> on failure. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00067">67</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00066">66</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
-<a id="a6906e8f25cef0242e563bc434d885676" name="a6906e8f25cef0242e563bc434d885676"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6906e8f25cef0242e563bc434d885676">&#9670;&#160;</a></span>callAsyncVariant()</h2>
+<a id="a513c4ad30b9564c039bf08231dc848a2" name="a513c4ad30b9564c039bf08231dc848a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a513c4ad30b9564c039bf08231dc848a2">&#9670;&#160;</a></span>callAsyncVariant()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -425,12 +432,6 @@ template&lt;typename... Args&gt; </div>
         <tr>
           <td class="memname">std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt; qtpyt::QPyModule::callAsyncVariant </td>
           <td>(</td>
-          <td class="paramtype">const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>notifier</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const QString &amp;&#160;</td>
           <td class="paramname"><em>functionName</em>, </td>
         </tr>
@@ -457,7 +458,6 @@ template&lt;typename... Args&gt; </div>
 <p>Asynchronously calls a Python function by name with explicit arguments. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">notifier</td><td>Optional notifier used to observe completion/progress. </td></tr>
     <tr><td class="paramname">functionName</td><td>Name of the Python callable to invoke. </td></tr>
     <tr><td class="paramname">returnType</td><td>Expected return type information for marshalling. </td></tr>
     <tr><td class="paramname">args</td><td>Argument list; moved into the call to avoid copies. </td></tr>
@@ -465,6 +465,33 @@ template&lt;typename... Args&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><code><a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a></code> on successful scheduling; <code>std::nullopt</code> on failure. </dd></dl>
+
+</div>
+</div>
+<a id="aff8f717908520682bae340f92d6b3daf" name="aff8f717908520682bae340f92d6b3daf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff8f717908520682bae340f92d6b3daf">&#9670;&#160;</a></span>clearFutureNotifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void qtpyt::QPyModule::clearFutureNotifier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00200">200</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -536,7 +563,7 @@ template&lt;typename SignalFunc &gt; </div>
 <dl class="section note"><dt>Note</dt><dd>The Python function is scheduled asynchronously via qtpyt thread facilities. </dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Logs a warning if the signal cannot be matched to a method signature. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00186">186</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00177">177</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -661,7 +688,7 @@ template&lt;typename SignalFunc &gt; </div>
 <dl class="section note"><dt>Note</dt><dd>The Python function is called synchronously in the sender's thread context. </dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Logs a warning if the signal cannot be matched to a method signature. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00163">163</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00154">154</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -746,8 +773,8 @@ template&lt;typename SignalFunc &gt; </div>
 
 </div>
 </div>
-<a id="af1e18065c9aa8d0f08e76b4c9c926171" name="af1e18065c9aa8d0f08e76b4c9c926171"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af1e18065c9aa8d0f08e76b4c9c926171">&#9670;&#160;</a></span>makeAsyncFunction()</h2>
+<a id="af4a7ef567c1626118da197441ea61abd" name="af4a7ef567c1626118da197441ea61abd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4a7ef567c1626118da197441ea61abd">&#9670;&#160;</a></span>makeAsyncFunction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -760,19 +787,9 @@ template&lt;typename R , typename... Args&gt; </div>
         <tr>
           <td class="memname">std::function&lt; std::optional&lt; <a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a> &gt;(Args...)&gt; qtpyt::QPyModule::makeAsyncFunction </td>
           <td>(</td>
-          <td class="paramtype">const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>notifier</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -792,7 +809,6 @@ template&lt;typename R , typename... Args&gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">notifier</td><td>Optional notifier used to observe completion/progress. </td></tr>
     <tr><td class="paramname">name</td><td>Name of the Python callable to invoke. </td></tr>
   </table>
   </dd>
@@ -800,12 +816,12 @@ template&lt;typename R , typename... Args&gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>A <code>std::function</code> that returns an optional <code><a class="el" href="classqtpyt_1_1QPyFuture.html">QPyFuture</a></code>. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>If the underlying <code><a class="el" href="classqtpyt_1_1QPyModule.html#a383bbee6215680d62ace29792a668e05" title="Asynchronously calls a Python function by name, with variadic arguments.">callAsync()</a></code> returns <code>std::nullopt</code>. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>If the underlying <code><a class="el" href="classqtpyt_1_1QPyModule.html#a071ce9bcfb7d561a6b5904280d57d92f" title="Asynchronously calls a Python function by name, with variadic arguments.">callAsync()</a></code> returns <code>std::nullopt</code>. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00099">99</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00095">95</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -837,8 +853,8 @@ template&lt;typename R , typename... Args&gt; </div>
 
 </div>
 </div>
-<a id="a910663989d6631b8eef82e300a946b35" name="a910663989d6631b8eef82e300a946b35"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a910663989d6631b8eef82e300a946b35">&#9670;&#160;</a></span>makeSlot()</h2>
+<a id="a58825cbd6d5e911c90c9d48e5f0d3714" name="a58825cbd6d5e911c90c9d48e5f0d3714"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58825cbd6d5e911c90c9d48e5f0d3714">&#9670;&#160;</a></span>makeSlot()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -853,13 +869,7 @@ template&lt;typename R , typename... Args&gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespaceqtpyt.html#a193891aa8da0b94ec366440b48ececd6">QPyRegisteredType</a> &amp;&#160;</td>
-          <td class="paramname"><em>returnType</em> = <code>QMetaType::Void</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>notifier</em> = <code>nullptr</code>&#160;</td>
+          <td class="paramname"><em>returnType</em> = <code>QMetaType::Void</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -879,6 +889,84 @@ template&lt;typename R , typename... Args&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classqtpyt_1_1QPySlot.html">QPySlot</a></code> bound to <code>slotName</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a9f06b5ee41f5692bb432004034d2f1c9" name="a9f06b5ee41f5692bb432004034d2f1c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f06b5ee41f5692bb432004034d2f1c9">&#9670;&#160;</a></span>setFutureNotifier() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void qtpyt::QPyModule::setFutureNotifier </td>
+          <td>(</td>
+          <td class="paramtype">QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt;&#160;</td>
+          <td class="paramname"><em>notifier</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00188">188</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+
+</div>
+</div>
+<a id="a579bd82e802415d7fda5ee4bd7aa1041" name="a579bd82e802415d7fda5ee4bd7aa1041"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a579bd82e802415d7fda5ee4bd7aa1041">&#9670;&#160;</a></span>setFutureNotifier() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void qtpyt::QPyModule::setFutureNotifier </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>)&gt;&#160;</td>
+          <td class="paramname"><em>onStarted</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const QVariant &amp;value)&gt;&#160;</td>
+          <td class="paramname"><em>onFinished</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const QVariant &amp;value)&gt;&#160;</td>
+          <td class="paramname"><em>onResultAvailable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(const QString &amp;<a class="el" href="classqtpyt_1_1QPyModuleBase.html#acfb7e5196a4d52864f192b15ae6615ff">functionName</a>, const QString &amp;errorMessage)&gt;&#160;</td>
+          <td class="paramname"><em>onError</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00191">191</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -932,7 +1020,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True if cancellation has been triggered. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00217">217</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00260">260</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -958,7 +1046,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>Human-readable cancel reason, if cancellation is requested. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00214">214</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00257">257</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -984,7 +1072,31 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True when execution is complete. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00220">220</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00263">263</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+
+</div>
+</div>
+<a id="a1274721928ca6206c2c86398270f6650" name="a1274721928ca6206c2c86398270f6650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1274721928ca6206c2c86398270f6650">&#9670;&#160;</a></span>m_notifier</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QSharedPointer&lt;<a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a>&gt; qtpyt::QPyModule::m_notifier {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00271">271</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1010,7 +1122,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>Thread id captured for thread-affinity/validation logic. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00226">226</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00269">269</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1036,7 +1148,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True when cancellation has been requested but not yet applied. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00223">223</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00266">266</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
