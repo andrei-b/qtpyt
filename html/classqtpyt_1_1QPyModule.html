@@ -147,6 +147,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a579bd82e802415d7fda5ee4bd7aa1041"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff8f717908520682bae340f92d6b3daf" id="r_aff8f717908520682bae340f92d6b3daf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#aff8f717908520682bae340f92d6b3daf">clearFutureNotifier</a> ()</td></tr>
 <tr class="separator:aff8f717908520682bae340f92d6b3daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a77480192703004cbef0cb048e1e946" id="r_a4a77480192703004cbef0cb048e1e946"><td class="memItemLeft" align="right" valign="top">QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModule.html#a4a77480192703004cbef0cb048e1e946">getNotifier</a> () const</td></tr>
+<tr class="separator:a4a77480192703004cbef0cb048e1e946"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classqtpyt_1_1QPyModuleBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classqtpyt_1_1QPyModuleBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classqtpyt_1_1QPyModuleBase.html">qtpyt::QPyModuleBase</a></td></tr>
 <tr class="memitem:a8a7245210247c552aff66f607046021c inherit pub_methods_classqtpyt_1_1QPyModuleBase" id="r_a8a7245210247c552aff66f607046021c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqtpyt_1_1QPyModuleBase.html#a8a7245210247c552aff66f607046021c">QPyModuleBase</a> (const QString &amp;source, <a class="el" href="namespaceqtpyt.html#a5a3d6fa6207b1dc24548032b5e1b7a61">QPySourceType</a> sourceType)</td></tr>
 <tr class="memdesc:a8a7245210247c552aff66f607046021c inherit pub_methods_classqtpyt_1_1QPyModuleBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a module wrapper from Python source.  <br /></td></tr>
@@ -491,7 +493,7 @@ template&lt;typename... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00200">200</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00202">202</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -745,6 +747,33 @@ template&lt;typename SignalFunc &gt; </div>
 
 </div>
 </div>
+<a id="a4a77480192703004cbef0cb048e1e946" name="a4a77480192703004cbef0cb048e1e946"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a77480192703004cbef0cb048e1e946">&#9670;&#160;</a></span>getNotifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QSharedPointer&lt; <a class="el" href="classqtpyt_1_1IQPyFutureNotifier.html">IQPyFutureNotifier</a> &gt; qtpyt::QPyModule::getNotifier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00206">206</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+
+</div>
+</div>
 <a id="ad20e96958ad5e2f851d620ada570cd09" name="ad20e96958ad5e2f851d620ada570cd09"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad20e96958ad5e2f851d620ada570cd09">&#9670;&#160;</a></span>getThreadId()</h2>
 
@@ -966,7 +995,7 @@ template&lt;typename R , typename... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00191">191</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00192">192</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1020,7 +1049,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True if cancellation has been triggered. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00260">260</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00266">266</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1046,7 +1075,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>Human-readable cancel reason, if cancellation is requested. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00257">257</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00263">263</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1072,7 +1101,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True when execution is complete. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00263">263</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00269">269</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1096,7 +1125,7 @@ template&lt;typename R , typename... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00271">271</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00277">277</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1122,7 +1151,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>Thread id captured for thread-affinity/validation logic. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00269">269</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00275">275</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>
@@ -1148,7 +1177,7 @@ template&lt;typename R , typename... Args&gt; </div>
 
 <p>True when cancellation has been requested but not yet applied. </p>
 
-<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00266">266</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="qpymodule_8h_source.html#l00272">272</a> of file <a class="el" href="qpymodule_8h_source.html">qpymodule.h</a>.</p>
 
 </div>
 </div>

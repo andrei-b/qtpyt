@@ -9,5 +9,5 @@ var searchData=
   ['isreadonly_6',['isreadonly',['../classqtpyt_1_1QPySequenceReference.html#a757f38ec9f02cd5e5b68acf0dd2011f2',1,'qtpyt::QPySequenceReference::isReadOnly()'],['../classqtpyt_1_1QPySharedByteArray.html#a77059bb48fddefa506a46ed8c9a53f38',1,'qtpyt::QPySharedByteArray::isReadOnly()']]],
   ['isvalid_7',['isValid',['../classqtpyt_1_1QPyModuleBase.html#a713d9ed07c3ef41d78f3d1d063c330d3',1,'qtpyt::QPyModuleBase']]],
   ['itemcount_8',['itemCount',['../classqtpyt_1_1QPySequenceReference.html#a9847c58ba348905e734c07735f58df70',1,'qtpyt::QPySequenceReference']]],
-  ['itemsize_9',['itemsize',['../classqtpyt_1_1QPySequenceReference.html#a94f93df996f2e6ad5c3c2d209b4f62ea',1,'qtpyt::QPySequenceReference::itemSize()'],['../classqtpyt_1_1QPyMemoryView.html#a306f0c7f48c1b9d6f0ca10ff3aa90624',1,'qtpyt::QPyMemoryView::itemsize()']]]
+  ['itemsize_9',['itemsize',['../classqtpyt_1_1QPyMemoryView.html#a306f0c7f48c1b9d6f0ca10ff3aa90624',1,'qtpyt::QPyMemoryView::itemsize()'],['../classqtpyt_1_1QPySequenceReference.html#a94f93df996f2e6ad5c3c2d209b4f62ea',1,'qtpyt::QPySequenceReference::itemSize()']]]
 ];

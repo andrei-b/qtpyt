@@ -13,7 +13,7 @@ var searchData=
   ['m_5fitemcount_10',['m_itemCount',['../classqtpyt_1_1QPySequenceReference.html#a5c2e5742505730da081b4f33e2f72d35',1,'qtpyt::QPySequenceReference']]],
   ['m_5fitemsize_11',['m_itemSize',['../classqtpyt_1_1QPySequenceReference.html#a5198f7c511e7eaf06ef3119355a04a91',1,'qtpyt::QPySequenceReference']]],
   ['m_5fmodule_12',['m_module',['../classqtpyt_1_1QPySlot.html#a18b294db6c54f9aaad091587e58f71b6',1,'qtpyt::QPySlot']]],
-  ['m_5fnotifier_13',['m_notifier',['../classqtpyt_1_1QPySlot.html#a38bf4412eb5019a1ac2eed4a1eb721d8',1,'qtpyt::QPySlot::m_notifier'],['../classqtpyt_1_1QPyModule.html#a1274721928ca6206c2c86398270f6650',1,'qtpyt::QPyModule::m_notifier']]],
+  ['m_5fnotifier_13',['m_notifier',['../classqtpyt_1_1QPyModule.html#a1274721928ca6206c2c86398270f6650',1,'qtpyt::QPyModule']]],
   ['m_5fonerror_14',['m_onError',['../classqtpyt_1_1QPyModule_1_1Notifier.html#a48842abea284e6339e4305f06adaa1b2',1,'qtpyt::QPyModule::Notifier']]],
   ['m_5fonfinished_15',['m_onFinished',['../classqtpyt_1_1QPyModule_1_1Notifier.html#ab90f9357a146877ab8dc344f044f6878',1,'qtpyt::QPyModule::Notifier']]],
   ['m_5fonresultavailable_16',['m_onResultAvailable',['../classqtpyt_1_1QPyModule_1_1Notifier.html#ab6c159cd1f90e6e20f0d1f399362621a',1,'qtpyt::QPyModule::Notifier']]],
