@@ -19,23 +19,23 @@ class QPyFutureNotifier : public QObject, public qtpyt::IQPyFutureNotifier {
     }
     QPyFutureNotifier() = default;
     ~QPyFutureNotifier() override = default;
-    void notifyStarted() {
-        emit started();
+    void notifyStarted(const QString& function) override {
+        emit started(function);
     }
-    void notifyFinished(const QVariant& value = QVariant()) override{
-        emit finished(value);
+    void notifyFinished(const QString& function, const QVariant& value = QVariant()) override{
+        emit finished(function, value);
     }
-    void notifyResultAvailable(const QVariant& value) override {
-        emit resultAvailable(value);
+    void notifyResultAvailable(const QString& function,const QVariant& value) override {
+        emit resultAvailable(function, value);
     }
-    void notifyErrorOccurred(const QString& errorMessage) override {
-        emit errorOccurred(errorMessage);
+    void notifyErrorOccurred(const QString& function, const QString& errorMessage) override {
+        emit errorOccurred(function, errorMessage);
     }
     signals:
-      void started();
-    void finished(const QVariant& value = QVariant());
-    void resultAvailable(const QVariant& value);
-    void errorOccurred(const QString& errorMessage);
+      void started(const QString& function);
+    void finished(const QString& function, const QVariant& value = QVariant());
+    void resultAvailable(const QString& function, const QVariant& value);
+    void errorOccurred(const QString& function, const QString& errorMessage);
 };
 
 static std::filesystem::path testdata_path(std::string_view rel) {
@@ -46,7 +46,7 @@ static std::filesystem::path testdata_path(std::string_view rel) {
 TEST(QPyModule, CallAsyncRunsAndReturns) {
     auto m = qtpyt::QPyModule("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);
-    auto f = m.callAsync<double, double>(nullptr, "test_func", "double", 2.5, 3.5).value();
+    auto f = m.callAsync<double, double>("test_func", "double", 2.5, 3.5).value();
     f.waitForFinished();
     auto res = f.resultAs<double>(0);
     EXPECT_EQ(res, 6.0);
@@ -55,11 +55,11 @@ TEST(QPyModule, CallAsyncRunsAndReturns) {
 TEST(QPyModule, SyncRunsAfterAsync) {
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
         qtpyt::QPySourceType::File);
-    auto f = m.callAsync<double, double>(nullptr,"func_1", "double", 2.5, 3.5).value();
+    auto f = m.callAsync<double, double>("func_1", "double", 2.5, 3.5).value();
     auto func_2 = m.makeFunction<int()>("func_2");
     const auto res2 = func_2();
     EXPECT_EQ(res2, 1);
-    auto f2 = m.callAsync<>(nullptr, "func_2", QMetaType::Int ).value();
+    auto f2 = m.callAsync<>("func_2", QMetaType::Int ).value();
     f2.waitForFinished();
     auto res = f2.resultAs<int>(0);
     EXPECT_EQ(res, 1);
@@ -70,7 +70,7 @@ TEST(QPyModule, CallAsyncWithVariantListRunsAndReturns) {
     auto m = qtpyt::QPyModule ("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);
     QVariantList args = {2.5, 3.5};
-    auto f = m.callAsync(nullptr, "test_func", QMetaType::Double, 2.5, 3.5).value();
+    auto f = m.callAsync("test_func", QMetaType::Double, 2.5, 3.5).value();
     f.waitForFinished();
     auto res = f.resultAs<double>(0);
     EXPECT_EQ(res, 6.0);
@@ -82,7 +82,7 @@ TEST(QPyModule, CallAsyncReturnVoid) {
     QVariant x = 2.5;
     QVariant y = 3.5;
     QVariantList args = {x, y};
-    auto f = m.callAsync(nullptr, "test_func", QMetaType::Void, x, y).value();
+    auto f = m.callAsync( "test_func", QMetaType::Void, x, y).value();
     f.waitForFinished();
     EXPECT_EQ(f.state(), qtpyt::QPyFutureState::Finished);
     EXPECT_EQ(f.resultCount(), 0);
@@ -94,7 +94,7 @@ TEST(QPyModule, CallAsyncReturnVoid2) {
     QVariant x = 2.5;
     QVariant y = 3.5;
     QVariantList args = {x, y};
-    auto f = m.callAsync(nullptr, "test_func", "void", x, y).value();
+    auto f = m.callAsync("test_func", "void", x, y).value();
     f.waitForFinished();
     EXPECT_EQ(f.state(), qtpyt::QPyFutureState::Finished);
     EXPECT_EQ(f.resultCount(), 0);
@@ -104,7 +104,7 @@ TEST(QPyModule, CallAsyncReturnVoid2) {
 TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
     auto m = qtpyt::QPyModule("def test_func(x, y):\n"
                            "    return x + y\n", qtpyt::QPySourceType::SourceString);
-    auto f = m.callAsync<>(nullptr, "test_func", "double");
+    auto f = m.callAsync<>( "test_func", "double");
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Error);
     EXPECT_EQ(f->errorMessage().toStdString(),  "QPyFuture: Python error: TypeError: test_func() missing 2 required positional arguments: 'x' and 'y'");
@@ -113,7 +113,7 @@ TEST(QPyModule, CallAsyncInvalidFunctionRuntimeError) {
 TEST(QPyModule, TestMakeAsyncFunction) {
     auto m = qtpyt::QPyModule("def add_vectors(a, b):\n"
                            "    return (a[0]+b[0], a[1] + b[1], a[2] + b[2])\n", qtpyt::QPySourceType::SourceString);
-    auto add_vectors = m.makeAsyncFunction<QVector3D, QVector3D, QVector3D>(nullptr,"add_vectors");
+    auto add_vectors = m.makeAsyncFunction<QVector3D, QVector3D, QVector3D>("add_vectors");
     auto f = add_vectors({1.0, 2.0, 3.0}, {5.0, 8.0, 10.0});
     f->waitForFinished();
     EXPECT_EQ(f.value().state(), qtpyt::QPyFutureState::Finished);
@@ -129,11 +129,13 @@ TEST(QPyModule, TestQPyFutureNotifier) {
     auto notifier = QPyFutureNotifier::createNotifier();
     int oresult;
     bool notified = false;
-    QObject::connect(notifier.data(), &QPyFutureNotifier::finished, [&notified, &oresult](const QVariant& result) {
+    QObject::connect(notifier.data(), &QPyFutureNotifier::finished, [&notified, &oresult](const QString& function, const QVariant& result) {
+        EXPECT_EQ(function.toStdString(), "long_task");
         notified = true;
         oresult = result.toInt();
     });
-    auto f = m.callAsync<>(notifier, "long_task", QMetaType::Int);
+    m.setFutureNotifier(notifier);
+    auto f = m.callAsync<>( "long_task", QMetaType::Int);
 
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
@@ -197,14 +199,14 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapper) {
         AsyncNotifier(std::function<void()> onFinish,
                       std::function<void()> onError)
             : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
-        void notifyStarted()  override {
+        void notifyStarted(const QString& f)  override {
         }
-        void notifyFinished(const QVariant& value = QVariant()) override{
+        void notifyFinished(const QString& f, const QVariant& value = QVariant()) override{
             onFinish_();
         }
-        void notifyResultAvailable(const QVariant& value) override {
+        void notifyResultAvailable(const QString& f, const QVariant& value) override {
         }
-        void notifyErrorOccurred(const QString& errorMessage) override {
+        void notifyErrorOccurred(const QString& f, const QString& errorMessage) override {
             onError_();
         }
     private:
@@ -214,8 +216,9 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapper) {
 
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
+    m.setFutureNotifier(QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)));
     auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>(
-        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
+        "scale_array");
     {
         auto arr = QSharedPointer<QVector<double>>::create(4096);
         for (int i = 0; i < arr->length(); ++i) {
@@ -253,14 +256,14 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
         AsyncNotifier(std::function<void()> onFinish,
                       std::function<void()> onError)
             : onFinish_(std::move(onFinish)), onError_(std::move(onError)) {}
-        void notifyStarted()  override {
+        void notifyStarted(const QString& f)  override {
         }
-        void notifyFinished(const QVariant& value = QVariant()) override{
+        void notifyFinished(const QString& f, const QVariant& value = QVariant()) override{
             onFinish_();
         }
-        void notifyResultAvailable(const QVariant& value) override {
+        void notifyResultAvailable(const QString& f, const QVariant& value) override {
         }
-        void notifyErrorOccurred(const QString& errorMessage) override {
+        void notifyErrorOccurred(const QString& f, const QString& errorMessage) override {
             onError_();
         }
     private:
@@ -270,8 +273,8 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
 
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>(
-        QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)),"scale_array");
+    m.setFutureNotifier(QSharedPointer<AsyncNotifier>(new AsyncNotifier(n_finish, n_error)));
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, double>("scale_array");
 
         auto arr = QSharedPointer<QVector<float>>::create(4096);
         auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, false);
@@ -301,8 +304,7 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperShares) {
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly) {
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, int>(
-        nullptr,"scale_array");
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, int>("scale_array");
         auto arr = QSharedPointer<QVector<long long>>::create(4096);
         auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, true);
         for (int i = 0; i < arr->length(); ++i) {
@@ -317,8 +319,7 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly) {
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly2) {
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto scale_array = m.makeAsyncFunction<int, qtpyt::QPySequenceReference>(
-        nullptr,"summ_array");
+    auto scale_array = m.makeAsyncFunction<int, qtpyt::QPySequenceReference>("summ_array");
     auto arr = QSharedPointer<QVector<long long>>::create(4096);
     auto wrapped = qtpyt::wrapVectorWithSequenceReference(arr, true);
     for (int i = 0; i < arr->length(); ++i) {
@@ -334,8 +335,7 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReadOnly2) {
 TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, int>(
-        nullptr,"make_array");
+    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, int>("make_array");
 
     auto f =  make_array(1024);
     f->waitForFinished();
@@ -351,11 +351,9 @@ TEST(QPyModule, TestAsyncFunctionWithVectorWrapperReturned) {
 TEST(QPyModule, TestPassingVectorWrapperReturned) {
    auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
                            qtpyt::QPySourceType::File);
-    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, short int>(
-        nullptr,"make_array");
+    auto make_array = m.makeAsyncFunction<qtpyt::QPySequenceReference, short int>("make_array");
 
-    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, int>(
-        nullptr,"scale_array");
+    auto scale_array = m.makeAsyncFunction<void, qtpyt::QPySequenceReference, int>("scale_array");
     auto f =  make_array(1024);
     f->waitForFinished();
     EXPECT_EQ(f->state(), qtpyt::QPyFutureState::Finished);
@@ -376,8 +374,7 @@ TEST(QPyModule, TestQPySharedByteArrayShared) {
                                                    "        b[i] = (i * 2) % 256\n"
                                                    "    return None\n",
                                                    qtpyt::QPySourceType::SourceString);
-    auto test = m.makeAsyncFunction<void, qtpyt::QPySharedByteArray>(
-        nullptr,"test");
+    auto test = m.makeAsyncFunction<void, qtpyt::QPySharedByteArray>("test");
 
     qtpyt::QPySharedByteArray sba;
     sba.resize(64);
@@ -401,8 +398,7 @@ TEST(QPyModule, TestQPySharedByteArrayReadOnly) {
                                                    "        b[i] = (i * 2) % 256\n"
                                                    "    return None\n",
                                                    qtpyt::QPySourceType::SourceString);
-    auto test = m.makeAsyncFunction<void, qtpyt::QPySharedByteArray>(
-        nullptr,"test");
+    auto test = m.makeAsyncFunction<void, qtpyt::QPySharedByteArray>("test");
 
     qtpyt::QPySharedByteArray sba;
     sba.resize(64);
@@ -422,8 +418,7 @@ TEST(QPyModule, TestQPySharedByteArrayReadOnly) {
 TEST(QPyModule, TestQByteArrayReadOnly2) {
     auto m = qtpyt::QPyModule(QString::fromStdString(testdata_path("module8.py").string()),
             qtpyt::QPySourceType::File);
-    auto test = m.makeAsyncFunction<int, qtpyt::QPySharedByteArray>(
-        nullptr,"summ_array");
+    auto test = m.makeAsyncFunction<int, qtpyt::QPySharedByteArray>("summ_array");
 
     qtpyt::QPySharedByteArray sba;
     sba.resize(64);

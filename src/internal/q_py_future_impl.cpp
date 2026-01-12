@@ -36,7 +36,7 @@ void QPyFutureImpl::run() {
         {
             m_state =  qtpyt::QPyFutureState::Running;
             if (m_notifier != nullptr) {
-                m_notifier->notifyStarted();
+                m_notifier->notifyStarted(m_functionName);
             }
             // specify the return type explicitly and pass an explicit empty kwargs dict
             if (m_returnType == "void" || m_returnType == "NoneType") {
@@ -46,7 +46,7 @@ void QPyFutureImpl::run() {
                }
                m_state =  qtpyt::QPyFutureState::Finished;
                if (m_notifier != nullptr) {
-                   m_notifier->notifyFinished({});
+                   m_notifier->notifyFinished(m_functionName, {});
                }
                return;
             }
@@ -62,7 +62,7 @@ void QPyFutureImpl::run() {
             pushResult(result.first.value());
             m_state =  qtpyt::QPyFutureState::Finished;
             if (m_notifier != nullptr) {
-                m_notifier->notifyFinished(result.first.value());
+                m_notifier->notifyFinished(m_functionName, result.first.value());
             }
         }
 
@@ -73,7 +73,7 @@ void QPyFutureImpl::run() {
                 m_errorMessage = QString::fromStdString(e.what());
         }
         if (m_notifier != nullptr) {
-            m_notifier->notifyErrorOccurred(QString::fromStdString(e.what()));
+            m_notifier->notifyErrorOccurred(m_functionName, QString::fromStdString(e.what()));
         }
         qWarning() << "Python error in QPyFutureImpl::run:" << e.what();
         // Handle Python exception (log it, store it, etc.)
@@ -86,7 +86,7 @@ void QPyFutureImpl::run() {
                 m_errorMessage = QString::fromStdString(e.what());
         }
         if (m_notifier != nullptr) {
-            m_notifier->notifyErrorOccurred(QString::fromStdString(e.what()));
+            m_notifier->notifyErrorOccurred(m_functionName, QString::fromStdString(e.what()));
         }
         qWarning() << e.what();
         // Handle exception (log it, store it, etc.)

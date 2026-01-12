@@ -58,28 +58,25 @@ public:
     /// \brief Asynchronously calls a Python function by name, with variadic arguments.
     /// \details
     /// \tparam Args Arguments.
-    /// \param notifier Optional notifier used to observe completion/progress.
     /// \param functionName Name of the Python callable to invoke.
     /// \param returnType Expected return type information for marshalling.
     /// \param args Arguments forwarded and converted into a `QVariantList`.
     /// \return `QPyFuture` on successful scheduling; `std::nullopt` on failure.
     template<typename... Args>
-    std::optional<QPyFuture> callAsync(const QSharedPointer<IQPyFutureNotifier> &notifier,
-                                       const QString &functionName,
+    std::optional<QPyFuture> callAsync(const QString &functionName,
                                        const QPyRegisteredType &returnType,
                                        Args... args) const {
         QVariantList varArgs;
         (varArgs.push_back(QVariant::fromValue(args)), ...);
-        return callAsyncVariant(notifier, functionName, returnType, std::move(varArgs));
+        return callAsyncVariant(functionName, returnType, std::move(varArgs));
     }
 
     /// \brief Asynchronously calls a Python function by name with explicit arguments.
-    /// \param notifier Optional notifier used to observe completion/progress.
     /// \param functionName Name of the Python callable to invoke.
     /// \param returnType Expected return type information for marshalling.
     /// \param args Argument list; moved into the call to avoid copies.
     /// \return `QPyFuture` on successful scheduling; `std::nullopt` on failure.
-    std::optional<QPyFuture> callAsyncVariant(const QSharedPointer<IQPyFutureNotifier> &notifier,
+    std::optional<QPyFuture> callAsyncVariant(
                                        const QString &functionName,
                                        const QPyRegisteredType &returnType,
                                        QVariantList &&args) const;
@@ -91,20 +88,15 @@ public:
     /// passing it the arguments provided at call time.
     /// \tparam R Expected C\+\+ return type (mapped to `QMetaType`).
     /// \tparam Args Argument types convertible to `QVariant` via `QVariant::fromValue`.
-    /// \param notifier Optional notifier used to observe completion/progress.
     /// \param name Name of the Python callable to invoke.
     /// \return A `std::function` that returns an optional `QPyFuture`.
     /// \throws std::runtime_error If the underlying `callAsync()` returns `std::nullopt`.
     template<typename R, typename... Args>
     std::function<std::optional<QPyFuture>(Args...)> makeAsyncFunction(
-        const QSharedPointer<IQPyFutureNotifier> &notifier, const QString &name) {
+        const QString &name) {
         const QMetaType returnType = QMetaType::fromType<R>();
-        return [module=*this, name, returnType, notifier](Args... args) -> std::optional<QPyFuture> {
-            //QVariantList varArgs;
-            //varArgs.reserve(sizeof...(Args));
-            //(varArgs.push_back(QVariant::fromValue(args)), ...);
-
-            auto futOpt = module.callAsync(notifier, name, returnType, args...);
+        return [module=*this, name, returnType](Args... args) -> std::optional<QPyFuture> {
+            auto futOpt = module.callAsync(name, returnType, args...);
             if (!futOpt) {
                 throw std::runtime_error("callAsync failed");
             }
@@ -120,8 +112,7 @@ public:
     /// \param notifier Optional notifier used to observe completion/progress.
     /// \return A `QPySlot` bound to \p slotName.
     QPySlot makeSlot(const QString &slotName,
-                     const QPyRegisteredType &returnType = QMetaType::Void,
-                     const QSharedPointer<IQPyFutureNotifier> &notifier = nullptr);
+                     const QPyRegisteredType &returnType = QMetaType::Void);
 
     /// \brief Connects a Qt signal to a Python function in this module (synchronous call).
     /// This is a convenience wrapper around `QPySlot::connectToSignal()`.
@@ -194,6 +185,22 @@ public:
         return connectAsyncToSignal(const_cast<QObject*>(static_cast<const QObject*>(sender)), signalSignature, slot, type);
     }
 
+    void setFutureNotifier(QSharedPointer<IQPyFutureNotifier> notifier) {
+        m_notifier = std::move(notifier);
+    }
+    void setFutureNotifier(std::function<void(const QString& functionName)> onStarted,
+                           std::function<void(const QString& functionName, const QVariant& value)> onFinished,
+                           std::function<void(const QString& functionName, const QVariant& value)> onResultAvailable,
+                           std::function<void(const QString& functionName, const QString& errorMessage)> onError) {
+        auto notifier = QSharedPointer<QPyModule::Notifier>(
+            new Notifier(std::move(onStarted), std::move(onFinished), std::move(onResultAvailable), std::move(onError))
+        );
+        m_notifier = std::move(notifier);
+    }
+    void clearFutureNotifier() {
+        m_notifier = nullptr;
+    }
+
 protected:
     /// \brief Returns the thread id associated with this module instance.
     /// \return An implementation\-defined thread id value.
@@ -202,9 +209,45 @@ protected:
     /// \brief Captures/sets the current thread id as the module's associated thread.
     void setThreadId();
 
-
-
 private:
+
+    class Notifier : public IQPyFutureNotifier {
+    public:
+        Notifier(std::function<void(const QString& functionName)> onStarted,
+                 std::function<void(const QString& functionName, const QVariant& value)> onFinished,
+                 std::function<void(const QString& functionName, const QVariant& value)> onResultAvailable,
+                 std::function<void(const QString& functionName, const QString& errorMessage)> onError) :
+            m_onStarted(std::move(onStarted)),
+            m_onFinished(std::move(onFinished)),
+            m_onResultAvailable(std::move(onResultAvailable)),
+            m_onError(std::move(onError)) {}
+        void notifyStarted(const QString& functionName) override {
+            if (m_onStarted) {
+                m_onStarted(functionName);
+            }
+        }
+        void notifyFinished(const QString& functionName, const QVariant& value) override {
+            if (m_onFinished) {
+                m_onFinished(functionName, value);
+            }
+        }
+        void notifyResultAvailable(const QString& functionName, const QVariant& value) override {
+            if (m_onResultAvailable) {
+                m_onResultAvailable(functionName, value);
+            }
+        }
+        void notifyErrorOccurred(const QString& functionName, const QString& errorMessage) override {
+            if (m_onError) {
+                m_onError(functionName, errorMessage);
+            }
+        }
+    private:
+        std::function<void(const QString& funtionName)> m_onStarted;
+        std::function<void(const QString& functionName, const QVariant& value)> m_onFinished;
+        std::function<void(const QString& functionName, const QVariant& value)> m_onResultAvailable;
+        std::function<void(const QString& functionName, const QString& errorMessage)> m_onError;
+    };
+
     /// \brief Marks the module as wanting to cancel outstanding work.
     /// \details Used internally to coordinate cancellation state.
     void addWantsToCancel();
@@ -224,6 +267,8 @@ private:
 
     /// \brief Thread id captured for thread\-affinity/validation logic.
     qulonglong m_threadId{0};
+
+    QSharedPointer<IQPyFutureNotifier> m_notifier{nullptr};
 };
 
 } // namespace qtpyt

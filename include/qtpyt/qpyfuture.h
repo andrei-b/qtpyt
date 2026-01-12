@@ -14,10 +14,10 @@ namespace qtpyt {
 
     class IQPyFutureNotifier  {
       public:
-        virtual void notifyStarted() = 0;
-        virtual void notifyFinished(const QVariant& value) = 0;
-        virtual void notifyResultAvailable(const QVariant& value)  = 0;
-        virtual void notifyErrorOccurred(const QString& errorMessage) = 0;
+        virtual void notifyStarted(const QString& functionName) = 0;
+        virtual void notifyFinished(const QString& functionName, const QVariant& value) = 0;
+        virtual void notifyResultAvailable(const QString& functionName, const QVariant& value)  = 0;
+        virtual void notifyErrorOccurred(const QString& functionName, const QString& errorMessage) = 0;
         virtual  ~IQPyFutureNotifier() = default;
     };
 
