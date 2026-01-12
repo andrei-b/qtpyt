@@ -65,7 +65,7 @@ namespace qtpyt {
             type = QMetaType(std::get<QMetaType::Type>(returnType)).name();
         }
 
-        QPyFuture me(*this, m_notifier, functionName, type, std::move(args));
+        QPyFuture me(*this, functionName, type, std::move(args));
         QPyThreadPool::instance().submit(me);
         return me;
     }
@@ -76,7 +76,7 @@ namespace qtpyt {
     }*/
 
     QPySlot QPyModule::makeSlot(const QString &slotName, const QPyRegisteredType &returnType) {
-        return QPySlot(*this, m_notifier, slotName, returnType);
+        return QPySlot(*this, slotName, returnType);
     }
 
     QMetaObject::Connection QPyModule::connectToSignal(QObject *sender, const char *signal, const char *slot,

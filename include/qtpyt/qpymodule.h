@@ -188,6 +188,7 @@ public:
     void setFutureNotifier(QSharedPointer<IQPyFutureNotifier> notifier) {
         m_notifier = std::move(notifier);
     }
+
     void setFutureNotifier(std::function<void(const QString& functionName)> onStarted,
                            std::function<void(const QString& functionName, const QVariant& value)> onFinished,
                            std::function<void(const QString& functionName, const QVariant& value)> onResultAvailable,
@@ -197,8 +198,13 @@ public:
         );
         m_notifier = std::move(notifier);
     }
+
     void clearFutureNotifier() {
         m_notifier = nullptr;
+    }
+
+    QSharedPointer<IQPyFutureNotifier> getNotifier() const {
+        return m_notifier;
     }
 
 protected:

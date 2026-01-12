@@ -10,8 +10,8 @@
 class QPyFutureImpl {
   public:
     virtual ~QPyFutureImpl();
-    QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::IQPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
-    QPyFutureImpl(const qtpyt::QPyModule& module, QSharedPointer<qtpyt::IQPyFutureNotifier>&& notifier, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
+    QPyFutureImpl(const qtpyt::QPyModule& module, QString  functionName, QByteArray  returnType, QVariantList&& arguments);
+    QPyFutureImpl(const qtpyt::QPyModule& module, QString  functionName, QByteArray  returnType, const QVector<int>& types, void **a);
     void run();
 
     int resultCount() const;
@@ -35,6 +35,5 @@ class QPyFutureImpl {
     QVariantList m_arguments;
     QVariantList m_result;
      qtpyt::QPyFutureState m_state{ qtpyt::QPyFutureState::NotStarted};
-    QSharedPointer<qtpyt::IQPyFutureNotifier> m_notifier{nullptr};
-    QString m_errorMessage{};
+     QString m_errorMessage{};
 };
